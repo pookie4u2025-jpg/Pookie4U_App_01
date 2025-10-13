@@ -27,15 +27,11 @@ const { width, height } = Dimensions.get('window');
 
 export default function AuthScreen() {
   const [currentScreen, setCurrentScreen] = useState<'welcome' | 'login' | 'register' | 'signup-options'>('welcome');
-  const [registrationMethod, setRegistrationMethod] = useState<'email' | 'mobile' | null>(null);
+  const [registrationMethod, setRegistrationMethod] = useState<'email' | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  // Removed authMethod - using registrationMethod instead
-  const [mobile, setMobile] = useState('');
-  const [otp, setOtp] = useState('');
-  const [showOtpInput, setShowOtpInput] = useState(false);
+  const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
