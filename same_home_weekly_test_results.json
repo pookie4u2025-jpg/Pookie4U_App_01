@@ -1,0 +1,51 @@
+[
+  {
+    "test": "Same Home Weekly Tasks - Basic Functionality",
+    "success": true,
+    "details": "Task: 'Gift her something small but thoughtful...', Category: PhysicalActivity, Points: 25, Physical: True",
+    "timestamp": "2025-10-05T11:59:47.560016",
+    "response_data": null
+  },
+  {
+    "test": "Same Home Weekly Tasks - Content Verification",
+    "success": true,
+    "details": "Tasks appear to be home-focused pre-written content: ['Gift her something small but thoughtful', 'Gift her something small but thoughtful', 'Gift her something small but thoughtful']",
+    "timestamp": "2025-10-05T11:59:48.391424",
+    "response_data": null
+  },
+  {
+    "test": "Yearly Rotation Consistency",
+    "success": true,
+    "details": "Same week returns identical task: 'Gift her something small but thoughtful...', Week: 40, Seed: 2580289478",
+    "timestamp": "2025-10-05T11:59:49.219705",
+    "response_data": null
+  },
+  {
+    "test": "Task Structure and Metadata",
+    "success": true,
+    "details": "All structure checks passed. id: \u2713; title: \u2713; description: \u2713; category: \u2713; difficulty: \u2713",
+    "timestamp": "2025-10-05T11:59:49.729092",
+    "response_data": null
+  },
+  {
+    "test": "Complete Task Ecosystem Integration",
+    "success": true,
+    "details": "All modes working correctly. SAME_HOME uses pre-written weekly tasks. Results: {'SAME_HOME': {'daily': True, 'weekly': True, 'prewritten_weekly': True}, 'DAILY_IRL': {'daily': True, 'weekly': True}, 'LONG_DISTANCE': {'daily': True, 'weekly': True}}",
+    "timestamp": "2025-10-05T11:59:50.909700",
+    "response_data": null
+  },
+  {
+    "test": "SAME_HOME Daily Tasks Unchanged",
+    "success": true,
+    "details": "Daily tasks working correctly. Pre-written: True. Sample: 'Dance with her for a minute...'",
+    "timestamp": "2025-10-05T11:59:51.428367",
+    "response_data": null
+  },
+  {
+    "test": "Task Regeneration Consistency",
+    "success": true,
+    "details": "Regeneration maintains consistency: 'Gift her something small but thoughtful...'",
+    "timestamp": "2025-10-05T11:59:51.945959",
+    "response_data": null
+  }
+]
