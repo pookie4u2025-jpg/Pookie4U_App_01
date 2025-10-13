@@ -380,7 +380,7 @@ export default function AuthScreen() {
           <Text style={styles.cleanSubtitle}>Choose how you'd like to sign up</Text>
         </View>
 
-        {/* Sign-up Options */}
+        {/* Sign Up Options - Email + Google Only */}
         <View style={styles.cleanOptionsContainer}>
           {/* Email Address */}
           <TouchableOpacity
@@ -393,23 +393,7 @@ export default function AuthScreen() {
             </View>
             <View style={styles.cleanOptionContent}>
               <Text style={styles.cleanOptionTitle}>Email Address</Text>
-              <Text style={styles.cleanOptionDescription}>Sign up with your email</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#999999" />
-          </TouchableOpacity>
-
-          {/* Mobile Number */}
-          <TouchableOpacity
-            style={styles.cleanOption}
-            onPress={() => navigateToScreen('register', 'mobile')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.cleanOptionIconContainer}>
-              <Ionicons name="phone-portrait" size={24} color="#FF1493" />
-            </View>
-            <View style={styles.cleanOptionContent}>
-              <Text style={styles.cleanOptionTitle}>Mobile Number</Text>
-              <Text style={styles.cleanOptionDescription}>Sign up with your phone number</Text>
+              <Text style={styles.cleanOptionDescription}>Create account with email</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#999999" />
           </TouchableOpacity>
@@ -426,22 +410,6 @@ export default function AuthScreen() {
             <View style={styles.cleanOptionContent}>
               <Text style={styles.cleanOptionTitle}>Google Account</Text>
               <Text style={styles.cleanOptionDescription}>Continue with Google</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#999999" />
-          </TouchableOpacity>
-
-          {/* Apple ID */}
-          <TouchableOpacity
-            style={styles.cleanOption}
-            onPress={handleAppleSignIn}
-            activeOpacity={0.7}
-          >
-            <View style={styles.cleanOptionIconContainer}>
-              <Ionicons name="logo-apple" size={24} color="#000000" />
-            </View>
-            <View style={styles.cleanOptionContent}>
-              <Text style={styles.cleanOptionTitle}>Apple ID</Text>
-              <Text style={styles.cleanOptionDescription}>Continue with Apple</Text>
             </View>
             <Ionicons name="chevron-forward" size={20} color="#999999" />
           </TouchableOpacity>
