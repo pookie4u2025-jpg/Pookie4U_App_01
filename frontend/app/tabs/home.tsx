@@ -3,20 +3,23 @@ import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import HomeContent from '../../src/screens/HomeContent';
+import GradientBackground from '../../src/components/GradientBackground';
 
 export default function HomeScreen() {
   const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surface }]}>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Home</Text>
-      </View>
+    <GradientBackground>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, { backgroundColor: theme.surface }]}>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Home</Text>
+        </View>
 
-      {/* Content */}
-      <HomeContent />
-    </SafeAreaView>
+        {/* Content */}
+        <HomeContent />
+      </SafeAreaView>
+    </GradientBackground>
   );
 }
 
