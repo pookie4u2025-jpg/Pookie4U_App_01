@@ -3,20 +3,23 @@ import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import TasksContent from '../../src/screens/TasksContent';
+import GradientBackground from '../../src/components/GradientBackground';
 
 export default function TasksScreen() {
   const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surface }]}>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Tasks</Text>
-      </View>
+    <GradientBackground>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, { backgroundColor: theme.surface }]}>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Tasks</Text>
+        </View>
 
-      {/* Content */}
-      <TasksContent />
-    </SafeAreaView>
+        {/* Content */}
+        <TasksContent />
+      </SafeAreaView>
+    </GradientBackground>
   );
 }
 
