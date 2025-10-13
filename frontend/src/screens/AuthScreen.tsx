@@ -114,27 +114,7 @@ export default function AuthScreen() {
     }
   }, [name, email, password, confirmPassword, register]);
 
-  // Removed mobile/OTP functions - keeping only Email + Google OAuth
-
-  const handleVerifyOTP = useCallback(async () => {
-    if (!otp || otp.length !== 6) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Invalid OTP', 'Please enter the complete 6-digit verification code.');
-      return;
-    }
-    
-    try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      // Mock OTP verification - in production, verify with backend
-      console.log('Verifying OTP:', otp);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Verified! ✅', 'Your phone number has been successfully verified.');
-    } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Verification Failed', 'Invalid OTP. Please check and try again.');
-      console.error('Verify OTP failed:', error);
-    }
-  }, [otp]);
+  // All mobile/OTP functions removed - Email + Google OAuth only
 
   const handleGoogleSignIn = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
