@@ -289,12 +289,9 @@ export default function AuthScreen() {
 
   // Removed handleAuthMethodSwitch - using handleRegistrationMethodSwitch instead
 
-  const handleRegistrationMethodSwitch = (method: 'email' | 'mobile' | null) => {
+  const handleRegistrationMethodSwitch = (method: 'email' | null) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setRegistrationMethod(method);
-    setShowOtpInput(false);
-    setOtp('');
-    setMobile('');
     setEmail('');
     setPassword('');
     setConfirmPassword('');
