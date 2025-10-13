@@ -400,12 +400,10 @@ export default function AuthScreen() {
               resizeMode="contain"
             />
             <Text style={styles.cleanTitle}>
-              {registrationMethod === 'email' ? 'Sign in with Email' : 
-               registrationMethod === 'mobile' ? 'Sign in with Phone' : 'Welcome back!'}
+              {registrationMethod === 'email' ? 'Sign in with Email' : 'Welcome back!'}
             </Text>
             <Text style={styles.cleanSubtitle}>
-              {registrationMethod === 'email' ? 'Enter your email and password' :
-               registrationMethod === 'mobile' ? 'Enter your phone number' : 'Choose how you\'d like to sign in'}
+              {registrationMethod === 'email' ? 'Enter your email and password' : 'Choose how you\'d like to sign in'}
             </Text>
           </View>
 
