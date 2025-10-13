@@ -114,66 +114,7 @@ export default function AuthScreen() {
     }
   }, [name, email, password, confirmPassword, register]);
 
-  const handleMobileRegister = useCallback(async () => {
-    if (!name?.trim()) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Missing Information', 'Please enter your full name.');
-      return;
-    }
-
-    const cleanMobile = mobile?.trim();
-    if (!cleanMobile || cleanMobile.length < 10) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Invalid Number', 'Please enter a valid mobile number (10+ digits).');
-      return;
-    }
-
-    if (!otp || otp.length !== 6) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Invalid OTP', 'Please enter the complete 6-digit verification code.');
-      return;
-    }
-    
-    try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      // Mock mobile registration - in production, verify OTP and create account
-      console.log('Creating account with mobile:', cleanMobile, 'Name:', name.trim());
-      
-      // For now, create a temporary email from mobile number for registration
-      const tempEmail = `${cleanMobile.replace(/\D/g, '')}@mobile.temp`;
-      const tempPassword = `mobile_${cleanMobile.replace(/\D/g, '')}_${Date.now()}`;
-      
-      await register(name.trim(), tempEmail, tempPassword);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('Account Created! ✅', 'Your account has been successfully created with your mobile number.');
-    } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Registration Failed', 'Failed to create account. Please try again.');
-      console.error('Mobile registration failed:', error);
-    }
-  }, [name, mobile, otp, register]);
-
-  const handleSendOTP = useCallback(async () => {
-    const cleanMobile = mobile?.trim();
-    if (!cleanMobile || cleanMobile.length < 10) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Invalid Number', 'Please enter a valid mobile number (10+ digits).');
-      return;
-    }
-    
-    try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      // Mock OTP sending - in production, integrate with SMS service
-      console.log('Sending OTP to:', cleanMobile);
-      setShowOtpInput(true);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      Alert.alert('OTP Sent! 📱', 'Please check your messages for the verification code.');
-    } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Service Error', 'Failed to send OTP. Please try again.');
-      console.error('Send OTP failed:', error);
-    }
-  }, [mobile]);
+  // Removed mobile/OTP functions - keeping only Email + Google OAuth
 
   const handleVerifyOTP = useCallback(async () => {
     if (!otp || otp.length !== 6) {
