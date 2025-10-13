@@ -3,20 +3,23 @@ import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import MessagesContent from '../../src/screens/MessagesContent';
+import GradientBackground from '../../src/components/GradientBackground';
 
 export default function MessagesScreen() {
   const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surface }]}>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Messages</Text>
-      </View>
+    <GradientBackground>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, { backgroundColor: theme.surface }]}>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Messages</Text>
+        </View>
 
-      {/* Content */}
-      <MessagesContent />
-    </SafeAreaView>
+        {/* Content */}
+        <MessagesContent />
+      </SafeAreaView>
+    </GradientBackground>
   );
 }
 

@@ -3,20 +3,23 @@ import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import GiftsContent from '../../src/screens/GiftsContent';
+import GradientBackground from '../../src/components/GradientBackground';
 
 export default function GiftsScreen() {
   const { theme } = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surface }]}>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>Gifts</Text>
-      </View>
+    <GradientBackground>
+      <SafeAreaView style={styles.container}>
+        {/* Header */}
+        <View style={[styles.header, { backgroundColor: theme.surface }]}>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>Gifts</Text>
+        </View>
 
-      {/* Content */}
-      <GiftsContent />
-    </SafeAreaView>
+        {/* Content */}
+        <GiftsContent />
+      </SafeAreaView>
+    </GradientBackground>
   );
 }
 
