@@ -652,26 +652,7 @@ export default function AuthScreen() {
 
               {/* Mobile Registration removed - Email only */}
 
-              {/* Toggle Registration Method */}
-              {registrationMethod === 'mobile' && (
-                <TouchableOpacity
-                  style={styles.toggleMethodButton}
-                  onPress={() => handleRegistrationMethodSwitch('email')}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.toggleMethodText}>Use email instead</Text>
-                </TouchableOpacity>
-              )}
-
-              {registrationMethod === 'email' && (
-                <TouchableOpacity
-                  style={styles.toggleMethodButton}
-                  onPress={() => handleRegistrationMethodSwitch('mobile')}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.toggleMethodText}>Use phone number instead</Text>
-                </TouchableOpacity>
-              )}
+              {/* Toggle Method removed - Email only registration */}
 
               {/* Already have account */}
               <TouchableOpacity
