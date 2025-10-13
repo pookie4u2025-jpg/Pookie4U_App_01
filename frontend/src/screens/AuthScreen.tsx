@@ -378,13 +378,10 @@ export default function AuthScreen() {
           <TouchableOpacity
             style={styles.cleanBackButton}
             onPress={() => {
-              if (registrationMethod === 'email' || registrationMethod === 'mobile') {
+              if (registrationMethod === 'email') {
                 setRegistrationMethod(null);
                 setEmail('');
                 setPassword('');
-                setMobile('');
-                setOtp('');
-                setShowOtpInput(false);
                 clearError();
               } else {
                 navigateToScreen('welcome');
