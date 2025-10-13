@@ -571,20 +571,20 @@ export default function AuthScreen() {
                 )}
               </TouchableOpacity>
 
-              {/* Other Sign In Methods */}
+              {/* Alternative Sign In Method */}
               <View style={styles.cleanDivider}>
                 <View style={styles.cleanDividerLine} />
-                <Text style={styles.cleanDividerText}>or sign in with</Text>
+                <Text style={styles.cleanDividerText}>or continue with</Text>
                 <View style={styles.cleanDividerLine} />
               </View>
 
               <TouchableOpacity
                 style={styles.cleanMethodSwitchButton}
-                onPress={() => setRegistrationMethod('mobile')}
+                onPress={handleGoogleSignIn}
                 activeOpacity={0.7}
               >
-                <Ionicons name="phone-portrait" size={20} color="#FF1493" />
-                <Text style={styles.cleanMethodSwitchText}>Use phone number</Text>
+                <Ionicons name="logo-google" size={20} color="#4285F4" />
+                <Text style={styles.cleanMethodSwitchText}>Continue with Google</Text>
               </TouchableOpacity>
             </View>
           )}
