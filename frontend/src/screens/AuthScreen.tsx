@@ -701,18 +701,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   logoContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 30,
     padding: 30,
     marginBottom: 40,
-    shadowColor: '#FFFFFF',
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 8,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 10,
   },
   splashLogo: {
     width: width * 0.7, // 70% of screen width
