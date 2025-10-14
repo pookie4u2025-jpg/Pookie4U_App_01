@@ -225,47 +225,101 @@ export default function AuthScreen() {
 
   // Render different screens based on current state
   const renderWelcomeScreen = () => (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <LinearGradient
-        colors={['#FDF2F8', '#FCE7F3', '#FBCFE8', '#F9A8D4']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={styles.gradientContainer}
-      >
-        <SafeAreaView style={styles.container}>
-          {/* App Branding - Centered and Prominent */}
-          <View style={styles.splashBrandingContainer}>
-            <View style={styles.logoContainer}>
-              <Image 
-                source={require('../../assets/images/logos/p4u-long-logo.png')}
-                style={styles.splashLogo}
-                resizeMode="contain"
-              />
+    <SafeAreaView style={styles.cleanWhiteContainer}>
+      <ScrollView contentContainerStyle={styles.cleanWelcomeContent} showsVerticalScrollIndicator={false}>
+        {/* Logo */}
+        <View style={styles.cleanWelcomeHeader}>
+          <Image 
+            source={require('../../assets/images/p4u-logo-new.png')}
+            style={styles.cleanWelcomeLogo}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* Sign In Form */}
+        <View style={styles.cleanForm}>
+          <Text style={styles.cleanWelcomeTitle}>Welcome to P4U</Text>
+          <Text style={styles.cleanWelcomeSubtitle}>Sign in to your account</Text>
+
+          {/* Error Display */}
+          {error && (
+            <View style={styles.cleanErrorContainer}>
+              <Text style={styles.cleanErrorText}>
+                {typeof error === 'string' ? error : error.message || error.detail || 'An error occurred'}
+              </Text>
             </View>
-            <Text style={styles.splashTagline}>Strengthen your bond with gamified love</Text>
+          )}
+
+          {/* Email Input */}
+          <View style={styles.cleanInputGroup}>
+            <TextInput
+              style={styles.cleanWelcomeInput}
+              placeholder="Email"
+              placeholderTextColor="#9CA3AF"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
           </View>
 
-          {/* Action Buttons */}
-          <View style={styles.splashButtonContainer}>
+          {/* Password Input */}
+          <View style={styles.cleanInputGroup}>
+            <TextInput
+              style={styles.cleanWelcomeInput}
+              placeholder="Password"
+              placeholderTextColor="#9CA3AF"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
             <TouchableOpacity
-              style={[styles.splashPrimaryButton, { shadowColor: '#FFFFFF' }]}
-              onPress={() => navigateToScreen('signup-options')}
-              activeOpacity={0.8}
+              style={styles.cleanPasswordToggle}
+              onPress={() => setShowPassword(!showPassword)}
+              activeOpacity={0.7}
             >
-              <Text style={styles.splashPrimaryButtonText}>Create Account</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.splashSecondaryButton}
-              onPress={() => navigateToScreen('login')}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.splashSecondaryButtonText}>Sign In</Text>
+              <Ionicons 
+                name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                size={20} 
+                color="#9CA3AF" 
+              />
             </TouchableOpacity>
           </View>
-        </SafeAreaView>
-      </LinearGradient>
+
+          {/* Sign In Button */}
+          <TouchableOpacity
+            style={[styles.cleanPrimaryButton, loading && styles.cleanButtonDisabled]}
+            onPress={handleLogin}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.cleanPrimaryButtonText}>Sign In</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Continue with Google */}
+          <TouchableOpacity
+            style={styles.cleanGoogleButton}
+            onPress={handleGoogleSignIn}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="logo-google" size={20} color="#4285F4" />
+            <Text style={styles.cleanGoogleButtonText}>Continue with Google</Text>
+          </TouchableOpacity>
+
+          {/* Sign Up Link */}
+          <View style={styles.cleanSignUpLink}>
+            <Text style={styles.cleanLinkText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => navigateToScreen('register')}>
+              <Text style={styles.cleanLinkButton}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 
