@@ -24,6 +24,7 @@ export default function ProfileContent() {
   const { totalPoints, currentLevel, currentStreak, longestStreak, tasksCompleted, badges, loadPersistedData } = useGameStore();
   const { resetOnboarding } = useAppStore();
   const { theme } = useTheme();
+  const router = useRouter();
 
   const [editMode, setEditMode] = useState(false);
   const [profileImage, setProfileImage] = useState(user?.profile_image || null);
