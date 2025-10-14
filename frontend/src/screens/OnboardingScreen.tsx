@@ -125,7 +125,7 @@ export default function OnboardingScreen() {
             </Text>
             <TextInput
               style={styles.input}
-              placeholder="YYYY-MM-DD (e.g., 1995-06-15)"
+              placeholder="DD-MM-YYYY (e.g., 15-06-1995)"
               value={birthday}
               onChangeText={setBirthday}
             />
