@@ -538,7 +538,7 @@ frontend:
     file: "app/screens/OnboardingScreen.tsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
         - agent: "main"
@@ -546,6 +546,9 @@ frontend:
         - working: "NA"
         - agent: "testing"
         - comment: "Cannot test onboarding flow due to authentication issues blocking access. Onboarding screen implementation appears complete based on code review."
+        - working: "NA"
+        - agent: "main"
+        - comment: "Fixed critical date parsing bug causing 'Invalid time value' error. Issue: Birthday/anniversary dates entered in DD-MM-YYYY format were being passed directly to new Date() which expects MM-DD-YYYY or YYYY-MM-DD format. Solution: Implemented parseDateString() function that properly parses DD-MM-YYYY format, validates day/month/year ranges, handles edge cases (empty strings, invalid formats, out-of-range values), returns ISO string format for backend compatibility. Added comprehensive error handling and try-catch blocks. Ready for testing."
 
   - task: "Home Screen with Tasks"
     implemented: true
