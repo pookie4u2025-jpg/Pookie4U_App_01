@@ -1414,4 +1414,104 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     letterSpacing: 0.5,
   },
+
+  // Clean Welcome Screen Styles
+  cleanWhiteContainer: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  cleanWelcomeContent: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 40,
+  },
+  cleanWelcomeHeader: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  cleanWelcomeLogo: {
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+  },
+  cleanForm: {
+    flex: 1,
+  },
+  cleanWelcomeTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  cleanWelcomeSubtitle: {
+    fontSize: 16,
+    color: '#666666',
+    textAlign: 'center',
+    marginBottom: 32,
+  },
+  cleanInputGroup: {
+    marginBottom: 16,
+    position: 'relative',
+  },
+  cleanWelcomeInput: {
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    fontSize: 16,
+    color: '#1A1A1A',
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+  },
+  cleanPrimaryButton: {
+    backgroundColor: '#FF1493',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 20,
+  },
+  cleanButtonDisabled: {
+    opacity: 0.6,
+  },
+  cleanPrimaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cleanGoogleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F8F9FA',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+    marginBottom: 32,
+  },
+  cleanGoogleButtonText: {
+    marginLeft: 8,
+    fontSize: 16,
+    color: '#1A1A1A',
+    fontWeight: '500',
+  },
+  cleanSignUpLink: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 'auto',
+  },
+  cleanLinkText: {
+    fontSize: 16,
+    color: '#666666',
+  },
+  cleanLinkButton: {
+    fontSize: 16,
+    color: '#FF1493',
+    fontWeight: '600',
+  },
 });
