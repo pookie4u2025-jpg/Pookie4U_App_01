@@ -1626,4 +1626,16 @@ const styles = StyleSheet.create({
     color: '#FF1493',
     fontWeight: '600',
   },
+  cleanBackButton: {
+    position: 'absolute',
+    top: 20,
+    left: 24,
+    zIndex: 1,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F8F9FA',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
