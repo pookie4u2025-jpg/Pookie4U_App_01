@@ -392,11 +392,13 @@ export default function ProfileContent() {
                     style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
                     value={partnerData.birthday}
                     onChangeText={(text) => setPartnerData({...partnerData, birthday: text})}
-                    placeholder="DD/MM/YYYY"
+                    placeholder="DD-MM-YYYY"
                     placeholderTextColor={theme.textSecondary}
                   />
                 ) : (
-                  <Text style={[styles.inputValue, { color: theme.textSecondary }]}>{partnerData.birthday || 'Not set'}</Text>
+                  <Text style={[styles.inputValue, { color: theme.textSecondary }]}>
+                    {formatDateForDisplay(partnerData.birthday)}
+                  </Text>
                 )}
               </View>
 
@@ -407,11 +409,13 @@ export default function ProfileContent() {
                     style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
                     value={partnerData.anniversary}
                     onChangeText={(text) => setPartnerData({...partnerData, anniversary: text})}
-                    placeholder="DD/MM/YYYY"
+                    placeholder="DD-MM-YYYY"
                     placeholderTextColor={theme.textSecondary}
                   />
                 ) : (
-                  <Text style={[styles.inputValue, { color: theme.textSecondary }]}>{partnerData.anniversary || 'Not set'}</Text>
+                  <Text style={[styles.inputValue, { color: theme.textSecondary }]}>
+                    {formatDateForDisplay(partnerData.anniversary)}
+                  </Text>
                 )}
               </View>
 
