@@ -108,13 +108,18 @@ export default function AuthScreen() {
     
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      await register(name.trim(), email.trim().toLowerCase(), password);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      const success = await register(name.trim(), email.trim().toLowerCase(), password);
+      
+      if (success) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        // Navigate to subscription screen after successful registration
+        router.push('/subscription');
+      }
     } catch (error) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       console.error('Registration failed:', error);
     }
-  }, [name, email, password, confirmPassword, register]);
+  }, [name, email, password, confirmPassword, register, router]);
 
   // All mobile/OTP functions removed - Email + Google OAuth only
 
