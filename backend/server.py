@@ -2098,6 +2098,234 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# =======================
+# SUBSCRIPTION ENDPOINTS
+# =======================
+
+class CreateSubscriptionRequest(BaseModel):
+    plan_type: str = Field(..., description="Plan type: 'monthly' or 'sixmonth'")
+
+class VerifyPaymentRequest(BaseModel):
+    payment_id: str
+    subscription_id: str
+    signature: str
+
+@router.post("/subscriptions/create", tags=["Subscriptions"])
+async def create_subscription(
+    request: CreateSubscriptionRequest,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Create a new Razorpay subscription"""
+    try:
+        # Get current user
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        # Get user data
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Validate plan type
+        if request.plan_type not in ['monthly', 'sixmonth']:
+            raise HTTPException(status_code=400, detail="Invalid plan type. Must be 'monthly' or 'sixmonth'")
+        
+        # Create customer data
+        customer_data = {
+            'email': email,
+            'name': user.get('name', ''),
+            'phone': user.get('phone', '')
+        }
+        
+        # Create subscription
+        result = razorpay_service.create_subscription(request.plan_type, customer_data)
+        
+        if not result.get('success'):
+            raise HTTPException(status_code=500, detail=result.get('error', 'Failed to create subscription'))
+        
+        # Save subscription info to user
+        await db.users.update_one(
+            {"email": email},
+            {"$set": {
+                "subscription": {
+                    "subscription_id": result['subscription_id'],
+                    "plan_type": request.plan_type,
+                    "plan_id": result['plan_id'],
+                    "status": result['status'],
+                    "created_at": datetime.utcnow().isoformat(),
+                }
+            }}
+        )
+        
+        return {
+            "success": True,
+            "subscription_id": result['subscription_id'],
+            "short_url": result.get('short_url'),
+            "plan_type": request.plan_type,
+            "status": result['status'],
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating subscription: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create subscription: {str(e)}")
+
+@router.post("/subscriptions/verify", tags=["Subscriptions"])
+async def verify_payment(
+    request: VerifyPaymentRequest,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Verify Razorpay payment signature"""
+    try:
+        # Get current user
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        # Verify signature
+        is_valid = razorpay_service.verify_payment_signature(
+            request.payment_id,
+            request.subscription_id,
+            request.signature
+        )
+        
+        if not is_valid:
+            raise HTTPException(status_code=400, detail="Invalid payment signature")
+        
+        # Update subscription status
+        await db.users.update_one(
+            {"email": email},
+            {"$set": {
+                "subscription.status": "active",
+                "subscription.activated_at": datetime.utcnow().isoformat(),
+                "subscription.payment_id": request.payment_id,
+            }}
+        )
+        
+        return {
+            "success": True,
+            "message": "Payment verified successfully",
+            "subscription_status": "active"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error verifying payment: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to verify payment: {str(e)}")
+
+@router.get("/subscriptions/status", tags=["Subscriptions"])
+async def get_subscription_status(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get current subscription status"""
+    try:
+        # Get current user
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        # Get user data
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        subscription_data = user.get('subscription', {})
+        
+        if not subscription_data or not subscription_data.get('subscription_id'):
+            return {
+                "has_subscription": False,
+                "subscription": None
+            }
+        
+        # Fetch latest details from Razorpay
+        subscription_id = subscription_data['subscription_id']
+        latest_details = razorpay_service.get_subscription_details(subscription_id)
+        
+        if latest_details:
+            # Update local copy
+            await db.users.update_one(
+                {"email": email},
+                {"$set": {
+                    "subscription.status": latest_details['status'],
+                    "subscription.updated_at": datetime.utcnow().isoformat(),
+                }}
+            )
+        
+        return {
+            "has_subscription": True,
+            "subscription": latest_details or subscription_data
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting subscription status: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get subscription status: {str(e)}")
+
+@router.post("/subscriptions/cancel", tags=["Subscriptions"])
+async def cancel_subscription(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Cancel current subscription"""
+    try:
+        # Get current user
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        # Get user data
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        subscription_data = user.get('subscription', {})
+        subscription_id = subscription_data.get('subscription_id')
+        
+        if not subscription_id:
+            raise HTTPException(status_code=404, detail="No active subscription found")
+        
+        # Cancel subscription
+        result = razorpay_service.cancel_subscription(subscription_id, cancel_at_cycle_end=True)
+        
+        if not result.get('success'):
+            raise HTTPException(status_code=500, detail=result.get('error', 'Failed to cancel subscription'))
+        
+        # Update local status
+        await db.users.update_one(
+            {"email": email},
+            {"$set": {
+                "subscription.status": result['status'],
+                "subscription.cancelled_at": datetime.utcnow().isoformat(),
+            }}
+        )
+        
+        return {
+            "success": True,
+            "message": "Subscription cancelled successfully",
+            "status": result['status']
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error cancelling subscription: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to cancel subscription: {str(e)}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
