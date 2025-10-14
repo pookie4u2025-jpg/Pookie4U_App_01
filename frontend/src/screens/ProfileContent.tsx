@@ -195,6 +195,25 @@ export default function ProfileContent() {
     }
   };
 
+  // Format date for display - converts ISO string to DD-MM-YYYY format
+  const formatDateForDisplay = (dateString: string | undefined): string => {
+    if (!dateString) return 'Not set';
+    
+    try {
+      // If it's already in DD-MM-YYYY format, return as is
+      if (/^\d{2}-\d{2}-\d{4}$/.test(dateString)) {
+        return dateString;
+      }
+      
+      // If it's an ISO string, format it
+      const formatted = formatDateWithDashes(dateString);
+      return formatted === 'Invalid Date' ? 'Not set' : formatted;
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Not set';
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <KeyboardAvoidingView 
