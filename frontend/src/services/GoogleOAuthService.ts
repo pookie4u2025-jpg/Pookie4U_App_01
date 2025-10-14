@@ -47,11 +47,11 @@ class GoogleOAuthService {
       throw new Error('Google OAuth not initialized. Call initialize() first.');
     }
 
-    // For development with Expo Go, we need to use the auth proxy
-    // This creates a stable redirect URI that doesn't change with ngrok
+    // IMPORTANT: Use Expo's auth proxy to get an HTTPS redirect URI
+    // Google OAuth only accepts http/https, not exp://
     const redirectUri = AuthSession.makeRedirectUri({
-      scheme: 'exp',
-      path: 'redirect',
+      native: 'exp://pookie-couples.ngrok.io/--/redirect',
+      useProxy: true, // This creates an https://auth.expo.io URL
     });
 
     console.log('OAuth Redirect URI:', redirectUri);
