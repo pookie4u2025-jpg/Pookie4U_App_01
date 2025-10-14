@@ -141,7 +141,7 @@ export default function OnboardingScreen() {
             </Text>
             <TextInput
               style={styles.input}
-              placeholder="YYYY-MM-DD (e.g., 2020-02-14)"
+              placeholder="DD-MM-YYYY (e.g., 14-02-2020)"
               value={anniversary}
               onChangeText={setAnniversary}
             />
