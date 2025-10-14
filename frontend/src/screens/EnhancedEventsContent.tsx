@@ -947,7 +947,7 @@ export default function EnhancedEventsContent() {
                 style={[styles.formInput, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.primary }]}
                 value={customEventDate}
                 onChangeText={setCustomEventDate}
-                placeholder="YYYY-MM-DD"
+                placeholder="DD-MM-YYYY"
                 placeholderTextColor={theme.textSecondary}
               />
             </View>
@@ -1019,7 +1019,7 @@ export default function EnhancedEventsContent() {
                   style={[styles.formInput, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.primary }]}
                   value={editingEvent.date}
                   onChangeText={(text) => setEditingEvent(prev => prev ? {...prev, date: text} : null)}
-                  placeholder="YYYY-MM-DD"
+                  placeholder="DD-MM-YYYY"
                   placeholderTextColor={theme.textSecondary}
                 />
               </View>
