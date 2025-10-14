@@ -1,6 +1,5 @@
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
 
 // Complete the auth session when browser closes
