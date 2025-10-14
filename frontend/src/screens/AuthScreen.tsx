@@ -1556,6 +1556,11 @@ const styles = StyleSheet.create({
     height: 120,
     marginBottom: 20,
   },
+  cleanWelcomeLogoFull: {
+    width: 280,
+    height: 100,
+    marginBottom: 20,
+  },
   cleanForm: {
     flex: 1,
   },
