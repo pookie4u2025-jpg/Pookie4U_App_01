@@ -43,7 +43,7 @@ class GoogleOAuthService {
   /**
    * Create authentication request
    */
-  private createAuthRequest(): Promise<AuthSession.AuthRequest> {
+  private async createAuthRequest(): Promise<AuthSession.AuthRequest> {
     if (!this.config) {
       throw new Error('Google OAuth not initialized. Call initialize() first.');
     }
@@ -55,28 +55,20 @@ class GoogleOAuthService {
 
     console.log('OAuth Redirect URI:', redirectUri);
 
-    // Create auth request
+    // Create auth request with proper configuration
     const request = new AuthSession.AuthRequest({
       clientId: this.config.clientId,
       scopes: ['openid', 'profile', 'email'],
       responseType: AuthSession.ResponseType.IdToken,
       redirectUri,
-      // Use PKCE for security (required for mobile OAuth)
-      codeChallenge: Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        Crypto.getRandomBytes(32).toString(),
-        { encoding: Crypto.CryptoEncoding.BASE64URL }
-      ).then((challenge) => challenge),
-      codeChallengeMethod: AuthSession.CodeChallengeMethod.S256,
       // Additional parameters for better UX
       extraParams: {
         access_type: 'offline',
         prompt: 'select_account', // Always show account selector
       },
-      additionalParameters: {},
     });
 
-    return Promise.resolve(request);
+    return request;
   }
 
   /**
@@ -91,19 +83,22 @@ class GoogleOAuthService {
         };
       }
 
+      console.log('🔐 Creating auth request...');
+      
       // Create auth request
       this.authRequest = await this.createAuthRequest();
 
-      // Start the authentication flow
-      const result = await AuthSession.startAsync({
-        authUrl: await this.authRequest.makeAuthUrlAsync(discovery),
-        returnUrl: this.authRequest.redirectUri,
-      });
+      console.log('🚀 Prompting user for OAuth...');
 
-      console.log('OAuth Result:', result);
+      // Start the authentication flow using promptAsync (new method)
+      const result = await this.authRequest.promptAsync(discovery);
+
+      console.log('📋 OAuth Result:', result);
 
       if (result.type === 'success') {
         const { id_token, access_token } = result.params;
+        
+        console.log('✅ OAuth success, ID token present:', !!id_token);
         
         if (id_token) {
           return {
@@ -117,18 +112,20 @@ class GoogleOAuthService {
             error: 'No ID token received from Google',
           };
         }
-      } else if (result.type === 'dismiss') {
+      } else if (result.type === 'dismiss' || result.type === 'cancel') {
+        console.log('⚠️ OAuth dismissed/cancelled by user');
         return {
           type: 'dismiss',
         };
       } else {
+        console.error('❌ OAuth error:', result);
         return {
           type: 'error',
-          error: result.error?.description || 'Authentication failed',
+          error: 'Authentication failed',
         };
       }
     } catch (error) {
-      console.error('Google OAuth Error:', error);
+      console.error('❌ Google OAuth Error:', error);
       return {
         type: 'error',
         error: error instanceof Error ? error.message : 'Unknown error occurred',
