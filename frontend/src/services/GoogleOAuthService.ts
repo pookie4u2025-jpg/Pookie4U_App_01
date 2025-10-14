@@ -54,12 +54,13 @@ class GoogleOAuthService {
 
     console.log('OAuth Redirect URI:', redirectUri);
 
-    // Create auth request with proper configuration
+    // Create auth request - Use Code flow (not IdToken) to avoid PKCE issues
     const request = new AuthSession.AuthRequest({
       clientId: this.config.clientId,
       scopes: ['openid', 'profile', 'email'],
-      responseType: AuthSession.ResponseType.IdToken,
+      responseType: AuthSession.ResponseType.Code, // Changed from IdToken to Code
       redirectUri,
+      usePKCE: false, // Explicitly disable PKCE to avoid the error
       // Additional parameters for better UX
       extraParams: {
         access_type: 'offline',
@@ -89,26 +90,42 @@ class GoogleOAuthService {
 
       console.log('🚀 Prompting user for OAuth...');
 
-      // Start the authentication flow using promptAsync (new method)
+      // Start the authentication flow using promptAsync
       const result = await this.authRequest.promptAsync(discovery);
 
       console.log('📋 OAuth Result:', result);
 
       if (result.type === 'success') {
-        const { id_token, access_token } = result.params;
+        // With Code flow, we get an authorization code instead of direct tokens
+        const { code } = result.params;
         
-        console.log('✅ OAuth success, ID token present:', !!id_token);
+        console.log('✅ OAuth success, authorization code present:', !!code);
         
-        if (id_token) {
+        if (code) {
+          // Exchange authorization code for tokens
+          const tokenResult = await AuthSession.exchangeCodeAsync(
+            {
+              clientId: this.config.clientId,
+              code,
+              redirectUri: this.authRequest.redirectUri,
+              extraParams: {
+                client_secret: this.config.clientSecret || '',
+              },
+            },
+            discovery
+          );
+
+          console.log('🎫 Token exchange successful');
+
           return {
             type: 'success',
-            idToken: id_token,
-            accessToken: access_token,
+            idToken: tokenResult.idToken || undefined,
+            accessToken: tokenResult.accessToken,
           };
         } else {
           return {
             type: 'error',
-            error: 'No ID token received from Google',
+            error: 'No authorization code received from Google',
           };
         }
       } else if (result.type === 'dismiss' || result.type === 'cancel') {
