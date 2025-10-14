@@ -11,7 +11,7 @@ from datetime import datetime
 import uuid
 
 # Configuration
-BACKEND_URL = "https://pookie-couple.preview.emergentagent.com/api"
+BACKEND_URL = "https://pookie-couples.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "sarah.johnson@example.com"
 TEST_USER_PASSWORD = "SecurePass123!"
 TEST_USER_NAME = "Sarah Johnson"

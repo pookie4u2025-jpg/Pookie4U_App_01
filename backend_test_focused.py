@@ -11,7 +11,7 @@ from datetime import datetime
 import time
 
 # Configuration
-BASE_URL = "https://pookie-couple.preview.emergentagent.com/api"
+BASE_URL = "https://pookie-couples.preview.emergentagent.com/api"
 TEST_USER_EMAIL = f"test_user_{uuid.uuid4().hex[:8]}@example.com"
 TEST_USER_PASSWORD = "TestPassword123!"
 TEST_USER_NAME = "Sarah Johnson"
