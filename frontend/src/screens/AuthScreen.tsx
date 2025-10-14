@@ -43,17 +43,23 @@ export default function AuthScreen() {
 
   // Initialize Google OAuth when component mounts
   useEffect(() => {
-    // For now, Google OAuth is not configured until user provides credentials
-    // This will be updated once the user provides their Google Client ID
+    // Get credentials from environment variables
+    // In Expo, use Constants.expoConfig.extra for env vars
     const googleClientId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || '';
+    const googleClientSecret = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_SECRET || '';
+    
+    console.log('🔍 Checking Google OAuth credentials...');
+    console.log('Client ID present:', !!googleClientId);
+    console.log('Client ID value:', googleClientId ? `${googleClientId.substring(0, 20)}...` : 'empty');
     
     if (googleClientId) {
       initializeGoogleOAuth({
         clientId: googleClientId,
+        clientSecret: googleClientSecret,
       });
-      console.log('✅ Google OAuth initialized with client ID');
+      console.log('✅ Google OAuth initialized successfully');
     } else {
-      console.log('⚠️ Google OAuth credentials not configured');
+      console.log('⚠️ Google OAuth credentials not found in environment');
     }
   }, [initializeGoogleOAuth]);
 
