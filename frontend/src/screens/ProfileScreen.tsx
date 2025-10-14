@@ -322,7 +322,7 @@ export default function ProfileScreen() {
                     style={styles.input}
                     value={partnerData.birthday}
                     onChangeText={(text) => setPartnerData({...partnerData, birthday: text})}
-                    placeholder="YYYY-MM-DD"
+                    placeholder="DD-MM-YYYY"
                   />
                 ) : (
                   <Text style={styles.inputValue}>{partnerData.birthday || 'Not set'}</Text>
@@ -336,7 +336,7 @@ export default function ProfileScreen() {
                     style={styles.input}
                     value={partnerData.anniversary}
                     onChangeText={(text) => setPartnerData({...partnerData, anniversary: text})}
-                    placeholder="YYYY-MM-DD"
+                    placeholder="DD-MM-YYYY"
                   />
                 ) : (
                   <Text style={styles.inputValue}>{partnerData.anniversary || 'Not set'}</Text>
