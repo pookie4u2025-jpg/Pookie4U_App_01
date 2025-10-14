@@ -203,6 +203,15 @@ export default function ProfileContent() {
         <ScrollView style={styles.scrollView}>
           {/* User Profile Header */}
           <View style={[styles.profileHeader, { backgroundColor: theme.surface }]}>
+            {/* Settings Button - Top Right */}
+            <TouchableOpacity 
+              style={styles.settingsButton}
+              onPress={() => router.push('/comprehensive-settings')}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="settings-outline" size={24} color={theme.textSecondary} />
+            </TouchableOpacity>
+
             <TouchableOpacity style={[styles.avatarContainer, { backgroundColor: theme.primary + '20', borderColor: theme.primary }]} onPress={showImagePicker}>
               {profileImage ? (
                 <Image source={{ uri: profileImage }} style={styles.avatarImage} />
