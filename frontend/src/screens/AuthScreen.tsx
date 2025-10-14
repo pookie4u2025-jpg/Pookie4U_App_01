@@ -574,127 +574,134 @@ export default function AuthScreen() {
   );
 
   const renderRegisterScreen = () => (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      <LinearGradient
-        colors={['#F7D7DA', '#F2C2C7', '#F0B8BE']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={styles.gradientContainer}
-      >
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardView}
+    <SafeAreaView style={styles.cleanWhiteContainer}>
+      <ScrollView contentContainerStyle={styles.cleanWelcomeContent} showsVerticalScrollIndicator={false}>
+        {/* Back Button */}
+        <TouchableOpacity
+          style={styles.cleanBackButton}
+          onPress={() => navigateToScreen('welcome')}
+          activeOpacity={0.7}
         >
-          <ScrollView 
-            contentContainerStyle={styles.scrollContent}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            {/* Back Button */}
+          <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
+        </TouchableOpacity>
+
+        {/* Logo */}
+        <View style={styles.cleanWelcomeHeader}>
+          <Image 
+            source={require('../../assets/images/p4u-logo-new.png')}
+            style={styles.cleanWelcomeLogo}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* Sign Up Form */}
+        <View style={styles.cleanForm}>
+          <Text style={styles.cleanWelcomeTitle}>Join P4U</Text>
+          <Text style={styles.cleanWelcomeSubtitle}>Create your account</Text>
+
+          {/* Error Display */}
+          {error && (
+            <View style={styles.cleanErrorContainer}>
+              <Text style={styles.cleanErrorText}>
+                {typeof error === 'string' ? error : error.message || error.detail || 'An error occurred'}
+              </Text>
+            </View>
+          )}
+
+          {/* Name Input */}
+          <View style={styles.cleanInputGroup}>
+            <TextInput
+              style={styles.cleanWelcomeInput}
+              placeholder="Full Name"
+              placeholderTextColor="#9CA3AF"
+              value={name}
+              onChangeText={setName}
+              autoCapitalize="words"
+            />
+          </View>
+
+          {/* Email Input */}
+          <View style={styles.cleanInputGroup}>
+            <TextInput
+              style={styles.cleanWelcomeInput}
+              placeholder="Email"
+              placeholderTextColor="#9CA3AF"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </View>
+
+          {/* Password Input */}
+          <View style={styles.cleanInputGroup}>
+            <TextInput
+              style={styles.cleanWelcomeInput}
+              placeholder="Password"
+              placeholderTextColor="#9CA3AF"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+            />
             <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigateToScreen('welcome')}
+              style={styles.cleanPasswordToggle}
+              onPress={() => setShowPassword(!showPassword)}
               activeOpacity={0.7}
             >
-              <Ionicons name="arrow-back" size={24} color="#fff" />
+              <Ionicons 
+                name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                size={20} 
+                color="#9CA3AF" 
+              />
             </TouchableOpacity>
+          </View>
 
-            {/* Create Account Form */}
-            <View style={styles.formContainer}>
-              <Text style={styles.screenTitle}>
-                {registrationMethod === 'mobile' ? 'Sign up with Mobile' : 'Sign up with Email'}
-              </Text>
+          {/* Confirm Password Input */}
+          <View style={styles.cleanInputGroup}>
+            <TextInput
+              style={styles.cleanWelcomeInput}
+              placeholder="Confirm Password"
+              placeholderTextColor="#9CA3AF"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showPassword}
+            />
+          </View>
 
-              {/* Error Display */}
-              {error && (
-                <View style={styles.errorContainer}>
-                  <Ionicons name="alert-circle-outline" size={20} color="#FFE5E5" />
-                  <Text style={styles.errorText}>
-                    {typeof error === 'string' ? error : error.message || error.detail || 'An error occurred'}
-                  </Text>
-                </View>
-              )}
+          {/* Sign Up Button */}
+          <TouchableOpacity
+            style={[styles.cleanPrimaryButton, loading && styles.cleanButtonDisabled]}
+            onPress={handleRegister}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.cleanPrimaryButtonText}>Create Account</Text>
+            )}
+          </TouchableOpacity>
 
-              {/* Email Registration */}
-              {registrationMethod === 'email' && (
-                <View style={styles.formSection}>
-                  <View style={styles.inputContainer}>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Full Name"
-                      placeholderTextColor="rgba(255,255,255,0.7)"
-                      value={name}
-                      onChangeText={setName}
-                      autoCapitalize="words"
-                    />
-                  </View>
+          {/* Continue with Google */}
+          <TouchableOpacity
+            style={styles.cleanGoogleButton}
+            onPress={handleGoogleSignIn}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="logo-google" size={20} color="#4285F4" />
+            <Text style={styles.cleanGoogleButtonText}>Continue with Google</Text>
+          </TouchableOpacity>
 
-                  <View style={styles.inputContainer}>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Email address"
-                      placeholderTextColor="rgba(255,255,255,0.7)"
-                      value={email}
-                      onChangeText={setEmail}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                    />
-                  </View>
-
-                  <View style={styles.inputContainer}>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Password"
-                      placeholderTextColor="rgba(255,255,255,0.7)"
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry
-                    />
-                  </View>
-
-                  <View style={styles.inputContainer}>
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Confirm Password"
-                      placeholderTextColor="rgba(255,255,255,0.7)"
-                      value={confirmPassword}
-                      onChangeText={setConfirmPassword}
-                      secureTextEntry
-                    />
-                  </View>
-
-                  <TouchableOpacity
-                    style={[styles.submitButton, loading && styles.submitButtonDisabled]}
-                    onPress={handleRegister}
-                    disabled={loading}
-                    activeOpacity={0.8}
-                  >
-                    {loading ? (
-                      <ActivityIndicator color="#FF69B4" />
-                    ) : (
-                      <Text style={styles.submitButtonText}>Create Account</Text>
-                    )}
-                  </TouchableOpacity>
-                </View>
-              )}
-
-              {/* Mobile Registration removed - Email only */}
-
-              {/* Toggle Method removed - Email only registration */}
-
-              {/* Already have account */}
-              <TouchableOpacity
-                style={styles.switchToLoginButton}
-                onPress={() => navigateToScreen('login')}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.switchToLoginText}>Already have an account? Sign in</Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </LinearGradient>
+          {/* Sign In Link */}
+          <View style={styles.cleanSignUpLink}>
+            <Text style={styles.cleanLinkText}>Already have an account? </Text>
+            <TouchableOpacity onPress={() => navigateToScreen('welcome')}>
+              <Text style={styles.cleanLinkButton}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 
