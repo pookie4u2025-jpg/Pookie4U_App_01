@@ -275,7 +275,7 @@ export default function EventsScreen() {
 
             <TextInput
               style={styles.input}
-              placeholder="Date (YYYY-MM-DD)"
+              placeholder="Date (DD-MM-YYYY)"
               value={newEventDate}
               onChangeText={setNewEventDate}
             />
