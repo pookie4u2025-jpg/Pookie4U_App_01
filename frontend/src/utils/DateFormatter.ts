@@ -31,8 +31,13 @@ export const formatDateTime = (date: Date | string): string => {
 };
 
 export const parseDate = (dateString: string): Date | null => {
-  // Parse DD/MM/YYYY format
-  const parts = dateString.split('/');
+  // Parse DD/MM/YYYY or DD-MM-YYYY format
+  let parts = dateString.split('/');
+  
+  // If split by '/' doesn't work, try split by '-'
+  if (parts.length !== 3) {
+    parts = dateString.split('-');
+  }
   
   if (parts.length !== 3) {
     return null;
