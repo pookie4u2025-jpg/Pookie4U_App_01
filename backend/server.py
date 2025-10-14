@@ -36,6 +36,9 @@ from ai_task_service import generate_daily_tasks_for_mode, generate_weekly_tasks
 # Import Enhanced Calendar Service
 from enhanced_calendar_service import enhanced_calendar_service
 
+# Import Razorpay Service
+from razorpay_service import razorpay_service
+
 # Rate limiting storage
 rate_limit_storage = defaultdict(list)
 failed_attempts = defaultdict(list)
