@@ -56,32 +56,6 @@ export default function ComprehensiveSettingsScreen() {
     router.push('/subscription');
   };
 
-  const handleCancelSubscription = () => {
-    Alert.alert(
-      'Cancel Subscription',
-      'Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your billing period.',
-      [
-        { text: 'Keep Subscription', style: 'cancel' },
-        { text: 'Cancel', style: 'destructive', onPress: () => {
-          Alert.alert('Success', 'Subscription cancelled. You will retain access until 25/12/2024.');
-        }}
-      ]
-    );
-  };
-
-  const handleUpgradePlan = () => {
-    Alert.alert(
-      'Switch to 6-Month Plan',
-      'Save money with our 6-month plan!\n\n6-Month Plan: ₹450 (₹75/month)\nMonthly Plan: ₹79/month\n\nSave ₹24 every 6 months!',
-      [
-        { text: 'Switch to 6-Month Plan (₹450)', onPress: () => {
-          Alert.alert('Success', 'Switched to 6-Month plan! You save ₹24 every 6 months.');
-        }},
-        { text: 'Keep Monthly Plan', style: 'cancel' }
-      ]
-    );
-  };
-
   const handleNotificationSettings = () => {
     Alert.alert(
       'Notification Settings',
