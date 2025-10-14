@@ -18,6 +18,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import { useGameStore } from '../stores/useGameStore';
 import { useAppStore } from '../stores/useAppStore';
 import { useTheme } from '../contexts/ThemeContext';
+import { formatDateWithDashes } from '../utils/DateFormatter';
 
 export default function ProfileContent() {
   const { user, logout, updatePartnerProfile, updateRelationshipMode, updateProfileImage } = useAuthStore();
