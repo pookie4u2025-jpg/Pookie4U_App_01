@@ -228,7 +228,7 @@ export default function AuthScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
       <LinearGradient
-        colors={['#F8BBD9', '#F4A6CD', '#F092C1', '#EC7FB5', '#E86BA9']}
+        colors={['#FDF2F8', '#FCE7F3', '#FBCFE8', '#F9A8D4']}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={styles.gradientContainer}
