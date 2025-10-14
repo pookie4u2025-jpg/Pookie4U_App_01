@@ -234,15 +234,15 @@ export default function AuthScreen() {
         {/* Logo */}
         <View style={styles.cleanWelcomeHeader}>
           <Image 
-            source={require('../../assets/images/p4u-logo-new.png')}
-            style={styles.cleanWelcomeLogo}
+            source={require('../../assets/images/pookie4u-logo.png')}
+            style={styles.cleanWelcomeLogoFull}
             resizeMode="contain"
           />
         </View>
 
         {/* Sign In Form */}
         <View style={styles.cleanForm}>
-          <Text style={styles.cleanWelcomeTitle}>Welcome to P4U</Text>
+          <Text style={styles.cleanWelcomeTitle}>Welcome to Pookie4u</Text>
           <Text style={styles.cleanWelcomeSubtitle}>Sign in to your account</Text>
 
           {/* Error Display */}
