@@ -613,6 +613,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 30,
     marginBottom: 10,
+    position: 'relative',
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 10,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.05)',
   },
   avatarContainer: {
     width: 80,
