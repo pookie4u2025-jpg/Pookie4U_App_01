@@ -12,7 +12,7 @@ export default function HomeScreen() {
     <GradientBackground>
       <SafeAreaView style={styles.container}>
         {/* Header */}
-        <View style={[styles.header, { backgroundColor: theme.surface }]}>
+        <View style={[styles.header, { backgroundColor: theme.surface, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 8, elevation: 5 }]}>
           <Text style={[styles.headerTitle, { color: theme.text }]}>Home</Text>
         </View>
 
