@@ -53,15 +53,7 @@ export default function ComprehensiveSettingsScreen() {
   ];
 
   const handleSubscriptionManagement = () => {
-    Alert.alert(
-      'Manage Subscription',
-      'Current Plan: Monthly Plan\nRenews: 25/12/2024\nPrice: ₹79/month',
-      [
-        { text: 'Cancel Subscription', style: 'destructive', onPress: () => handleCancelSubscription() },
-        { text: 'Switch to 6-Month Plan', onPress: () => handleUpgradePlan() },
-        { text: 'Close', style: 'cancel' }
-      ]
-    );
+    router.push('/subscription');
   };
 
   const handleCancelSubscription = () => {
