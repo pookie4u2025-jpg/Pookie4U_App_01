@@ -44,27 +44,81 @@ export default function OnboardingScreen() {
     }
   };
 
+  const parseDateString = (dateStr: string): string | undefined => {
+    if (!dateStr || !dateStr.trim()) {
+      return undefined;
+    }
+
+    try {
+      // Expected format: DD-MM-YYYY
+      const parts = dateStr.trim().split('-');
+      
+      if (parts.length !== 3) {
+        console.warn('Invalid date format, expected DD-MM-YYYY');
+        return undefined;
+      }
+
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10);
+      const year = parseInt(parts[2], 10);
+
+      // Validate day, month, year
+      if (isNaN(day) || isNaN(month) || isNaN(year)) {
+        console.warn('Invalid date values');
+        return undefined;
+      }
+
+      if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2100) {
+        console.warn('Date values out of range');
+        return undefined;
+      }
+
+      // Create date object (month is 0-indexed in JavaScript)
+      const date = new Date(year, month - 1, day);
+
+      // Verify the date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date created');
+        return undefined;
+      }
+
+      return date.toISOString();
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      return undefined;
+    }
+  };
+
   const handleComplete = async () => {
-    // Update relationship mode
-    await updateRelationshipMode(relationshipMode);
+    try {
+      // Update relationship mode
+      await updateRelationshipMode(relationshipMode);
 
-    // Update partner profile
-    const partnerProfile = {
-      name: partnerName,
-      birthday: birthday ? new Date(birthday).toISOString() : undefined,
-      anniversary: anniversary ? new Date(anniversary).toISOString() : undefined,
-      favorite_color: '',
-      favorite_food: '',
-      favorite_flower: '',
-      favorite_brand: '',
-      dress_size: '',
-      ring_size: '',
-      perfume_preference: '',
-      notes: '',
-    };
+      // Parse dates with proper validation
+      const parsedBirthday = parseDateString(birthday);
+      const parsedAnniversary = parseDateString(anniversary);
 
-    await updatePartnerProfile(partnerProfile);
-    completeOnboarding();
+      // Update partner profile
+      const partnerProfile = {
+        name: partnerName,
+        birthday: parsedBirthday,
+        anniversary: parsedAnniversary,
+        favorite_color: '',
+        favorite_food: '',
+        favorite_flower: '',
+        favorite_brand: '',
+        dress_size: '',
+        ring_size: '',
+        perfume_preference: '',
+        notes: '',
+      };
+
+      await updatePartnerProfile(partnerProfile);
+      completeOnboarding();
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      Alert.alert('Error', 'Failed to complete onboarding. Please try again.');
+    }
   };
 
   const renderStep = () => {
