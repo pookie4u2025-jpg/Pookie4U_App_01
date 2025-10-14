@@ -152,11 +152,8 @@ export default function AuthScreen() {
         console.log('✅ Google Sign-In successful!');
         
         if (oauthData.is_new_user) {
-          Alert.alert(
-            'Welcome to Pookie4u! 🎉',
-            'Your Google account has been successfully linked. Let\'s set up your profile!',
-            [{ text: 'Get Started', style: 'default' }]
-          );
+          // Navigate to subscription screen for new users
+          router.push('/subscription');
         }
       } else {
         throw new Error('Failed to authenticate with app after OAuth');
@@ -177,7 +174,7 @@ export default function AuthScreen() {
         ]
       );
     }
-  }, [isConfigured, completeOAuthFlow, loginWithOAuth]);
+  }, [isConfigured, completeOAuthFlow, loginWithOAuth, router]);
 
   const handleAppleSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
