@@ -133,8 +133,12 @@ export default function AuthScreen() {
   const handleGoogleSignIn = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     
+    console.log('🎯 Google Sign-In button clicked');
+    console.log('  - isConfigured:', isConfigured);
+    
     // Check if Google OAuth is configured
     if (!isConfigured) {
+      console.log('❌ OAuth not configured - showing alert');
       Alert.alert(
         'Google Sign-In Setup Required 🔧',
         'Google OAuth credentials are not configured. Please contact the developer to enable Google Sign-In.',
@@ -142,6 +146,8 @@ export default function AuthScreen() {
       );
       return;
     }
+
+    console.log('✅ OAuth is configured - starting flow');
 
     try {
       console.log('🚀 Starting Google OAuth flow...');
