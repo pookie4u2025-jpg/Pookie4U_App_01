@@ -8,6 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
+import { buttonPress } from '../utils/HapticsManager';
 
 interface AnimatedButtonProps {
   title: string;
