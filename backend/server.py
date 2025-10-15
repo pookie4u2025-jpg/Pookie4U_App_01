@@ -2274,7 +2274,7 @@ async def get_subscription_status(
         logger.error(f"Error getting subscription status: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to get subscription status: {str(e)}")
 
-@router.post("/subscriptions/cancel", tags=["Subscriptions"])
+@app.post("/api/subscriptions/cancel", tags=["Subscriptions"])
 async def cancel_subscription(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
