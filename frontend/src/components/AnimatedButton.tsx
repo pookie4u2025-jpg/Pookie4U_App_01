@@ -43,7 +43,8 @@ export const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   const tap = Gesture.Tap()
     .enabled(!disabled && !loading)
     .onBegin(() => {
-      scale.value = withSpring(0.95);
+      scale.value = withSpring(0.96);
+      runOnJS(buttonPress)();
     })
     .onFinalize(() => {
       scale.value = withSpring(1);
