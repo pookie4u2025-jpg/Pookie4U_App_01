@@ -708,10 +708,21 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Home Screen Upcoming Events Integration Testing Completed Successfully"
+    - "Comprehensive App Audit - Phase 1: Backend API Testing"
+    - "Test all endpoints for functionality and bugs"
+    - "Document all features and AI integrations"
   stuck_tasks: []
-  test_all: false
-  test_priority: "high_first"
+  test_all: true
+  test_priority: "comprehensive_audit"
+  audit_tasks:
+    - "Test authentication system (Email, Google OAuth, Mobile OTP)"
+    - "Test task management and AI task generation"
+    - "Test events system with CRUD operations"
+    - "Test gifts API with Amazon product data"
+    - "Test messages system with relationship modes"
+    - "Test profile management endpoints"
+    - "Test subscription/payment integration"
+    - "Document all working vs broken features"
 
 agent_communication:
     - agent: "main"
