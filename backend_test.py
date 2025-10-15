@@ -9,6 +9,7 @@ import json
 import time
 from datetime import datetime
 import uuid
+from typing import Dict, List, Any
 
 # Configuration
 BACKEND_URL = "https://relationship-app-4.preview.emergentagent.com/api"
@@ -19,7 +20,7 @@ class GiftIdeasAPITester:
         self.backend_url = BACKEND_URL
         self.test_results = []
         
-    def log_test(self, test_name, success, details="", response_data=None):
+    def log_test(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
         """Log test result"""
         result = {
             "test": test_name,
@@ -37,450 +38,262 @@ class GiftIdeasAPITester:
         if not success and response_data:
             print(f"     Response: {response_data}")
         print()
-
-    def test_user_registration(self):
-        """Test user registration to ensure we have a valid user"""
+        
+    def test_gifts_api_basic_functionality(self):
+        """Test basic API functionality"""
         try:
-            # Generate unique email for testing
-            unique_email = f"test.user.{int(time.time())}@example.com"
+            response = self.session.get(f"{self.backend_url}/gifts")
+            status_code = response.status_code
             
-            payload = {
-                "email": unique_email,
-                "password": TEST_USER_PASSWORD,
-                "name": TEST_USER_NAME
-            }
-            
-            response = self.session.post(f"{BACKEND_URL}/auth/register", json=payload)
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.auth_token = data.get("access_token")
-                self.log_result(
-                    "User Registration", 
-                    True, 
-                    f"Successfully registered user with email: {unique_email}",
-                    {"status_code": response.status_code, "has_token": bool(self.auth_token)}
-                )
-                return True
+            # Test 1: API responds with 200 status
+            if status_code == 200:
+                self.log_test("API Response Status", True, f"Status code: {status_code}")
             else:
-                self.log_result(
-                    "User Registration", 
-                    False, 
-                    f"Registration failed with status {response.status_code}",
-                    response.json() if response.content else None
-                )
+                self.log_test("API Response Status", False, f"Expected 200, got {status_code}", response.text)
+                return False
+            
+            try:
+                response_data = response.json()
+            except json.JSONDecodeError:
+                self.log_test("JSON Response Format", False, "Response is not valid JSON", response.text)
                 return False
                 
-        except Exception as e:
-            self.log_result("User Registration", False, f"Exception: {str(e)}")
-            return False
-
-    def test_user_login(self):
-        """Test user login with existing credentials"""
-        try:
-            payload = {
-                "email": TEST_USER_EMAIL,
-                "password": TEST_USER_PASSWORD
-            }
-            
-            response = self.session.post(f"{BACKEND_URL}/auth/login", json=payload)
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.auth_token = data.get("access_token")
-                self.log_result(
-                    "User Login", 
-                    True, 
-                    f"Successfully logged in user: {TEST_USER_EMAIL}",
-                    {"status_code": response.status_code, "has_token": bool(self.auth_token)}
-                )
-                return True
+            # Test 2: Response has correct structure
+            if "gifts" in response_data and isinstance(response_data["gifts"], list):
+                self.log_test("Response Structure", True, "Contains 'gifts' array")
             else:
-                self.log_result(
-                    "User Login", 
-                    False, 
-                    f"Login failed with status {response.status_code}",
-                    response.json() if response.content else None
-                )
+                self.log_test("Response Structure", False, "Missing 'gifts' array or wrong type", response_data)
                 return False
-                
-        except Exception as e:
-            self.log_result("User Login", False, f"Exception: {str(e)}")
-            return False
-
-    def test_jwt_token_validation(self):
-        """Test JWT token validation by accessing protected endpoint"""
-        if not self.auth_token:
-            self.log_result("JWT Token Validation", False, "No auth token available")
-            return False
             
-        try:
-            headers = {"Authorization": f"Bearer {self.auth_token}"}
-            response = self.session.get(f"{BACKEND_URL}/user/profile", headers=headers)
-            
-            if response.status_code == 200:
-                data = response.json()
-                self.user_id = data.get("id")
-                self.log_result(
-                    "JWT Token Validation", 
-                    True, 
-                    f"Token valid, user ID: {self.user_id}",
-                    {"status_code": response.status_code, "user_id": self.user_id}
-                )
-                return True
+            # Test 3: Correct number of gifts (should be 6)
+            gifts = response_data["gifts"]
+            if len(gifts) == 6:
+                self.log_test("Gift Count", True, f"Found {len(gifts)} gifts")
             else:
-                self.log_result(
-                    "JWT Token Validation", 
-                    False, 
-                    f"Token validation failed with status {response.status_code}",
-                    response.json() if response.content else None
-                )
-                return False
-                
+                self.log_test("Gift Count", False, f"Expected 6 gifts, found {len(gifts)}", gifts)
+            
+            return gifts
+            
         except Exception as e:
-            self.log_result("JWT Token Validation", False, f"Exception: {str(e)}")
+            self.log_test("API Basic Functionality", False, f"Exception: {str(e)}")
             return False
-
-    def test_daily_tasks_retrieval(self):
-        """Test GET /api/tasks/daily to ensure tasks exist and have proper IDs"""
-        if not self.auth_token:
-            self.log_result("Daily Tasks Retrieval", False, "No auth token available")
-            return False, []
             
-        try:
-            headers = {"Authorization": f"Bearer {self.auth_token}"}
-            response = self.session.get(f"{BACKEND_URL}/tasks/daily", headers=headers)
+    def test_gift_data_structure(self, gifts: List[Dict]):
+        """Test each gift has required fields with correct data types"""
+        required_fields = ["id", "name", "category", "price_range", "link", "description", "image"]
+        
+        for i, gift in enumerate(gifts, 1):
+            gift_id = gift.get("id", f"gift_{i}")
             
-            if response.status_code == 200:
-                data = response.json()
-                tasks = data.get("tasks", [])
+            # Test required fields presence
+            missing_fields = [field for field in required_fields if field not in gift]
+            if not missing_fields:
+                self.log_test(f"Gift {gift_id} - Required Fields", True, "All required fields present")
+            else:
+                self.log_test(f"Gift {gift_id} - Required Fields", False, f"Missing fields: {missing_fields}", gift)
                 
-                if tasks and len(tasks) > 0:
-                    # Validate task structure
-                    valid_tasks = []
-                    for task in tasks:
-                        if "id" in task and "title" in task and "points" in task:
-                            valid_tasks.append(task)
-                    
-                    self.log_result(
-                        "Daily Tasks Retrieval", 
-                        True, 
-                        f"Retrieved {len(valid_tasks)} valid daily tasks",
-                        {"status_code": response.status_code, "task_count": len(valid_tasks), "sample_task_ids": [t["id"] for t in valid_tasks[:3]]}
-                    )
-                    return True, valid_tasks
+            # Test field data types and content
+            if "name" in gift:
+                if isinstance(gift["name"], str) and len(gift["name"]) > 0:
+                    self.log_test(f"Gift {gift_id} - Name Field", True, f"Name: '{gift['name']}'")
                 else:
-                    self.log_result(
-                        "Daily Tasks Retrieval", 
-                        False, 
-                        "No tasks returned in response",
-                        data
-                    )
-                    return False, []
-            else:
-                self.log_result(
-                    "Daily Tasks Retrieval", 
-                    False, 
-                    f"Failed to retrieve tasks with status {response.status_code}",
-                    response.json() if response.content else None
-                )
-                return False, []
-                
-        except Exception as e:
-            self.log_result("Daily Tasks Retrieval", False, f"Exception: {str(e)}")
-            return False, []
-
-    def test_weekly_tasks_retrieval(self):
-        """Test GET /api/tasks/weekly to ensure tasks exist and have proper IDs"""
-        if not self.auth_token:
-            self.log_result("Weekly Tasks Retrieval", False, "No auth token available")
-            return False, []
-            
-        try:
-            headers = {"Authorization": f"Bearer {self.auth_token}"}
-            response = self.session.get(f"{BACKEND_URL}/tasks/weekly", headers=headers)
-            
-            if response.status_code == 200:
-                data = response.json()
-                tasks = data.get("tasks", [])
-                
-                if tasks and len(tasks) > 0:
-                    # Validate task structure
-                    valid_tasks = []
-                    for task in tasks:
-                        if "id" in task and "title" in task and "points" in task:
-                            valid_tasks.append(task)
+                    self.log_test(f"Gift {gift_id} - Name Field", False, "Name is empty or not string", gift["name"])
                     
-                    self.log_result(
-                        "Weekly Tasks Retrieval", 
-                        True, 
-                        f"Retrieved {len(valid_tasks)} valid weekly tasks",
-                        {"status_code": response.status_code, "task_count": len(valid_tasks), "sample_task_ids": [t["id"] for t in valid_tasks[:3]]}
-                    )
-                    return True, valid_tasks
+            if "description" in gift:
+                if isinstance(gift["description"], str) and len(gift["description"]) > 10:
+                    self.log_test(f"Gift {gift_id} - Description Field", True, f"Description length: {len(gift['description'])} chars")
                 else:
-                    self.log_result(
-                        "Weekly Tasks Retrieval", 
-                        False, 
-                        "No tasks returned in response",
-                        data
-                    )
-                    return False, []
-            else:
-                self.log_result(
-                    "Weekly Tasks Retrieval", 
-                    False, 
-                    f"Failed to retrieve tasks with status {response.status_code}",
-                    response.json() if response.content else None
-                )
-                return False, []
+                    self.log_test(f"Gift {gift_id} - Description Field", False, "Description too short or not string", gift.get("description"))
+                    
+            if "price_range" in gift:
+                price = gift["price_range"]
+                if isinstance(price, str) and "₹" in price:
+                    self.log_test(f"Gift {gift_id} - Price Range", True, f"Price: {price}")
+                else:
+                    self.log_test(f"Gift {gift_id} - Price Range", False, "Price missing ₹ symbol or not string", price)
+                    
+            if "image" in gift:
+                image_url = gift["image"]
+                if isinstance(image_url, str) and image_url.startswith("https://"):
+                    self.log_test(f"Gift {gift_id} - Image URL", True, f"Image URL valid: {image_url[:50]}...")
+                else:
+                    self.log_test(f"Gift {gift_id} - Image URL", False, "Image URL invalid or not HTTPS", image_url)
+                    
+            if "link" in gift:
+                link = gift["link"]
+                if isinstance(link, str) and "amzn.to/" in link:
+                    self.log_test(f"Gift {gift_id} - Amazon Link", True, f"Amazon affiliate link: {link}")
+                else:
+                    self.log_test(f"Gift {gift_id} - Amazon Link", False, "Not a valid Amazon affiliate link", link)
+                    
+    def test_amazon_product_data_quality(self, gifts: List[Dict]):
+        """Test quality of Amazon product data"""
+        
+        # Test 1: All gifts should have Amazon product images
+        amazon_image_count = 0
+        for gift in gifts:
+            if "image" in gift and "m.media-amazon.com/images/" in gift["image"]:
+                amazon_image_count += 1
                 
-        except Exception as e:
-            self.log_result("Weekly Tasks Retrieval", False, f"Exception: {str(e)}")
-            return False, []
-
-    def test_task_completion(self, task_id, task_type="daily"):
-        """Test POST /api/tasks/complete with valid authentication"""
-        if not self.auth_token:
-            self.log_result("Task Completion", False, "No auth token available")
-            return False
+        if amazon_image_count == len(gifts):
+            self.log_test("Amazon Product Images", True, f"All {amazon_image_count} gifts have Amazon product images")
+        else:
+            self.log_test("Amazon Product Images", False, f"Only {amazon_image_count}/{len(gifts)} gifts have Amazon images")
             
-        try:
-            headers = {"Authorization": f"Bearer {self.auth_token}"}
-            payload = {"task_id": task_id}
-            
-            response = self.session.post(f"{BACKEND_URL}/tasks/complete", json=payload, headers=headers)
-            
-            if response.status_code == 200:
-                data = response.json()
-                # Check if task completion was successful based on response structure
-                has_message = "message" in data
-                points_earned = data.get("points_earned", 0)
-                total_points = data.get("total_points", 0)
-                success = has_message and points_earned > 0
+        # Test 2: Product names should reflect actual Amazon products
+        realistic_product_names = 0
+        for gift in gifts:
+            name = gift.get("name", "")
+            # Check for realistic product naming patterns
+            if any(keyword in name.lower() for keyword in ["women", "formal", "trouser", "pants", "style", "high waist"]):
+                realistic_product_names += 1
                 
-                self.log_result(
-                    f"Task Completion ({task_type})", 
-                    success, 
-                    f"Task {task_id} completed. Points earned: {points_earned}, Total: {total_points}",
-                    {"status_code": response.status_code, "message": data.get("message"), "points_earned": points_earned, "total_points": total_points}
-                )
-                return success
-            else:
-                self.log_result(
-                    f"Task Completion ({task_type})", 
-                    False, 
-                    f"Task completion failed with status {response.status_code}",
-                    response.json() if response.content else None
-                )
-                return False
+        if realistic_product_names >= len(gifts) * 0.8:  # At least 80% should have realistic names
+            self.log_test("Realistic Product Names", True, f"{realistic_product_names}/{len(gifts)} gifts have realistic product names")
+        else:
+            self.log_test("Realistic Product Names", False, f"Only {realistic_product_names}/{len(gifts)} gifts have realistic names")
+            
+        # Test 3: Descriptions should be meaningful
+        meaningful_descriptions = 0
+        for gift in gifts:
+            description = gift.get("description", "")
+            if len(description) > 20 and any(keyword in description.lower() for keyword in ["elegant", "comfortable", "style", "office", "wear", "perfect"]):
+                meaningful_descriptions += 1
                 
-        except Exception as e:
-            self.log_result(f"Task Completion ({task_type})", False, f"Exception: {str(e)}")
-            return False
-
-    def test_task_completion_verification(self, task_id):
-        """Verify task is marked as completed by fetching tasks again"""
-        if not self.auth_token:
-            self.log_result("Task Completion Verification", False, "No auth token available")
-            return False
+        if meaningful_descriptions >= len(gifts) * 0.8:
+            self.log_test("Meaningful Descriptions", True, f"{meaningful_descriptions}/{len(gifts)} gifts have meaningful descriptions")
+        else:
+            self.log_test("Meaningful Descriptions", False, f"Only {meaningful_descriptions}/{len(gifts)} gifts have meaningful descriptions")
             
-        try:
-            headers = {"Authorization": f"Bearer {self.auth_token}"}
-            
-            # Fetch daily tasks to check completion status
-            response = self.session.get(f"{BACKEND_URL}/tasks/daily", headers=headers)
-            
-            if response.status_code == 200:
-                data = response.json()
-                tasks = data.get("tasks", [])
-                
-                for task in tasks:
-                    if task.get("id") == task_id:
-                        is_completed = task.get("completed", False)
-                        completed_at = task.get("completed_at")
+        # Test 4: Price ranges should be realistic Indian rupee amounts
+        realistic_prices = 0
+        for gift in gifts:
+            price = gift.get("price_range", "")
+            # Check for Indian rupee prices in reasonable ranges
+            if "₹" in price and any(char.isdigit() for char in price):
+                # Extract numbers from price
+                import re
+                numbers = re.findall(r'\d+', price)
+                if numbers:
+                    min_price = int(numbers[0])
+                    if 100 <= min_price <= 5000:  # Reasonable price range
+                        realistic_prices += 1
                         
-                        self.log_result(
-                            "Task Completion Verification", 
-                            is_completed, 
-                            f"Task {task_id} completion status: {is_completed}, completed_at: {completed_at}",
-                            {"task_id": task_id, "completed": is_completed, "completed_at": completed_at}
-                        )
-                        return is_completed
+        if realistic_prices == len(gifts):
+            self.log_test("Realistic Price Ranges", True, f"All {realistic_prices} gifts have realistic Indian rupee prices")
+        else:
+            self.log_test("Realistic Price Ranges", False, f"Only {realistic_prices}/{len(gifts)} gifts have realistic prices")
+            
+    def test_api_performance_and_reliability(self):
+        """Test API performance and reliability"""
+        
+        # Test multiple consecutive requests
+        response_times = []
+        successful_requests = 0
+        
+        for i in range(5):
+            try:
+                start_time = datetime.now()
+                response = self.session.get(f"{self.backend_url}/gifts")
+                end_time = datetime.now()
+                response_time = (end_time - start_time).total_seconds()
+                response_times.append(response_time)
                 
-                self.log_result(
-                    "Task Completion Verification", 
-                    False, 
-                    f"Task {task_id} not found in current tasks",
-                    {"searched_task_id": task_id, "available_tasks": len(tasks)}
-                )
-                return False
-            else:
-                self.log_result(
-                    "Task Completion Verification", 
-                    False, 
-                    f"Failed to fetch tasks for verification with status {response.status_code}",
-                    response.json() if response.content else None
-                )
-                return False
+                if response.status_code == 200:
+                    successful_requests += 1
+                    
+            except Exception as e:
+                print(f"Request {i+1} failed: {e}")
                 
-        except Exception as e:
-            self.log_result("Task Completion Verification", False, f"Exception: {str(e)}")
-            return False
-
-    def test_points_system_verification(self):
-        """Verify points are awarded correctly by checking user profile"""
-        if not self.auth_token:
-            self.log_result("Points System Verification", False, "No auth token available")
-            return False
+        if successful_requests == 5:
+            avg_response_time = sum(response_times) / len(response_times)
+            self.log_test("API Reliability", True, f"5/5 requests successful, avg response time: {avg_response_time:.3f}s")
+        else:
+            self.log_test("API Reliability", False, f"Only {successful_requests}/5 requests successful")
             
-        try:
-            headers = {"Authorization": f"Bearer {self.auth_token}"}
-            response = self.session.get(f"{BACKEND_URL}/user/profile", headers=headers)
+        # Test response time performance
+        if response_times and max(response_times) < 5.0:  # Should respond within 5 seconds
+            self.log_test("API Performance", True, f"Max response time: {max(response_times):.3f}s")
+        else:
+            self.log_test("API Performance", False, f"Response time too slow: {max(response_times) if response_times else 'N/A'}s")
             
-            if response.status_code == 200:
-                data = response.json()
-                total_points = data.get("total_points", 0)
-                tasks_completed = data.get("tasks_completed", 0)
-                current_level = data.get("current_level", 1)
-                current_streak = data.get("current_streak", 0)
+    def test_specific_amazon_products(self, gifts: List[Dict]):
+        """Test specific Amazon product details mentioned in the review request"""
+        
+        # Test for the specific product mentioned in review request
+        high_waist_trouser_found = False
+        for gift in gifts:
+            if "High Waist Formal Trousers for Women" in gift.get("name", ""):
+                high_waist_trouser_found = True
                 
-                self.log_result(
-                    "Points System Verification", 
-                    True, 
-                    f"User stats - Points: {total_points}, Tasks: {tasks_completed}, Level: {current_level}, Streak: {current_streak}",
-                    {"total_points": total_points, "tasks_completed": tasks_completed, "current_level": current_level, "current_streak": current_streak}
-                )
-                return True
-            else:
-                self.log_result(
-                    "Points System Verification", 
-                    False, 
-                    f"Failed to fetch user profile with status {response.status_code}",
-                    response.json() if response.content else None
-                )
-                return False
+                # Check specific details
+                expected_price = "₹449"
+                expected_link = "https://amzn.to/46k7tSR"
+                expected_image = "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
                 
-        except Exception as e:
-            self.log_result("Points System Verification", False, f"Exception: {str(e)}")
-            return False
-
-    def test_authentication_errors(self):
-        """Test task completion without authentication to verify error handling"""
-        try:
-            # Test without auth header
-            payload = {"task_id": "test_task_id"}
-            response = self.session.post(f"{BACKEND_URL}/tasks/complete", json=payload)
-            
-            expected_status = response.status_code in [401, 403]
-            self.log_result(
-                "Authentication Error Handling", 
-                expected_status, 
-                f"No auth header returned status {response.status_code} (expected 401/403)",
-                {"status_code": response.status_code, "response": response.json() if response.content else None}
-            )
-            
-            # Test with invalid token
-            headers = {"Authorization": "Bearer invalid_token_12345"}
-            response = self.session.post(f"{BACKEND_URL}/tasks/complete", json=payload, headers=headers)
-            
-            expected_status = response.status_code in [401, 403]
-            self.log_result(
-                "Invalid Token Error Handling", 
-                expected_status, 
-                f"Invalid token returned status {response.status_code} (expected 401/403)",
-                {"status_code": response.status_code, "response": response.json() if response.content else None}
-            )
-            
-            return True
+                if gift.get("price_range") == expected_price:
+                    self.log_test("Specific Product - Price", True, f"Correct price: {expected_price}")
+                else:
+                    self.log_test("Specific Product - Price", False, f"Expected {expected_price}, got {gift.get('price_range')}")
+                    
+                if gift.get("link") == expected_link:
+                    self.log_test("Specific Product - Link", True, "Correct Amazon affiliate link")
+                else:
+                    self.log_test("Specific Product - Link", False, f"Link mismatch: {gift.get('link')}")
+                    
+                if gift.get("image") == expected_image:
+                    self.log_test("Specific Product - Image", True, "Correct Amazon product image")
+                else:
+                    self.log_test("Specific Product - Image", False, f"Image mismatch: {gift.get('image')}")
+                    
+                break
                 
-        except Exception as e:
-            self.log_result("Authentication Error Handling", False, f"Exception: {str(e)}")
-            return False
-
-    def run_complete_task_flow_test(self):
-        """Run the complete end-to-end task completion flow"""
-        print("🚀 Starting Complete Task Completion Flow Test")
+        if high_waist_trouser_found:
+            self.log_test("Specific Product Found", True, "High Waist Formal Trousers product found")
+        else:
+            self.log_test("Specific Product Found", False, "High Waist Formal Trousers product not found")
+            
+    def run_all_tests(self):
+        """Run all Gift Ideas API tests"""
+        print("🎁 STARTING GIFT IDEAS API COMPREHENSIVE TESTING")
         print("=" * 60)
+        print(f"Backend URL: {self.backend_url}")
+        print(f"Test Start Time: {datetime.now().isoformat()}")
+        print()
         
-        # Step 1: Authentication
-        print("Step 1: Authentication Flow")
-        auth_success = False
+        # Test 1: Basic API functionality
+        print("📋 TESTING BASIC API FUNCTIONALITY")
+        print("-" * 40)
+        gifts = self.test_gifts_api_basic_functionality()
         
-        # Try login first, then registration if login fails
-        if self.test_user_login():
-            auth_success = True
-        elif self.test_user_registration():
-            auth_success = True
-        
-        if not auth_success:
-            print("❌ Authentication failed. Cannot proceed with task completion tests.")
-            return False
-        
-        # Validate JWT token
-        if not self.test_jwt_token_validation():
-            print("❌ JWT token validation failed. Cannot proceed.")
-            return False
-        
-        print("\n" + "=" * 60)
-        print("Step 2: Task Retrieval")
-        
-        # Step 2: Retrieve tasks
-        daily_success, daily_tasks = self.test_daily_tasks_retrieval()
-        weekly_success, weekly_tasks = self.test_weekly_tasks_retrieval()
-        
-        if not daily_success and not weekly_success:
-            print("❌ No tasks available for completion testing.")
-            return False
-        
-        print("\n" + "=" * 60)
-        print("Step 3: Task Completion Testing")
-        
-        # Step 3: Test task completion
-        completion_success = False
-        
-        # Test daily task completion
-        if daily_tasks:
-            task_to_complete = daily_tasks[0]  # Take first available task
-            task_id = task_to_complete["id"]
+        if gifts:
+            # Test 2: Gift data structure
+            print("🔍 TESTING GIFT DATA STRUCTURE")
+            print("-" * 40)
+            self.test_gift_data_structure(gifts)
             
-            print(f"Testing completion of daily task: {task_id}")
-            if self.test_task_completion(task_id, "daily"):
-                completion_success = True
-                
-                # Verify completion
-                self.test_task_completion_verification(task_id)
-        
-        # Test weekly task completion if daily failed
-        if not completion_success and weekly_tasks:
-            task_to_complete = weekly_tasks[0]  # Take first available task
-            task_id = task_to_complete["id"]
+            # Test 3: Amazon product data quality
+            print("🛍️ TESTING AMAZON PRODUCT DATA QUALITY")
+            print("-" * 40)
+            self.test_amazon_product_data_quality(gifts)
             
-            print(f"Testing completion of weekly task: {task_id}")
-            if self.test_task_completion(task_id, "weekly"):
-                completion_success = True
-                
-                # Verify completion
-                self.test_task_completion_verification(task_id)
+            # Test 4: Specific Amazon products
+            print("🎯 TESTING SPECIFIC AMAZON PRODUCTS")
+            print("-" * 40)
+            self.test_specific_amazon_products(gifts)
+            
+        # Test 5: API performance and reliability
+        print("⚡ TESTING API PERFORMANCE & RELIABILITY")
+        print("-" * 40)
+        self.test_api_performance_and_reliability()
         
+        # Generate summary
+        self.generate_test_summary()
+        
+    def generate_test_summary(self):
+        """Generate comprehensive test summary"""
         print("\n" + "=" * 60)
-        print("Step 4: Points System Verification")
-        
-        # Step 4: Verify points system
-        self.test_points_system_verification()
-        
-        print("\n" + "=" * 60)
-        print("Step 5: Error Handling Tests")
-        
-        # Step 5: Test error scenarios
-        self.test_authentication_errors()
-        
-        return completion_success
-
-    def generate_summary_report(self):
-        """Generate a summary report of all tests"""
-        print("\n" + "=" * 60)
-        print("📊 TASK COMPLETION TESTING SUMMARY REPORT")
+        print("🎁 GIFT IDEAS API TEST SUMMARY")
         print("=" * 60)
         
         total_tests = len(self.test_results)
@@ -494,65 +307,72 @@ class GiftIdeasAPITester:
         print(f"Success Rate: {success_rate:.1f}%")
         print()
         
-        # Critical issues
-        critical_failures = []
-        for result in self.test_results:
-            if not result["success"] and any(keyword in result["test"].lower() for keyword in ["authentication", "login", "token", "task completion"]):
-                critical_failures.append(result)
-        
-        if critical_failures:
-            print("🚨 CRITICAL ISSUES FOUND:")
-            for failure in critical_failures:
-                print(f"   ❌ {failure['test']}: {failure['details']}")
+        if failed_tests > 0:
+            print("❌ FAILED TESTS:")
+            for result in self.test_results:
+                if not result["success"]:
+                    print(f"  • {result['test']}: {result['details']}")
             print()
+            
+        print("✅ CRITICAL FINDINGS:")
         
-        # Successful components
-        successful_components = []
-        for result in self.test_results:
-            if result["success"]:
-                successful_components.append(result["test"])
+        # Check for critical issues
+        api_working = any(r["test"] == "API Response Status" and r["success"] for r in self.test_results)
+        structure_correct = any(r["test"] == "Response Structure" and r["success"] for r in self.test_results)
+        gift_count_correct = any(r["test"] == "Gift Count" and r["success"] for r in self.test_results)
+        amazon_images = any(r["test"] == "Amazon Product Images" and r["success"] for r in self.test_results)
         
-        if successful_components:
-            print("✅ WORKING COMPONENTS:")
-            for component in successful_components:
-                print(f"   ✅ {component}")
-            print()
+        if api_working:
+            print("  • Gift Ideas API is responding correctly (200 status)")
+        else:
+            print("  • ❌ CRITICAL: Gift Ideas API not responding properly")
+            
+        if structure_correct:
+            print("  • API returns correct JSON structure with 'gifts' array")
+        else:
+            print("  • ❌ CRITICAL: API response structure is incorrect")
+            
+        if gift_count_correct:
+            print("  • Correct number of gifts (6) returned")
+        else:
+            print("  • ⚠️ WARNING: Incorrect number of gifts returned")
+            
+        if amazon_images:
+            print("  • All gifts have proper Amazon product images")
+        else:
+            print("  • ⚠️ WARNING: Some gifts missing Amazon product images")
+            
+        print()
+        print("🎯 AMAZON AFFILIATE INTEGRATION STATUS:")
         
-        return {
-            "total_tests": total_tests,
-            "passed_tests": passed_tests,
-            "failed_tests": failed_tests,
-            "success_rate": success_rate,
-            "critical_failures": critical_failures,
-            "all_results": self.test_results
-        }
+        # Check Amazon integration specific items
+        affiliate_links = sum(1 for r in self.test_results if "Amazon Link" in r["test"] and r["success"])
+        product_images = sum(1 for r in self.test_results if "Image URL" in r["test"] and r["success"])
+        realistic_names = any(r["test"] == "Realistic Product Names" and r["success"] for r in self.test_results)
+        meaningful_descriptions = any(r["test"] == "Meaningful Descriptions" and r["success"] for r in self.test_results)
+        
+        print(f"  • Amazon affiliate links: {affiliate_links}/6 gifts")
+        print(f"  • Product images: {product_images}/6 gifts")
+        print(f"  • Realistic product names: {'✅' if realistic_names else '❌'}")
+        print(f"  • Meaningful descriptions: {'✅' if meaningful_descriptions else '❌'}")
+        
+        print()
+        print("📊 OVERALL ASSESSMENT:")
+        if success_rate >= 90:
+            print("  🎉 EXCELLENT: Gift Ideas API with Amazon integration is working perfectly!")
+        elif success_rate >= 75:
+            print("  ✅ GOOD: Gift Ideas API is working well with minor issues")
+        elif success_rate >= 50:
+            print("  ⚠️ MODERATE: Gift Ideas API has some issues that need attention")
+        else:
+            print("  ❌ CRITICAL: Gift Ideas API has major issues requiring immediate fixes")
+            
+        print(f"\nTest completed at: {datetime.now().isoformat()}")
 
 def main():
     """Main test execution"""
-    print("🎯 POOKIE4U TASK COMPLETION TESTING")
-    print("Focus: Resolving 'task completion not working' issue")
-    print("=" * 60)
-    
-    tester = TaskCompletionTester()
-    
-    # Run complete flow test
-    flow_success = tester.run_complete_task_flow_test()
-    
-    # Generate summary report
-    summary = tester.generate_summary_report()
-    
-    # Final assessment
-    print("🎯 FINAL ASSESSMENT:")
-    if flow_success and summary["success_rate"] >= 80:
-        print("✅ Task completion functionality is WORKING correctly")
-    elif summary["success_rate"] >= 60:
-        print("⚠️  Task completion has MINOR ISSUES but core functionality works")
-    else:
-        print("❌ Task completion has CRITICAL ISSUES that need immediate attention")
-    
-    print(f"\nDetailed results saved. Success rate: {summary['success_rate']:.1f}%")
-    
-    return summary
+    tester = GiftIdeasAPITester()
+    tester.run_all_tests()
 
 if __name__ == "__main__":
     main()
