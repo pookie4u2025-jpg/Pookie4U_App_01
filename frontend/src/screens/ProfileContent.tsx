@@ -354,6 +354,60 @@ export default function ProfileContent() {
             )}
           </View>
 
+          {/* Subscription Status Card */}
+          {!loadingSubscription && subscriptionData && (
+            <View style={[styles.subscriptionCard, { backgroundColor: theme.surface }]}>
+              <View style={styles.subscriptionHeader}>
+                <Ionicons 
+                  name={subscriptionData.is_active ? "diamond" : "gift-outline"} 
+                  size={28} 
+                  color={subscriptionData.is_active ? "#FFD700" : theme.textSecondary} 
+                />
+                <View style={styles.subscriptionInfo}>
+                  <Text style={[styles.subscriptionTitle, { color: theme.text }]}>
+                    {subscriptionData.display_text}
+                  </Text>
+                  {subscriptionData.is_active && subscriptionData.days_remaining !== null && (
+                    <Text style={[styles.subscriptionSubtitle, { color: theme.textSecondary }]}>
+                      {subscriptionData.days_remaining} days remaining
+                    </Text>
+                  )}
+                </View>
+              </View>
+              
+              {/* Action Button */}
+              {!subscriptionData.is_active && subscriptionData.can_start_trial && (
+                <TouchableOpacity 
+                  style={[styles.trialButton, { backgroundColor: theme.primary }]}
+                  onPress={handleStartTrial}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="gift" size={20} color="#FFF" />
+                  <Text style={styles.trialButtonText}>Start Free Trial</Text>
+                </TouchableOpacity>
+              )}
+              
+              {subscriptionData.is_active && (
+                <TouchableOpacity 
+                  style={[styles.manageButton, { backgroundColor: theme.primary + '20' }]}
+                  onPress={() => router.push('/subscription')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.manageButtonText, { color: theme.primary }]}>
+                    Manage Subscription
+                  </Text>
+                  <Ionicons name="chevron-forward" size={16} color={theme.primary} />
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+          
+          {loadingSubscription && (
+            <View style={[styles.subscriptionCard, { backgroundColor: theme.surface }]}>
+              <ActivityIndicator size="small" color={theme.primary} />
+            </View>
+          )}
+
           {/* Stats Overview */}
           <View style={styles.statsContainer}>
             <View style={[styles.statCard, { backgroundColor: theme.surface }]}>
