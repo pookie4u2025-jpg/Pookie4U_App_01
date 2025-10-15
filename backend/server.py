@@ -2099,6 +2099,70 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # =======================
+# GIFTS ENDPOINTS
+# =======================
+
+@app.get("/api/gifts", tags=["Gifts"])
+async def get_gifts():
+    """Get curated gift ideas with affiliate links"""
+    gifts = [
+        {
+            "id": "1",
+            "name": "Personalized Photo Frame",
+            "category": "Romantic",
+            "price_range": "Under ₹500",
+            "link": "https://amzn.to/46k7tSR",
+            "description": "Beautiful personalized frame for your special memories"
+        },
+        {
+            "id": "2",
+            "name": "Couple's Coffee Mug Set",
+            "category": "Home",
+            "price_range": "Under ₹500",
+            "link": "https://amzn.to/47mpgdb",
+            "description": "Matching mugs for your morning coffee together"
+        },
+        {
+            "id": "3",
+            "name": "Romantic Scented Candles",
+            "category": "Romantic",
+            "price_range": "Under ₹1000",
+            "link": "https://amzn.to/4g7fRs4",
+            "description": "Set the perfect romantic mood"
+        },
+        {
+            "id": "4",
+            "name": "Jewelry Gift Set",
+            "category": "Jewelry",
+            "price_range": "₹1000-5000",
+            "link": "https://amzn.to/485YoOK",
+            "description": "Elegant jewelry to make her shine"
+        },
+        {
+            "id": "5",
+            "name": "Luxury Perfume",
+            "category": "Beauty",
+            "price_range": "₹1000-5000",
+            "link": "https://amzn.to/4p1cpDv",
+            "description": "A fragrance she'll love"
+        },
+        {
+            "id": "6",
+            "name": "Gourmet Chocolate Box",
+            "category": "Food",
+            "price_range": "Under ₹1000",
+            "link": "https://amzn.to/4g58AJo",
+            "description": "Premium chocolates for your sweet moments"
+        },
+    ]
+    
+    return {
+        "success": True,
+        "gifts": gifts,
+        "total": len(gifts)
+    }
+
+# =======================
 # SUBSCRIPTION ENDPOINTS
 # =======================
 
