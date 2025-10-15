@@ -551,14 +551,12 @@ WEEKLY_TASKS = {
 }
 
 GIFT_IDEAS = [
-    {"id": "g1", "name": "Personalized Photo Frame", "category": "Romantic", "price_range": "Under ₹500", "link": "https://example.com"},
-    {"id": "g2", "name": "Couple's Matching Bracelets", "category": "Jewelry", "price_range": "Under ₹1000", "link": "https://example.com"},
-    {"id": "g3", "name": "Custom Love Letter in a Bottle", "category": "Romantic", "price_range": "Under ₹500", "link": "https://example.com"},
-    {"id": "g4", "name": "Spa Day Coupon Book", "category": "Experiences", "price_range": "Free DIY", "link": "https://example.com"},
-    {"id": "g5", "name": "Favorite Perfume", "category": "Beauty", "price_range": "₹1000-5000", "link": "https://example.com"},
-    {"id": "g6", "name": "Weekend Getaway Booking", "category": "Experiences", "price_range": "₹5000+", "link": "https://example.com"},
-    {"id": "g7", "name": "Handmade Chocolate Box", "category": "Food", "price_range": "Under ₹1000", "link": "https://example.com"},
-    {"id": "g8", "name": "Couple's Plant Set", "category": "Home", "price_range": "Under ₹1000", "link": "https://example.com"}
+    {"id": "1", "name": "Personalized Photo Frame", "category": "Romantic", "price_range": "Under ₹500", "link": "https://amzn.to/46k7tSR", "description": "Beautiful personalized frame for your special memories"},
+    {"id": "2", "name": "Couple's Coffee Mug Set", "category": "Home", "price_range": "Under ₹500", "link": "https://amzn.to/47mpgdb", "description": "Matching mugs for your morning coffee together"},
+    {"id": "3", "name": "Romantic Scented Candles", "category": "Romantic", "price_range": "Under ₹1000", "link": "https://amzn.to/4g7fRs4", "description": "Set the perfect romantic mood"},
+    {"id": "4", "name": "Jewelry Gift Set", "category": "Jewelry", "price_range": "₹1000-5000", "link": "https://amzn.to/485YoOK", "description": "Elegant jewelry to make her shine"},
+    {"id": "5", "name": "Luxury Perfume", "category": "Beauty", "price_range": "₹1000-5000", "link": "https://amzn.to/4p1cpDv", "description": "A fragrance she'll love"},
+    {"id": "6", "name": "Gourmet Chocolate Box", "category": "Food", "price_range": "Under ₹1000", "link": "https://amzn.to/4g58AJo", "description": "Premium chocolates for your sweet moments"}
 ]
 
 ROMANTIC_MESSAGES = {
