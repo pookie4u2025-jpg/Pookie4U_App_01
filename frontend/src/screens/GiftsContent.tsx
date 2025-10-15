@@ -119,16 +119,13 @@ export default function GiftsContent() {
           style={styles.categoriesContainer}
           contentContainerStyle={styles.categoriesContent}
         >
-          {categories.map((category, index) => {
-            const categoryAnim = useFadeInAnimation(index * 50);
-            return (
+          {categories.map((category, index) => (
               <AnimatedTouchable
                 key={category}
                 style={[
                   styles.categoryButton,
                   { backgroundColor: theme.surface, borderColor: theme.border },
-                  selectedCategory === category && { backgroundColor: theme.primary, borderColor: theme.primary },
-                  categoryAnim
+                  selectedCategory === category && { backgroundColor: theme.primary, borderColor: theme.primary }
                 ]}
                 onPress={() => {
                   buttonPress();
@@ -144,8 +141,7 @@ export default function GiftsContent() {
                   {category}
                 </Text>
               </AnimatedTouchable>
-            );
-          })}
+          ))}
         </ScrollView>
 
         {/* Gifts Grid */}
