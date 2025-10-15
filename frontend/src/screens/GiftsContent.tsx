@@ -10,9 +10,14 @@ import {
   RefreshControl,
   Image,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useTheme } from '../contexts/ThemeContext';
+import { useCardAnimation, useFadeInAnimation } from '../utils/animations';
+import { buttonPress } from '../utils/HapticsManager';
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface Gift {
   id: string;
