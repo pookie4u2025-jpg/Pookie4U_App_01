@@ -2222,7 +2222,7 @@ async def verify_payment(
         logger.error(f"Error verifying payment: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to verify payment: {str(e)}")
 
-@router.get("/subscriptions/status", tags=["Subscriptions"])
+@app.get("/api/subscriptions/status", tags=["Subscriptions"])
 async def get_subscription_status(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
