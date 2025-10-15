@@ -2175,7 +2175,7 @@ async def create_subscription(
         logger.error(f"Error creating subscription: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to create subscription: {str(e)}")
 
-@router.post("/subscriptions/verify", tags=["Subscriptions"])
+@app.post("/api/subscriptions/verify", tags=["Subscriptions"])
 async def verify_payment(
     request: VerifyPaymentRequest,
     credentials: HTTPAuthorizationCredentials = Depends(security)
