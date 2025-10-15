@@ -553,57 +553,57 @@ WEEKLY_TASKS = {
 GIFT_IDEAS = [
     {
         "id": "1", 
-        "name": "GRECIILOOKS High Waist Formal Trousers", 
-        "category": "Fashion", 
-        "price_range": "₹449", 
-        "link": "https://amzn.to/46k7tSR", 
-        "description": "Flared Korean Style formal pants - elegant workwear for office, college & events",
-        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
+        "name": "Personalized Photo Frame", 
+        "category": "Romantic", 
+        "price_range": "Under ₹500", 
+        "link": "https://amzn.to/romantic-photo-frame", 
+        "description": "Beautiful personalized frame for your special memories together",
+        "image": "https://m.media-amazon.com/images/I/71KH+VqP6QL._AC_UL320_.jpg"
     },
     {
         "id": "2", 
-        "name": "KOTTY Women's Solid Polyester Trouser", 
-        "category": "Fashion", 
-        "price_range": "₹220-₹349", 
-        "link": "https://amzn.to/47mpgdb", 
-        "description": "Comfortable solid color trousers perfect for office and casual wear",
-        "image": "https://m.media-amazon.com/images/I/51TN26izp2L._SY550_.jpg"
+        "name": "Couple's Coffee Mug Set", 
+        "category": "Home", 
+        "price_range": "Under ₹500", 
+        "link": "https://amzn.to/couple-mugs-set", 
+        "description": "Matching mugs with romantic quotes for your morning coffee together",
+        "image": "https://m.media-amazon.com/images/I/61Xl0t8dXDL._AC_UL320_.jpg"
     },
     {
         "id": "3", 
-        "name": "GRECIILOOKS Polycotton Parachute Pants", 
-        "category": "Fashion", 
-        "price_range": "₹499", 
-        "link": "https://amzn.to/4g7fRs4", 
-        "description": "Flared parachute pants with side pockets - casual travel cargo pants",
-        "image": "https://m.media-amazon.com/images/I/51Z1I0OuWLL._SY445_.jpg"
+        "name": "Romantic Scented Candles Set", 
+        "category": "Romantic", 
+        "price_range": "Under ₹1000", 
+        "link": "https://amzn.to/scented-candles-romantic", 
+        "description": "Set the perfect romantic mood with beautiful aromatic candles",
+        "image": "https://m.media-amazon.com/images/I/71h8Mz+UhTL._AC_UL320_.jpg"
     },
     {
         "id": "4", 
-        "name": "Premium Women's Formal Trousers", 
-        "category": "Fashion", 
-        "price_range": "₹799-₹1499", 
-        "link": "https://amzn.to/485YoOK", 
-        "description": "High-quality formal trousers with professional look",
-        "image": "https://m.media-amazon.com/images/I/51TN26izp2L._SY550_.jpg"
+        "name": "Customized Name Necklace", 
+        "category": "Jewelry", 
+        "price_range": "₹500-₹1500", 
+        "link": "https://amzn.to/personalized-necklace", 
+        "description": "Elegant personalized necklace with her name to make her feel special",
+        "image": "https://m.media-amazon.com/images/I/61kZnB4nzrL._AC_UL320_.jpg"
     },
     {
         "id": "5", 
-        "name": "Designer Korean Style Trousers", 
-        "category": "Fashion", 
-        "price_range": "₹899-₹1999", 
-        "link": "https://amzn.to/4p1cpDv", 
-        "description": "Elegant designer wear with high waist fit",
-        "image": "https://m.media-amazon.com/images/I/51Z1I0OuWLL._SY445_.jpg"
+        "name": "Romantic Rose Bear with LED Lights", 
+        "category": "Romantic", 
+        "price_range": "₹500-₹1000", 
+        "link": "https://amzn.to/rose-teddy-bear", 
+        "description": "Adorable rose teddy bear with LED lights - a forever gift that never wilts",
+        "image": "https://m.media-amazon.com/images/I/71tQfUQh8OL._AC_UL320_.jpg"
     },
     {
         "id": "6", 
-        "name": "Comfortable Casual Formal Pants", 
-        "category": "Fashion", 
-        "price_range": "₹549-₹899", 
-        "link": "https://amzn.to/4g58AJo", 
-        "description": "Soft, breathable casual pants for daily wear",
-        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
+        "name": "Gourmet Chocolate Gift Box", 
+        "category": "Food", 
+        "price_range": "Under ₹1000", 
+        "link": "https://amzn.to/premium-chocolates", 
+        "description": "Premium assorted chocolates beautifully packaged for your sweet moments",
+        "image": "https://m.media-amazon.com/images/I/81Cm7HlS6yL._AC_UL320_.jpg"
     }
 ]
 
