@@ -1176,7 +1176,15 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
         profile_completed=current_user.get("profile_completed", False),
         profile_image=current_user.get("profile_image"),
         created_at=current_user["created_at"],
-        updated_at=current_user.get("updated_at", datetime.utcnow())
+        updated_at=current_user.get("updated_at", datetime.utcnow()),
+        # Subscription fields
+        subscription_type=current_user.get("subscription_type", "none"),
+        subscription_status=current_user.get("subscription_status", "inactive"),
+        subscription_start_date=current_user.get("subscription_start_date"),
+        subscription_end_date=current_user.get("subscription_end_date"),
+        trial_started=current_user.get("trial_started", False),
+        razorpay_subscription_id=current_user.get("razorpay_subscription_id"),
+        razorpay_customer_id=current_user.get("razorpay_customer_id")
     )
 
 @api_router.put("/user/profile")
