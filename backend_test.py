@@ -640,7 +640,10 @@ class Pookie4uAPITester:
             # Phase 6: Messages System
             await self.test_messages_system()
             
-            # Phase 7: Subscription/Payment System
+            # Phase 7: AI Personalization Features (NEW)
+            await self.test_ai_personalization_features()
+            
+            # Phase 8: Subscription/Payment System
             await self.test_subscription_system()
             
         except Exception as e:
