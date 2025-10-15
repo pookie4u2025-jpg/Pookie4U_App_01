@@ -119,25 +119,33 @@ export default function GiftsContent() {
           style={styles.categoriesContainer}
           contentContainerStyle={styles.categoriesContent}
         >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              style={[
-                styles.categoryButton,
-                { backgroundColor: theme.surface, borderColor: theme.border },
-                selectedCategory === category && { backgroundColor: theme.primary, borderColor: theme.primary }
-              ]}
-              onPress={() => setSelectedCategory(category)}
-            >
-              <Text style={[
-                styles.categoryText,
-                { color: theme.textSecondary },
-                selectedCategory === category && { color: '#fff' }
-              ]}>
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {categories.map((category, index) => {
+            const categoryAnim = useFadeInAnimation(index * 50);
+            return (
+              <AnimatedTouchable
+                key={category}
+                style={[
+                  styles.categoryButton,
+                  { backgroundColor: theme.surface, borderColor: theme.border },
+                  selectedCategory === category && { backgroundColor: theme.primary, borderColor: theme.primary },
+                  categoryAnim
+                ]}
+                onPress={() => {
+                  buttonPress();
+                  setSelectedCategory(category);
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={[
+                  styles.categoryText,
+                  { color: theme.textSecondary },
+                  selectedCategory === category && { color: '#fff' }
+                ]}>
+                  {category}
+                </Text>
+              </AnimatedTouchable>
+            );
+          })}
         </ScrollView>
 
         {/* Gifts Grid */}
