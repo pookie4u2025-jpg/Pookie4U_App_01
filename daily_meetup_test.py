@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any
 
 # Test configuration
-BACKEND_URL = "https://pookie-couples.preview.emergentagent.com/api"
+BACKEND_URL = "https://relationship-app-4.preview.emergentagent.com/api"
 TEST_USER_EMAIL = "dailymeetup.tester@example.com"
 TEST_USER_PASSWORD = "TestPass123!"
 TEST_USER_NAME = "Daily Meetup Tester"

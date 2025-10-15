@@ -5,15 +5,15 @@
 **Authorized redirect URIs:**
 ```
 https://auth.expo.io/@anonymous/frontend
-https://pookie-couples.preview.emergentagent.com
-https://pookie-couples.preview.emergentagent.com/auth/callback
+https://relationship-app-4.preview.emergentagent.com
+https://relationship-app-4.preview.emergentagent.com/auth/callback
 http://localhost:3000
 ```
 
 **Authorized JavaScript origins:**
 ```
 https://auth.expo.io
-https://pookie-couples.preview.emergentagent.com
+https://relationship-app-4.preview.emergentagent.com
 http://localhost:3000
 ```
 
@@ -54,7 +54,7 @@ http://localhost:3000
    
 4. Click **"+ ADD URI"** again and add:
    ```
-   https://pookie-couples.preview.emergentagent.com
+   https://relationship-app-4.preview.emergentagent.com
    ```
    
 5. Click **"+ ADD URI"** again and add:
@@ -73,12 +73,12 @@ http://localhost:3000
    
 4. Click **"+ ADD URI"** again and add:
    ```
-   https://pookie-couples.preview.emergentagent.com
+   https://relationship-app-4.preview.emergentagent.com
    ```
    
 5. Click **"+ ADD URI"** again and add:
    ```
-   https://pookie-couples.preview.emergentagent.com/auth/callback
+   https://relationship-app-4.preview.emergentagent.com/auth/callback
    ```
    
 6. Click **"+ ADD URI"** again and add:
@@ -99,13 +99,13 @@ After saving, verify you have:
 
 **Authorized JavaScript origins (3 total):**
 - [ ] `https://auth.expo.io`
-- [ ] `https://pookie-couples.preview.emergentagent.com`
+- [ ] `https://relationship-app-4.preview.emergentagent.com`
 - [ ] `http://localhost:3000`
 
 **Authorized redirect URIs (4 total):**
 - [ ] `https://auth.expo.io/@anonymous/frontend`
-- [ ] `https://pookie-couples.preview.emergentagent.com`
-- [ ] `https://pookie-couples.preview.emergentagent.com/auth/callback`
+- [ ] `https://relationship-app-4.preview.emergentagent.com`
+- [ ] `https://relationship-app-4.preview.emergentagent.com/auth/callback`
 - [ ] `http://localhost:3000`
 
 ---
@@ -153,15 +153,15 @@ If you prefer to copy-paste, here's a condensed version:
 **Authorized JavaScript origins (add 3 URIs):**
 ```
 https://auth.expo.io
-https://pookie-couples.preview.emergentagent.com
+https://relationship-app-4.preview.emergentagent.com
 http://localhost:3000
 ```
 
 **Authorized redirect URIs (add 4 URIs):**
 ```
 https://auth.expo.io/@anonymous/frontend
-https://pookie-couples.preview.emergentagent.com
-https://pookie-couples.preview.emergentagent.com/auth/callback
+https://relationship-app-4.preview.emergentagent.com
+https://relationship-app-4.preview.emergentagent.com/auth/callback
 http://localhost:3000
 ```
 

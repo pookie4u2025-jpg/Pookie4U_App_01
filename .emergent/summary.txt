@@ -1,84 +1,60 @@
 <analysis>
-The AI engineer's work on Pookie4u has focused on refining existing features and implementing new UI/UX designs. Initially, the engineer fixed an incomplete login screen, adding missing input forms and error styling. Authentication issues, particularly recurring 401 errors, were debugged and resolved by implementing robust session validation in the  and modifying the main app entry point to correctly handle authentication states. The app's visual identity underwent significant changes, including comprehensive logo integration across welcome, splash, and authentication screens, followed by multiple iterations to achieve a consistent, elegant soft pink gradient theme throughout the entire application as per user-provided reference designs. Date formatting was standardized to DD-MM-YYYY across the app. Core functionalities like displaying real-time upcoming events on the home screen and backend task completion were implemented and verified. The engineer also addressed Git repository corruption and guided the user on recovery. Currently, the authentication system has been streamlined to support only Email and Google OAuth, with other methods removed. The immediate task is to design and implement a new subscription screen based on a user-provided reference.
+The AI engineer's work in the provided trajectory involved multiple feature enhancements and bug fixes for the Pookie4u app. Key tasks included designing and integrating a new subscription screen UI, fixing date parsing errors in the onboarding flow, restoring a missing settings button on the profile screen, standardizing date display in the partner profile, and updating the welcome screen logo. A significant portion of the work focused on debugging and rectifying Google OAuth authentication issues, which involved correctly configuring environment variables, updating deprecated API calls, and handling redirect URIs. Finally, Amazon affiliate links were integrated into the Gifts tab, including addressing issues with outdated backend data and irrelevant product links. The immediate next step involves updating the backend with generic product names and images for the affiliate links.
 </analysis>
 
 <product_requirements>
-Pookie4u is a gamified mobile app for couples, featuring AI-powered tasks, events with notifications (including Indian festivals and custom events), curated gifts, and daily love messages. It includes email, mobile, Google, and Apple ID authentication (though only Email and Google were kept by user choice). Monetization involves a ₹79/month or ₹450/6-month subscription after a 14-day free trial. Key enhancements include relationship-mode-specific content, a sortable event list, persistent points/streaks, dark mode (not implemented yet), DD/MM/YYYY date format, haptics, editable account fields, and a single favorite food field. Event management requires edit/delete with customizable reminders. The UI prioritizes a clean, readable, user-friendly design.
+Pookie4u is a gamified mobile app for couples, featuring AI-powered tasks, events with notifications (including Indian festivals and custom events), curated gifts, and daily love messages. It supports Email and Google authentication. Monetization involves a ₹79/month or ₹450/6-month subscription after a 14-day free trial. Key enhancements include relationship-mode-specific content, a sortable event list, persistent points/streaks, dark mode (not implemented), DD/MM/YYYY date format, haptics, editable account fields, and a single favorite food field. Event management requires edit/delete with customizable reminders. The UI prioritizes a clean, readable, user-friendly design.
+Recent implementations include a new subscription screen UI, onboarding date format parsing, restored settings button on profile, formatted dates in partner profile, updated welcome screen logo, and backend integration for Razorpay and Amazon affiliate links for gifts.
 </product_requirements>
 
 <key_technical_concepts>
--   **Frontend**: React Native, Expo (Expo Router, AuthSession), Zustand (state management), AsyncStorage, react-navigation, .
--   **Backend**: FastAPI (Python), MongoDB (data storage), JWT (authentication), Pydantic (data validation).
--   **Architecture**: Client-server model, RESTful APIs, AI task/message generation, Google OAuth.
+-   **Frontend**: React Native, Expo (Expo Router, AuthSession), Zustand (state management), , .
+-   **Backend**: FastAPI (Python), MongoDB (data storage), JWT (authentication), Pydantic (data validation), Razorpay Python SDK.
+-   **Authentication**: Google OAuth (Code flow, PKCE), Email/Password.
+-   **State Management**: Zustand for global application state.
+-   **UI/UX**: Gradient backgrounds,  for improved UX.
 </key_technical_concepts>
 
 <code_architecture>
-The application utilizes an Expo React Native frontend, a FastAPI backend, and a MongoDB database.
+The application employs an Expo React Native frontend, a FastAPI backend, and a MongoDB database.
 
 
+-   ****: Updated with Google OAuth and Razorpay API credentials.
 -   ****:
-    -   **Summary**: Manages event data, including pre-filled and personal events.
-    -   **Changes**: Added National Women's Day (India) and Girlfriend's Day for 2025/2026.
+    -   **Changes**: Fixed Pydantic validation for . Implemented . Integrated . Added Razorpay subscription endpoints (, , ) and changed  to  for these endpoints. Added  endpoint with Amazon affiliate links, replacing old  constant.
+-   ****: **New file**. Contains functions to interact with Razorpay APIs for subscription management, including creating orders and verifying payments.
+-   ****: Updated with , , , , and Razorpay plan IDs.
+-   ****: **New file**. Contains the UI structure for the subscription screen, integrated into the navigation flow.
 -   ****:
-    -   **Summary**: FastAPI backend with API routes.
-    -   **Changes**: Fixed Pydantic validation error for  field (datetime to DD/MM/YYYY string conversion). Implemented  endpoint for task completion, updating points, levels, and streaks.
+    -   **Changes**: Redesigned for a clean, minimal look, integrated  on the welcome screen. Modified  and  to navigate to  after successful registration for new users. Updated Google OAuth initialization to correctly access Expo environment variables and debugged various OAuth errors, including using  and fixing redirect URIs.
 -   ****:
-    -   **Summary**: Entry point for authentication routing.
-    -   **Changes**: Modified to wait for  initialization and session validation, redirecting to  only if authenticated and validated, else to .
+    -   **Changes**: Modified  to navigate to  instead of displaying an alert. Removed unused  and  functions.
 -   ****:
-    -   **Summary**: Layout for the main tab navigation.
-    -   **Changes**: Modified to use the new  component for a consistent app-wide theme.
+    -   **Changes**: Fixed Invalid time value error by correctly parsing  and  fields (DD-MM-YYYY) into Date objects using .
 -   ****:
-    -   **Summary**: Home screen displaying key user information.
-    -   **Changes**: Integrated fetching and displaying real-time upcoming events from the API, replacing hardcoded placeholders. Uses new .
+    -   **Changes**: Restored the settings button (gear icon) on the top right, navigating to . Implemented date formatting using  to display  and  fields in DD-MM-YYYY format in the partner profile.
 -   ****:
-    -   **Summary**: New directory created to store Pookie4u logos.
-    -   **Changes**: Contains , , and .
--   ****:
-    -   **Summary**: New component to provide a consistent gradient background across the app.
-    -   **Changes**: Created to abstract the  implementation, making it reusable.
--   ****:
-    -   **Summary**: Manages the application's color theme.
-    -   **Changes**: Updated with a new palette of softer pink gradient colors and appropriate text/card colors to match the user's reference design.
--   ****:
-    -   **Summary**: User authentication and welcome screen.
-    -   **Changes**: Heavily redesigned for a clean, minimal look matching recent reference images. Integrated Pookie4u logos. Fixed login screen to include actual email/password input forms. Removed Mobile/OTP and Apple OAuth options and their associated logic/state. Implemented a vibrant pink gradient welcome screen.
--   ****:
-    -   **Summary**: Displays and manages calendar events.
-    -   **Changes**: Added authentication guards to prevent API calls when unauthenticated, displaying a Please Sign In message instead. React Hooks usage refactored to comply with rules.
--   ****:
-    -   **Summary**: Guides new users through initial setup.
-    -   **Changes**: Replaced the native  component for relationship mode selection with custom  buttons to improve readability and contrast.
--   ****:
-    -   **Summary**: Zustand store for authentication state.
-    -   **Changes**: Added  state and  method to perform token validation on app startup, handling expired/invalid tokens gracefully by logging out.
--   ****:
-    -   **Summary**: Zustand store for task management.
-    -   **Changes**: Calls the newly implemented backend  endpoint for task completion.
--   ****:
-    -   **Summary**: Utility for date formatting.
-    -   **Changes**: Updated  to accept both  and  formats. Added  to output .
+    -   **Changes**: Heavily refactored to use  instead of deprecated . Switched to  response type for PKCE compatibility. Removed unused  import. Fixed redirect URI logic to use Expo's AuthSession proxy for HTTPS-compatible URIs.
 </code_architecture>
 
 <pending_tasks>
 -   Implement account linking, recovery, and other security/compliance aspects for the new authentication system.
--   Complete the design and implementation of the Subscription Screen.
+-   Complete the frontend integration for Razorpay (Subscription Screen UI is done, but payment processing is not).
+-   Update the Gifts tab to display actual product names and images from Amazon affiliate links.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary, the AI engineer was tasked with a major redesign of the sign-in/sign-up flow and the creation of a new Subscription Screen, aligning with a user-provided reference image. This involved using the P4U logo, a soft pink and white color scheme, minimal layout, rounded corners, and simple icons.
+Immediately before this summary, the AI engineer was working on integrating Amazon affiliate links into the Gifts tab. The user provided a set of affiliate links, which were added to the backend  endpoint in .
 
-The work completed so far in this phase includes:
--   **Downloading Assets**: The new  and  were downloaded.
--   **Redesigning AuthScreen**: The  has been updated to reflect the clean, minimal design. This involved:
-    -   Incorporating the new  prominently.
-    -   Adding new styles to achieve the clean minimal design as per the reference image.
-    -   Redesigning the sign-up section () within  to match this clean minimal aesthetic.
-    -   Updating the back button styling to fit the new design.
+During this process, it was discovered that:
+1.  There were two gift endpoints in  and an old  constant was being used, causing the app to display outdated example.com links instead of the new affiliate links.
+2.  This was fixed by locating and updating the  constant and ensuring the correct endpoint was being used.
+3.  Even after correcting the code, the backend sometimes returned old data, requiring a force restart of the backend service to ensure the latest changes were loaded.
+4.  After these fixes, the backend was confirmed to be returning the correct Amazon affiliate links.
 
-The AI engineer has successfully redesigned the welcome, login, and signup components within  according to the new visual guidelines, preparing the groundwork for a unified aesthetic. The next logical step is to create the new Subscription Screen, which was explicitly requested as part of the same design task.
+The user then requested to display actual product names and photos from these links, similar to the Amazon mobile app. The engineer attempted to extract this information but noted that the provided links redirected to generic women's trousers, not relevant couple gifts. The last action was to update the backend with generic product names and use a generic gift icon, based on the user's confirmation to proceed with the provided links for testing purposes.
 </current_work>
 
 <optional_next_step>
-Create the new Subscription Screen based on the provided reference design.
+Update the backend's  endpoint with generic product names.
 </optional_next_step>
