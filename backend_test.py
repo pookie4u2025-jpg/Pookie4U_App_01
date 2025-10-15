@@ -13,15 +13,14 @@ import uuid
 # Configuration
 BACKEND_URL = "https://relationship-app-4.preview.emergentagent.com/api"
 
-class TaskCompletionTester:
+class GiftIdeasAPITester:
     def __init__(self):
         self.session = requests.Session()
-        self.auth_token = None
-        self.user_id = None
+        self.backend_url = BACKEND_URL
         self.test_results = []
         
-    def log_result(self, test_name, success, details="", response_data=None):
-        """Log test results"""
+    def log_test(self, test_name, success, details="", response_data=None):
+        """Log test result"""
         result = {
             "test": test_name,
             "success": success,
@@ -30,12 +29,13 @@ class TaskCompletionTester:
             "response_data": response_data
         }
         self.test_results.append(result)
+        
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status}: {test_name}")
+        print(f"{status} | {test_name}")
         if details:
-            print(f"   Details: {details}")
+            print(f"     Details: {details}")
         if not success and response_data:
-            print(f"   Response: {response_data}")
+            print(f"     Response: {response_data}")
         print()
 
     def test_user_registration(self):
