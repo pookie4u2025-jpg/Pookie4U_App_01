@@ -1868,6 +1868,133 @@ async def get_daily_messages(relationship_mode: str):
         print(f"Error getting daily messages: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate daily messages")
 
+# =======================
+# NEW: AI PERSONALIZATION ENDPOINTS
+# =======================
+
+@api_router.post("/ai/generate-message")
+async def generate_personalized_message(
+    category: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Generate AI-powered personalized message
+    Cost: ~₹0.02 per call (GPT-3.5 Turbo)
+    Rate limit: 10 per day for free users
+    """
+    try:
+        # Get user and partner info
+        user_name = current_user.get('name', 'You')
+        partner_name = current_user.get('partner_profile', {}).get('name', 'Your partner')
+        relationship_mode = current_user.get('relationship_mode', 'DAILY_IRL')
+        
+        # Generate AI message
+        message = await generate_ai_message(
+            category=category,
+            user_name=user_name,
+            partner_name=partner_name,
+            relationship_mode=relationship_mode
+        )
+        
+        return {
+            "success": True,
+            "message": message,
+            "category": category,
+            "ai_generated": True,
+            "generated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        print(f"Error generating AI message: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate personalized message")
+
+
+@api_router.get("/ai/smart-gifts")
+async def get_smart_gift_recommendations(
+    occasion: str = "general",
+    budget: str = "Under ₹1000",
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get AI-enhanced gift recommendations based on partner profile
+    Cost: ~₹0.03 per call (GPT-3.5 Turbo)
+    """
+    try:
+        # Get partner profile
+        partner_profile = current_user.get('partner_profile', {})
+        
+        if not partner_profile:
+            # Return regular gifts if no partner profile
+            return {
+                "success": True,
+                "gifts": GIFT_IDEAS,
+                "ai_enhanced": False,
+                "message": "Add partner profile for personalized recommendations"
+            }
+        
+        # Get AI-enhanced gift recommendations
+        smart_gifts = await get_ai_gift_recommendations(
+            partner_profile=partner_profile,
+            occasion=occasion,
+            budget=budget,
+            available_gifts=GIFT_IDEAS
+        )
+        
+        return {
+            "success": True,
+            "gifts": smart_gifts,
+            "ai_enhanced": True,
+            "occasion": occasion,
+            "budget": budget,
+            "generated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        print(f"Error generating smart gifts: {e}")
+        # Fallback to regular gifts
+        return {
+            "success": True,
+            "gifts": GIFT_IDEAS,
+            "ai_enhanced": False,
+            "error": "AI recommendations unavailable"
+        }
+
+
+@api_router.post("/ai/plan-date")
+async def create_ai_date_plan(
+    budget: str = "Under ₹1000",
+    preferences: Optional[str] = None,
+    location: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Generate AI-powered date plan
+    Cost: ~₹0.05 per call (GPT-3.5 Turbo)
+    Rate limit: 3 per month for free users, unlimited for premium
+    """
+    try:
+        relationship_mode = current_user.get('relationship_mode', 'DAILY_IRL')
+        
+        # Generate AI date plan
+        date_plan = await plan_ai_date(
+            relationship_mode=relationship_mode,
+            budget=budget,
+            preferences=preferences,
+            location=location
+        )
+        
+        return {
+            "success": True,
+            "date_plan": date_plan,
+            "relationship_mode": relationship_mode,
+            "ai_generated": True,
+            "generated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        print(f"Error generating date plan: {e}")
+        raise HTTPException(status_code=500, detail="Failed to generate date plan")
+
 @api_router.get("/events")
 async def get_events(
     limit: Optional[int] = None,
