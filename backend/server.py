@@ -571,12 +571,12 @@ GIFT_IDEAS = [
     },
     {
         "id": "3", 
-        "name": "Women's High Waist Formal Pants", 
+        "name": "GRECIILOOKS Polycotton Parachute Pants", 
         "category": "Fashion", 
-        "price_range": "₹599-₹999", 
+        "price_range": "₹499", 
         "link": "https://amzn.to/4g7fRs4", 
-        "description": "Modern baggy fit formal trousers for every occasion",
-        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
+        "description": "Flared parachute pants with side pockets - casual travel cargo pants",
+        "image": "https://m.media-amazon.com/images/I/51Z1I0OuWLL._SY445_.jpg"
     },
     {
         "id": "4", 
@@ -585,7 +585,7 @@ GIFT_IDEAS = [
         "price_range": "₹799-₹1499", 
         "link": "https://amzn.to/485YoOK", 
         "description": "High-quality formal trousers with professional look",
-        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
+        "image": "https://m.media-amazon.com/images/I/51TN26izp2L._SY550_.jpg"
     },
     {
         "id": "5", 
@@ -594,7 +594,7 @@ GIFT_IDEAS = [
         "price_range": "₹899-₹1999", 
         "link": "https://amzn.to/4p1cpDv", 
         "description": "Elegant designer wear with high waist fit",
-        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
+        "image": "https://m.media-amazon.com/images/I/51Z1I0OuWLL._SY445_.jpg"
     },
     {
         "id": "6", 
