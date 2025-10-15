@@ -726,35 +726,271 @@ class Pookie4uAPITester:
             self.results.broken_features.append("AI Date Planner")
 
     async def test_subscription_system(self):
-        """Test Razorpay subscription system"""
-        print(f"\n{Colors.PURPLE}💳 TESTING SUBSCRIPTION/PAYMENT SYSTEM{Colors.END}")
+        """Test comprehensive subscription system - PRIMARY FOCUS"""
+        print(f"\n{Colors.PURPLE}💳 TESTING SUBSCRIPTION SYSTEM - COMPREHENSIVE{Colors.END}")
         
         headers = self.get_auth_headers()
         
-        # Test subscription creation (will likely fail without proper Razorpay setup)
-        subscription_data = {
-            "plan_type": "monthly"
+        # ============================================================================
+        # 1. SUBSCRIPTION STATUS ENDPOINT
+        # ============================================================================
+        print(f"{Colors.CYAN}📊 Testing Subscription Status Endpoint{Colors.END}")
+        
+        # Test with authentication
+        success, response, status = await self.make_request("GET", "/subscription/status", None, headers)
+        
+        if success and status == 200:
+            required_fields = ["success", "subscription"]
+            subscription_fields = ["type", "status", "is_active", "days_remaining", "can_start_trial"]
+            
+            if all(field in response for field in required_fields):
+                subscription = response["subscription"]
+                if all(field in subscription for field in subscription_fields):
+                    self.results.add_result("Subscription Status - With Auth", True, 
+                                          f"Type: {subscription['type']}, Status: {subscription['status']}")
+                    print(f"   ✅ Initial subscription status: {subscription['type']} ({subscription['status']})")
+                    print(f"   ✅ Can start trial: {subscription['can_start_trial']}")
+                else:
+                    self.results.add_result("Subscription Status - With Auth", False, 
+                                          f"Missing subscription fields: {subscription}")
+            else:
+                self.results.add_result("Subscription Status - With Auth", False, 
+                                      f"Missing required fields: {response}")
+        else:
+            self.results.add_result("Subscription Status - With Auth", False, 
+                                  f"Status: {status}, Response: {response}")
+
+        # Test without authentication (should fail)
+        success, response, status = await self.make_request("GET", "/subscription/status", None, {})
+        
+        if status in [401, 403]:
+            self.results.add_result("Subscription Status - No Auth", True, 
+                                  f"Correctly rejected with status {status}")
+        else:
+            self.results.add_result("Subscription Status - No Auth", False, 
+                                  f"Should reject unauthorized access, got {status}")
+
+        # ============================================================================
+        # 2. START FREE TRIAL
+        # ============================================================================
+        print(f"{Colors.CYAN}🆓 Testing Free Trial System{Colors.END}")
+        
+        # Get current subscription status first
+        success, status_response, status_code = await self.make_request("GET", "/subscription/status", None, headers)
+        
+        if success and status_code == 200:
+            can_start_trial = status_response["subscription"]["can_start_trial"]
+            
+            # Test starting trial
+            success, response, status = await self.make_request("POST", "/subscription/start-trial", None, headers)
+            
+            if can_start_trial:
+                if success and status == 200:
+                    if (response.get("success") and 
+                        response.get("subscription", {}).get("type") == "trial" and
+                        response.get("subscription", {}).get("status") == "active" and
+                        response.get("subscription", {}).get("days_remaining") == 14):
+                        self.results.add_result("Start Free Trial", True, 
+                                              f"Trial started: {response['subscription']}")
+                        print(f"   ✅ Free trial activated: 14 days remaining")
+                    else:
+                        self.results.add_result("Start Free Trial", False, 
+                                              f"Invalid trial data: {response}")
+                else:
+                    self.results.add_result("Start Free Trial", False, 
+                                          f"Status: {status}, Response: {response}")
+            else:
+                # Trial already used, should fail
+                if status == 400:
+                    self.results.add_result("Start Free Trial - Already Used", True, 
+                                          f"Correctly rejected: {response}")
+                    print(f"   ✅ Trial already used - correctly rejected")
+                else:
+                    self.results.add_result("Start Free Trial - Already Used", False, 
+                                          f"Should reject with 400, got {status}")
+
+            # Test without authentication
+            success, response, status = await self.make_request("POST", "/subscription/start-trial", None, {})
+            if status in [401, 403]:
+                self.results.add_result("Start Trial - No Auth", True, 
+                                      f"Correctly rejected with status {status}")
+            else:
+                self.results.add_result("Start Trial - No Auth", False, 
+                                      f"Should reject unauthorized access, got {status}")
+
+        # ============================================================================
+        # 3. START MOCKUP SUBSCRIPTION
+        # ============================================================================
+        print(f"{Colors.CYAN}💰 Testing Mockup Subscription System{Colors.END}")
+        
+        # Test monthly subscription
+        monthly_data = {"subscription_type": "monthly"}
+        success, response, status = await self.make_request("POST", "/subscription/start-mockup", 
+                                                          monthly_data, headers)
+        
+        if success and status == 200:
+            if (response.get("success") and 
+                response.get("subscription", {}).get("type") == "monthly" and
+                response.get("subscription", {}).get("status") == "active" and
+                response.get("subscription", {}).get("days_remaining") == 30):
+                self.results.add_result("Start Mockup Monthly", True, 
+                                      f"Monthly subscription: ₹79, 30 days")
+                print(f"   ✅ Monthly subscription activated: ₹79, 30 days")
+            else:
+                self.results.add_result("Start Mockup Monthly", False, 
+                                      f"Invalid monthly data: {response}")
+        else:
+            self.results.add_result("Start Mockup Monthly", False, 
+                                  f"Status: {status}, Response: {response}")
+
+        # Test half-yearly subscription
+        half_yearly_data = {"subscription_type": "half_yearly"}
+        success, response, status = await self.make_request("POST", "/subscription/start-mockup", 
+                                                          half_yearly_data, headers)
+        
+        if success and status == 200:
+            if (response.get("success") and 
+                response.get("subscription", {}).get("type") == "half_yearly" and
+                response.get("subscription", {}).get("status") == "active" and
+                response.get("subscription", {}).get("days_remaining") == 180):
+                self.results.add_result("Start Mockup Half-Yearly", True, 
+                                      f"Half-yearly subscription: ₹450, 180 days")
+                print(f"   ✅ Half-yearly subscription activated: ₹450, 180 days")
+            else:
+                self.results.add_result("Start Mockup Half-Yearly", False, 
+                                      f"Invalid half-yearly data: {response}")
+        else:
+            self.results.add_result("Start Mockup Half-Yearly", False, 
+                                  f"Status: {status}, Response: {response}")
+
+        # Test invalid subscription type
+        invalid_data = {"subscription_type": "invalid"}
+        success, response, status = await self.make_request("POST", "/subscription/start-mockup", 
+                                                          invalid_data, headers)
+        
+        if status == 400:
+            self.results.add_result("Start Mockup Invalid Type", True, 
+                                  f"Correctly rejected invalid type")
+            print(f"   ✅ Invalid subscription type correctly rejected")
+        else:
+            self.results.add_result("Start Mockup Invalid Type", False, 
+                                  f"Should reject invalid type with 400, got {status}")
+
+        # Test without authentication
+        success, response, status = await self.make_request("POST", "/subscription/start-mockup", 
+                                                          monthly_data, {})
+        
+        if status in [401, 403]:
+            self.results.add_result("Start Mockup - No Auth", True, 
+                                  f"Correctly rejected with status {status}")
+        else:
+            self.results.add_result("Start Mockup - No Auth", False, 
+                                  f"Should reject unauthorized access, got {status}")
+
+        # ============================================================================
+        # 4. USER PROFILE WITH SUBSCRIPTION FIELDS
+        # ============================================================================
+        print(f"{Colors.CYAN}👤 Testing User Profile Subscription Integration{Colors.END}")
+        
+        success, response, status = await self.make_request("GET", "/user/profile", None, headers)
+        
+        if success and status == 200:
+            subscription_fields = [
+                "subscription_type", "subscription_status", "subscription_start_date",
+                "subscription_end_date", "trial_started"
+            ]
+            
+            if all(field in response for field in subscription_fields):
+                self.results.add_result("User Profile Subscription Fields", True, 
+                                      f"All subscription fields present: {response['subscription_type']}")
+                print(f"   ✅ Profile includes subscription data: {response['subscription_type']}")
+            else:
+                missing_fields = [field for field in subscription_fields if field not in response]
+                self.results.add_result("User Profile Subscription Fields", False, 
+                                      f"Missing fields: {missing_fields}")
+        else:
+            self.results.add_result("User Profile Subscription Fields", False, 
+                                  f"Status: {status}, Response: {response}")
+
+        # ============================================================================
+        # 5. COMPLETE USER FLOW TEST
+        # ============================================================================
+        print(f"{Colors.CYAN}🔄 Testing Complete New User Subscription Flow{Colors.END}")
+        
+        # Create a new user for flow testing
+        flow_email = f"flow.test.{datetime.now().timestamp()}@pookie4u.com"
+        
+        # Register new user
+        flow_user_data = {
+            "email": flow_email,
+            "password": "FlowTest123!",
+            "name": "Flow Tester"
         }
         
-        success, response, status = await self.make_request("POST", "/subscriptions/create", 
-                                                          subscription_data, headers)
+        success, response, status = await self.make_request("POST", "/auth/register", flow_user_data, {})
         
-        # This is expected to fail in development/testing environment
-        self.results.add_result("Subscription Creation Endpoint", status in [400, 401, 500], 
-                              f"Status: {status} - Endpoint accessible (may need Razorpay config)")
-        
-        # Test payment verification endpoint
-        verify_data = {
-            "payment_id": "test_payment_id",
-            "subscription_id": "test_subscription_id",
-            "signature": "test_signature"
-        }
-        
-        success, response, status = await self.make_request("POST", "/subscriptions/verify", 
-                                                          verify_data, headers)
-        
-        self.results.add_result("Payment Verification Endpoint", status in [400, 401, 500], 
-                              f"Status: {status} - Endpoint accessible")
+        if success and status == 200:
+            flow_token = response.get("access_token")
+            flow_headers = {"Authorization": f"Bearer {flow_token}"}
+            
+            self.results.add_result("Flow - User Registration", True, "New user registered")
+            print(f"   ✅ New user registered for flow test")
+            
+            # Check initial subscription status
+            success, response, status = await self.make_request("GET", "/subscription/status", None, flow_headers)
+            
+            if success and status == 200:
+                subscription = response["subscription"]
+                if (subscription["type"] == "none" and 
+                    subscription["status"] == "inactive" and
+                    subscription["can_start_trial"]):
+                    
+                    self.results.add_result("Flow - Initial Status", True, 
+                                          "Initial status correct: no subscription, can start trial")
+                    print(f"   ✅ Initial status: no subscription, can start trial")
+                    
+                    # Start free trial
+                    success, response, status = await self.make_request("POST", "/subscription/start-trial", 
+                                                                      None, flow_headers)
+                    
+                    if success and status == 200:
+                        trial_data = response
+                        if (trial_data["subscription"]["type"] == "trial" and
+                            trial_data["subscription"]["status"] == "active" and
+                            trial_data["subscription"]["days_remaining"] == 14):
+                            
+                            self.results.add_result("Flow - Start Trial", True, 
+                                                  "Trial started successfully")
+                            print(f"   ✅ Trial started: 14 days active")
+                            
+                            # Try starting trial again (should fail)
+                            success, response, status = await self.make_request("POST", "/subscription/start-trial", 
+                                                                              None, flow_headers)
+                            
+                            if status == 400:
+                                self.results.add_result("Flow - Duplicate Trial", True, 
+                                                      "Correctly rejected duplicate trial")
+                                print(f"   ✅ Duplicate trial correctly rejected")
+                            else:
+                                self.results.add_result("Flow - Duplicate Trial", False, 
+                                                      f"Should reject duplicate trial, got {status}")
+                        else:
+                            self.results.add_result("Flow - Start Trial", False, 
+                                                  f"Trial start failed: {trial_data}")
+                    else:
+                        self.results.add_result("Flow - Start Trial", False, 
+                                              f"Trial request failed: {status}")
+                else:
+                    self.results.add_result("Flow - Initial Status", False, 
+                                          f"Incorrect initial status: {subscription}")
+            else:
+                self.results.add_result("Flow - Initial Status", False, 
+                                      f"Status request failed: {status}")
+        else:
+            self.results.add_result("Flow - User Registration", False, 
+                                  f"Registration failed: {status}")
+
+        print(f"{Colors.GREEN}✅ Subscription system testing completed{Colors.END}")
 
     # ============================================================================
     # COMPREHENSIVE TESTING ORCHESTRATION
