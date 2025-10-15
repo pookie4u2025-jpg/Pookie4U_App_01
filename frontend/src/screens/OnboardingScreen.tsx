@@ -82,10 +82,36 @@ export default function OnboardingScreen() {
   };
   
   const handleSubscriptionChoice = async (subscriptionType: 'trial' | 'monthly' | 'half_yearly' | 'skip') => {
-    // TODO: Call backend API to set subscription status
-    // For now, just complete onboarding
-    console.log('Selected subscription:', subscriptionType);
-    completeOnboarding();
+    try {
+      if (subscriptionType !== 'skip') {
+        // Call mockup subscription API
+        const { token } = useAuthStore.getState();
+        const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+        
+        const response = await fetch(`${backendUrl}/api/subscription/start-mockup`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ subscription_type: subscriptionType }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Subscription activated:', data);
+          Alert.alert('Success!', data.message || 'Subscription activated successfully!');
+        } else {
+          console.error('Subscription error:', await response.text());
+        }
+      }
+    } catch (error) {
+      console.error('Error activating subscription:', error);
+      // Continue anyway - don't block onboarding
+    } finally {
+      // Complete onboarding regardless
+      completeOnboarding();
+    }
   };
   
   // Show subscription screen after profile setup
