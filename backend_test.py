@@ -570,6 +570,161 @@ class Pookie4uAPITester:
     # SUBSCRIPTION/PAYMENT TESTS
     # ============================================================================
     
+    # ============================================================================
+    # AI PERSONALIZATION TESTS (NEW FEATURES)
+    # ============================================================================
+    
+    async def test_ai_personalization_features(self):
+        """Test NEW AI Personalization Features - Messages, Gifts, Date Planning"""
+        print(f"\n{Colors.PURPLE}🤖 TESTING AI PERSONALIZATION FEATURES (NEW){Colors.END}")
+        
+        if not self.auth_token:
+            self.results.add_result("AI Features - Auth Required", False, "No auth token available")
+            return
+        
+        headers = {"Authorization": f"Bearer {self.auth_token}"}
+        
+        # Test 1: AI-Powered Personalized Messages
+        print(f"   🎯 Testing AI Message Generation...")
+        message_categories = ["good_morning", "good_night", "love_confession", "apology", "funny_hinglish", "missing_you", "appreciation", "encouragement"]
+        
+        message_success_count = 0
+        for category in message_categories:
+            success, response, status = await self.make_request(
+                "POST", f"/ai/generate-message?category={category}", headers=headers
+            )
+            
+            if success and status == 200:
+                message = response.get("message", "")
+                ai_generated = response.get("ai_generated", False)
+                if message and ai_generated:
+                    message_success_count += 1
+                    self.results.add_result(f"AI Message - {category}", True, 
+                                          f"Generated: '{message[:30]}...'")
+                else:
+                    self.results.add_result(f"AI Message - {category}", False, 
+                                          f"Invalid response structure")
+            else:
+                self.results.add_result(f"AI Message - {category}", False, 
+                                      f"Status: {status}")
+        
+        # Test auth protection for messages
+        success, response, status = await self.make_request("POST", "/ai/generate-message?category=good_morning")
+        self.results.add_result("AI Message - Auth Protection", status in [401, 403], 
+                              f"Unauthorized status: {status}")
+        
+        # Test 2: AI-Enhanced Smart Gifts
+        print(f"   🎁 Testing AI Smart Gifts...")
+        gift_test_cases = [
+            {"occasion": "anniversary", "budget": "Under ₹1000"},
+            {"occasion": "birthday", "budget": "₹500-₹1500"},
+            {"occasion": "general", "budget": "Under ₹500"}
+        ]
+        
+        gift_success_count = 0
+        for case in gift_test_cases:
+            params = "&".join([f"{k}={v}" for k, v in case.items()])
+            success, response, status = await self.make_request(
+                "GET", f"/ai/smart-gifts?{params}", headers=headers
+            )
+            
+            if success and status == 200:
+                gifts = response.get("gifts", [])
+                ai_enhanced = response.get("ai_enhanced", False)
+                
+                # Verify unique images (critical user-reported bug)
+                images = [gift.get("image") for gift in gifts if gift.get("image")]
+                unique_images = len(set(images))
+                
+                if len(gifts) == 6 and unique_images == len(images):
+                    gift_success_count += 1
+                    self.results.add_result(f"Smart Gifts - {case['occasion']}", True, 
+                                          f"6 gifts, {unique_images} unique images, AI: {ai_enhanced}")
+                else:
+                    self.results.add_result(f"Smart Gifts - {case['occasion']}", False, 
+                                          f"Expected 6 unique gifts, got {len(gifts)} with {unique_images} unique images")
+            else:
+                self.results.add_result(f"Smart Gifts - {case['occasion']}", False, 
+                                      f"Status: {status}")
+        
+        # Test auth protection for gifts
+        success, response, status = await self.make_request("GET", "/ai/smart-gifts")
+        self.results.add_result("Smart Gifts - Auth Protection", status in [401, 403], 
+                              f"Unauthorized status: {status}")
+        
+        # Test 3: AI Date Planner
+        print(f"   💕 Testing AI Date Planner...")
+        date_test_cases = [
+            {"budget": "Under ₹1000", "preferences": "outdoor activities", "location": "Mumbai"},
+            {"budget": "₹1000-₹2000", "preferences": "romantic dinner", "location": "Delhi"},
+            {"budget": "Under ₹500"}
+        ]
+        
+        date_success_count = 0
+        for case in date_test_cases:
+            success, response, status = await self.make_request(
+                "POST", "/ai/plan-date", case, headers
+            )
+            
+            if success and status == 200:
+                date_plan = response.get("date_plan", {})
+                ai_generated = response.get("ai_generated", False)
+                
+                # Verify required fields
+                required_fields = ["title", "time", "duration", "activity", "why_romantic", "tips", "estimated_cost"]
+                has_all_fields = all(field in date_plan for field in required_fields)
+                
+                if has_all_fields and ai_generated:
+                    date_success_count += 1
+                    self.results.add_result(f"Date Plan - {case['budget']}", True, 
+                                          f"Complete plan: '{date_plan.get('title', '')}', AI: {ai_generated}")
+                else:
+                    missing_fields = [f for f in required_fields if f not in date_plan]
+                    self.results.add_result(f"Date Plan - {case['budget']}", False, 
+                                          f"Missing fields: {missing_fields}, AI: {ai_generated}")
+            else:
+                self.results.add_result(f"Date Plan - {case['budget']}", False, 
+                                      f"Status: {status}")
+        
+        # Test auth protection for date planner
+        success, response, status = await self.make_request("POST", "/ai/plan-date", {"budget": "Under ₹1000"})
+        self.results.add_result("Date Plan - Auth Protection", status in [401, 403], 
+                              f"Unauthorized status: {status}")
+        
+        # Test 4: Complete AI Flow
+        print(f"   🔄 Testing Complete AI Flow...")
+        try:
+            # Generate message -> Get gifts -> Plan date
+            msg_success, _, _ = await self.make_request("POST", "/ai/generate-message?category=love_confession", headers=headers)
+            gift_success, _, _ = await self.make_request("GET", "/ai/smart-gifts?occasion=anniversary", headers=headers)
+            date_success, _, _ = await self.make_request("POST", "/ai/plan-date", {"budget": "Under ₹1000"}, headers)
+            
+            flow_success = msg_success and gift_success and date_success
+            self.results.add_result("Complete AI Flow", flow_success, 
+                                  f"Message→Gifts→Date: {msg_success}→{gift_success}→{date_success}")
+        except Exception as e:
+            self.results.add_result("Complete AI Flow", False, f"Error: {str(e)}")
+        
+        # Summary
+        total_ai_features = message_success_count + gift_success_count + date_success_count
+        print(f"   📊 AI Features Summary: {total_ai_features}/11 core features working")
+        
+        # Critical verification
+        if message_success_count >= 6:  # At least 6/8 message categories
+            self.results.working_features.append("AI Personalized Messages")
+        else:
+            self.results.broken_features.append("AI Personalized Messages")
+        
+        if gift_success_count >= 2:  # At least 2/3 gift scenarios
+            self.results.working_features.append("AI Smart Gifts")
+        else:
+            self.results.broken_features.append("AI Smart Gifts")
+        
+        if date_success_count >= 2:  # At least 2/3 date scenarios
+            self.results.working_features.append("AI Date Planner")
+        else:
+            self.results.broken_features.append("AI Date Planner")
+
     async def test_subscription_system(self):
         """Test Razorpay subscription system"""
         print(f"\n{Colors.PURPLE}💳 TESTING SUBSCRIPTION/PAYMENT SYSTEM{Colors.END}")
