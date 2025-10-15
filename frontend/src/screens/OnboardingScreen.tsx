@@ -15,6 +15,7 @@ import { Picker } from '@react-native-picker/picker';
 import { format } from 'date-fns';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useAppStore } from '../stores/useAppStore';
+import SubscriptionOnboardingScreen from './SubscriptionOnboardingScreen';
 
 const RELATIONSHIP_MODES = [
   { value: 'SAME_HOME', label: 'Same Home - We live together' },
@@ -24,6 +25,7 @@ const RELATIONSHIP_MODES = [
 
 export default function OnboardingScreen() {
   const [step, setStep] = useState(1);
+  const [showSubscription, setShowSubscription] = useState(false);
   const [partnerName, setPartnerName] = useState('');
   const [relationshipMode, setRelationshipMode] = useState('SAME_HOME');
   const [birthday, setBirthday] = useState('');
@@ -40,9 +42,56 @@ export default function OnboardingScreen() {
     if (step < 4) {
       setStep(step + 1);
     } else {
-      handleComplete();
+      // After step 4, save profile and show subscription screen
+      saveProfileAndShowSubscription();
     }
   };
+  
+  const saveProfileAndShowSubscription = async () => {
+    try {
+      // Update relationship mode
+      await updateRelationshipMode(relationshipMode);
+
+      // Parse dates with proper validation
+      const parsedBirthday = parseDateString(birthday);
+      const parsedAnniversary = parseDateString(anniversary);
+
+      // Update partner profile
+      const partnerProfile = {
+        name: partnerName,
+        birthday: parsedBirthday,
+        anniversary: parsedAnniversary,
+        favorite_color: '',
+        favorite_food: '',
+        favorite_flower: '',
+        favorite_brand: '',
+        dress_size: '',
+        ring_size: '',
+        perfume_preference: '',
+        notes: '',
+      };
+
+      await updatePartnerProfile(partnerProfile);
+      
+      // Show subscription screen
+      setShowSubscription(true);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      Alert.alert('Error', 'Failed to save profile. Please try again.');
+    }
+  };
+  
+  const handleSubscriptionChoice = async (subscriptionType: 'trial' | 'monthly' | 'half_yearly' | 'skip') => {
+    // TODO: Call backend API to set subscription status
+    // For now, just complete onboarding
+    console.log('Selected subscription:', subscriptionType);
+    completeOnboarding();
+  };
+  
+  // Show subscription screen after profile setup
+  if (showSubscription) {
+    return <SubscriptionOnboardingScreen onComplete={handleSubscriptionChoice} />;
+  }
 
   const parseDateString = (dateStr: string): string | undefined => {
     if (!dateStr || !dateStr.trim()) {
