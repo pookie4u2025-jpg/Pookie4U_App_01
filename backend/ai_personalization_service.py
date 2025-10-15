@@ -39,7 +39,17 @@ class AIPersonalizationService:
     """Service for AI-powered personalization features"""
     
     def __init__(self):
-        self.llm = LlmChat()
+        # Get Emergent LLM key
+        self.api_key = os.getenv("EMERGENT_LLM_KEY")
+        if not self.api_key:
+            raise ValueError("EMERGENT_LLM_KEY not found in environment variables")
+        
+        # Initialize LLM chat with GPT-3.5 Turbo for cost optimization
+        self.llm = LlmChat(
+            api_key=self.api_key,
+            session_id="personalization",
+            system_message="You are a relationship assistant helping create personalized romantic content."
+        ).with_model("openai", "gpt-3.5-turbo")
     
     async def generate_personalized_message(
         self,
