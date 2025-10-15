@@ -2314,6 +2314,138 @@ class VerifyPaymentRequest(BaseModel):
     subscription_id: str
     signature: str
 
+class StartSubscriptionRequest(BaseModel):
+    subscription_type: str = Field(..., description="trial, monthly, or half_yearly")
+
+# =======================
+# SUBSCRIPTION ENDPOINTS (MOCKUP - No Payment)
+# =======================
+
+@app.get("/api/subscription/status", tags=["Subscriptions"])
+async def get_subscription_status(current_user: dict = Depends(get_current_user)):
+    """Get user's subscription status"""
+    try:
+        # Check and expire if needed
+        expiry_update = subscription_service.check_and_expire_subscriptions(current_user)
+        if expiry_update:
+            await db.users.update_one(
+                {"_id": current_user["_id"]},
+                {"$set": expiry_update}
+            )
+            # Refresh user data
+            current_user = await db.users.find_one({"_id": current_user["_id"]})
+        
+        # Get subscription info
+        subscription_info = subscription_service.get_subscription_info(current_user)
+        
+        return {
+            "success": True,
+            "subscription": {
+                "type": subscription_info.subscription_type,
+                "status": subscription_info.subscription_status,
+                "is_active": subscription_info.is_active,
+                "days_remaining": subscription_info.days_remaining,
+                "can_start_trial": subscription_info.can_start_trial,
+                "start_date": subscription_info.subscription_start_date.isoformat() if subscription_info.subscription_start_date else None,
+                "end_date": subscription_info.subscription_end_date.isoformat() if subscription_info.subscription_end_date else None,
+                "display_text": subscription_service.get_display_text(subscription_info)
+            }
+        }
+    except Exception as e:
+        print(f"Error getting subscription status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/subscription/start-trial", tags=["Subscriptions"])
+async def start_free_trial(current_user: dict = Depends(get_current_user)):
+    """Start 14-day free trial"""
+    try:
+        # Check if user can start trial
+        subscription_info = subscription_service.get_subscription_info(current_user)
+        
+        if not subscription_info.can_start_trial:
+            raise HTTPException(status_code=400, detail="Free trial already used")
+        
+        if subscription_info.is_active:
+            raise HTTPException(status_code=400, detail="You already have an active subscription")
+        
+        # Start trial
+        trial_data = subscription_service.start_trial(current_user["_id"])
+        
+        # Update user
+        await db.users.update_one(
+            {"_id": current_user["_id"]},
+            {"$set": trial_data}
+        )
+        
+        return {
+            "success": True,
+            "message": "Free trial started successfully!",
+            "subscription": {
+                "type": "trial",
+                "status": "active",
+                "days_remaining": 14,
+                "end_date": trial_data["subscription_end_date"].isoformat()
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error starting trial: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/subscription/start-mockup", tags=["Subscriptions"])
+async def start_mockup_subscription(
+    request: StartSubscriptionRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Start subscription (MOCKUP - no payment required)"""
+    try:
+        subscription_type = request.subscription_type
+        
+        if subscription_type == "trial":
+            # Use the trial endpoint
+            return await start_free_trial(current_user)
+        
+        elif subscription_type in ["monthly", "half_yearly"]:
+            # Create mockup paid subscription (no payment)
+            subscription_data = subscription_service.create_subscription(
+                subscription_type,
+                f"mock_sub_{current_user['_id']}",
+                f"mock_cust_{current_user['_id']}"
+            )
+            
+            # Update user
+            await db.users.update_one(
+                {"_id": current_user["_id"]},
+                {"$set": subscription_data}
+            )
+            
+            days = 30 if subscription_type == "monthly" else 180
+            price = "₹79" if subscription_type == "monthly" else "₹450"
+            
+            return {
+                "success": True,
+                "message": f"Subscription activated successfully! (MOCKUP - {price})",
+                "subscription": {
+                    "type": subscription_type,
+                    "status": "active",
+                    "days_remaining": days,
+                    "end_date": subscription_data["subscription_end_date"].isoformat(),
+                    "mockup": True
+                }
+            }
+        else:
+            raise HTTPException(status_code=400, detail="Invalid subscription type")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error starting subscription: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/subscriptions/create", tags=["Subscriptions"])
 async def create_subscription(
     request: CreateSubscriptionRequest,
