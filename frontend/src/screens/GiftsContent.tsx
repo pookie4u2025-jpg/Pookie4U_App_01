@@ -198,8 +198,7 @@ export default function GiftsContent() {
                 </View>
               </View>
             </AnimatedTouchable>
-          );
-          })}
+          ))}
         </View>
 
         {/* Gift Tips */}
