@@ -50,8 +50,7 @@ class GoogleOAuthService {
     // IMPORTANT: Use Expo's auth proxy to get an HTTPS redirect URI
     // Google OAuth only accepts http/https, not exp://
     const redirectUri = AuthSession.makeRedirectUri({
-      native: 'exp://pookie-couples.ngrok.io/--/redirect',
-      useProxy: true, // This creates an https://auth.expo.io URL
+      useProxy: true, // This creates an https://auth.expo.io URL that redirects to the app
     });
 
     console.log('OAuth Redirect URI:', redirectUri);
