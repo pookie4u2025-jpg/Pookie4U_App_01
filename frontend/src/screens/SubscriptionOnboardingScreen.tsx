@@ -40,11 +40,8 @@ export default function SubscriptionOnboardingScreen({ onComplete }: Subscriptio
     }
 
     setLoading(true);
-    // Here we'll call the subscription API later
-    setTimeout(() => {
-      setLoading(false);
-      onComplete(type);
-    }, 500);
+    onComplete(type);
+    setLoading(false);
   };
 
   return (
