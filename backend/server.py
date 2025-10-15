@@ -33,6 +33,13 @@ load_dotenv(ROOT_DIR / '.env')
 # Import AI task service
 from ai_task_service import generate_daily_tasks_for_mode, generate_weekly_tasks_for_mode
 
+# Import AI personalization service (NEW: AI Messages, Gifts, Date Planning)
+from ai_personalization_service import (
+    generate_ai_message,
+    get_ai_gift_recommendations,
+    plan_ai_date
+)
+
 # Import Enhanced Calendar Service
 from enhanced_calendar_service import enhanced_calendar_service
 
