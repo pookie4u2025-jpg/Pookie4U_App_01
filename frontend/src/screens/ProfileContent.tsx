@@ -54,7 +54,55 @@ export default function ProfileContent() {
   // Initialize game store data
   useEffect(() => {
     loadPersistedData();
+    fetchSubscriptionStatus();
   }, []);
+  
+  // Fetch subscription status
+  const fetchSubscriptionStatus = async () => {
+    try {
+      setLoadingSubscription(true);
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/subscription/status`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setSubscriptionData(data.subscription);
+      }
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+    } finally {
+      setLoadingSubscription(false);
+    }
+  };
+  
+  // Start free trial
+  const handleStartTrial = async () => {
+    try {
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/subscription/start-trial`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        Alert.alert('Success!', data.message);
+        fetchSubscriptionStatus(); // Refresh
+      } else {
+        const error = await response.json();
+        Alert.alert('Error', error.detail || 'Failed to start trial');
+      }
+    } catch (error) {
+      console.error('Error starting trial:', error);
+      Alert.alert('Error', 'Failed to start trial');
+    }
+  };
 
   // Image picker function for gallery
   const pickImageFromGallery = async () => {
