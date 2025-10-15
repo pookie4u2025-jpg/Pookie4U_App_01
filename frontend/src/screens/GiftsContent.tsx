@@ -150,11 +150,16 @@ export default function GiftsContent() {
 
         {/* Gifts Grid */}
         <View style={styles.giftsContainer}>
-          {filteredGifts.map((gift) => (
-            <TouchableOpacity 
+          {filteredGifts.map((gift, index) => {
+            const cardAnim = useCardAnimation(index);
+            return (
+            <AnimatedTouchable 
               key={gift.id} 
-              style={[styles.giftCard, { backgroundColor: theme.surface }]}
-              onPress={() => openLink(gift.link, gift.name)}
+              style={[styles.giftCard, { backgroundColor: theme.surface }, cardAnim]}
+              onPress={() => {
+                buttonPress();
+                openLink(gift.link, gift.name);
+              }}
               activeOpacity={0.7}
             >
               {/* Product Image */}
