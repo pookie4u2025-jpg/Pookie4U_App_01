@@ -761,13 +761,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n{Colors.RED}❌ Fatal error: {str(e)}{Colors.END}")
         sys.exit(1)
-            else:
-                self.log_test("API Response Status", False, f"Expected 200, got {status_code}", response.text)
-                return False
-            
-            try:
-                response_data = response.json()
-            except json.JSONDecodeError:
                 self.log_test("JSON Response Format", False, "Response is not valid JSON", response.text)
                 return False
                 
