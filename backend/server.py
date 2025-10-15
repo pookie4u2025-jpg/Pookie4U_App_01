@@ -2110,7 +2110,7 @@ class VerifyPaymentRequest(BaseModel):
     subscription_id: str
     signature: str
 
-@router.post("/subscriptions/create", tags=["Subscriptions"])
+@app.post("/api/subscriptions/create", tags=["Subscriptions"])
 async def create_subscription(
     request: CreateSubscriptionRequest,
     credentials: HTTPAuthorizationCredentials = Depends(security)
