@@ -726,7 +726,30 @@ test_plan:
 
 agent_communication:
     - agent: "main"
-    - message: "Starting comprehensive audit of Pookie4u app. Phase 1: Backend API testing. Need to test ALL endpoints including: 1) Authentication (Email/Password - working, Google OAuth - recently fixed redirect_uri, Mobile OTP - mocked), 2) AI Task System with 3 relationship modes (SAME_HOME, DAILY_IRL, LONG_DISTANCE) using pre-written tasks, 3) Enhanced Calendar with 40+ events, 4) Messages with 5 categories, 5) Gifts with Amazon affiliate product data, 6) Profile management, 7) Subscription/Razorpay integration. Test for bugs, document working vs broken features, verify data integrity. Backend appears to have image URLs in gifts endpoint. Need detailed test results for audit report."
+    - message: "PHASE 2: Testing NEW AI FEATURES. Just implemented 3 major AI personalization features using GPT-3.5 Turbo. CRITICAL TESTING NEEDED:
+    
+    1) /api/ai/generate-message (POST) - AI-powered personalized messages
+       - Requires JWT auth
+       - Test with categories: good_morning, good_night, love_confession, apology, funny_hinglish
+       - Should generate unique romantic messages based on user/partner names and relationship mode
+       - Cost: ~₹0.02 per call
+       
+    2) /api/ai/smart-gifts (GET) - AI-enhanced gift recommendations  
+       - Requires JWT auth
+       - Query params: occasion, budget
+       - Reorders gifts based on partner profile preferences
+       - Falls back to regular gifts if no partner profile
+       - Cost: ~₹0.03 per call
+       
+    3) /api/ai/plan-date (POST) - AI date planner
+       - Requires JWT auth
+       - Body params: budget, preferences (optional), location (optional)
+       - Generates creative date ideas based on relationship mode
+       - Cost: ~₹0.05 per call
+    
+    ALSO VERIFY: Gifts endpoint still has unique images for all 6 romantic gifts (fixed duplicate image bug).
+    
+    Test complete user flow: Login → Generate AI message → Get smart gifts → Plan date"
     - agent: "testing"
     - message: "🔐 BACKEND AUTHENTICATION VERIFICATION COMPLETED: Conducted comprehensive verification testing of backend authentication system as requested in review with 16 test cases achieving 87.5% success rate (14/16 tests passed). AUTHENTICATION ENDPOINTS FULLY VERIFIED: ✅ POST /api/auth/register working perfectly - user registration with unique emails successful (200), proper error handling for duplicate emails (400), invalid email format validation (422), missing fields validation (422). ✅ POST /api/auth/login working flawlessly - login with valid credentials successful (200), proper error handling for invalid credentials (401), non-existent email rejection (401). ✅ JWT AUTHENTICATION SYSTEM EXCELLENT - token generation working, protected endpoint access with valid token successful (200), proper rejection without token (403), proper rejection with invalid token (401/403). ✅ OAUTH ENDPOINTS ACCESSIBLE - Google OAuth endpoint implemented and accessible (requires configuration), account linking endpoint working with authentication protection, token refresh endpoint working with proper validation. CRITICAL FINDINGS: Email/Password authentication is production-ready and fully functional with no setup required. Mobile authentication is in development mode with mocked SMS functionality. Google OAuth is implemented but needs Client ID/Secret configuration. Apple ID authentication is not yet implemented. All authentication middleware and JWT validation working perfectly. SECURITY MEASURES CONFIRMED: All protected endpoints properly secured, proper error handling for authentication failures, JWT token validation working correctly. Backend authentication system is ready for frontend integration and production use."
     - agent: "testing"
