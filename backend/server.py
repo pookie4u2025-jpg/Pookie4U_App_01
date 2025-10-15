@@ -551,12 +551,60 @@ WEEKLY_TASKS = {
 }
 
 GIFT_IDEAS = [
-    {"id": "1", "name": "Women's High Waist Trousers", "category": "Fashion", "price_range": "Under ₹500", "link": "https://amzn.to/46k7tSR", "description": "Stylish and comfortable formal wear"},
-    {"id": "2", "name": "Women's Solid Polyester Trouser", "category": "Fashion", "price_range": "Under ₹500", "link": "https://amzn.to/47mpgdb", "description": "Perfect for office and casual wear"},
-    {"id": "3", "name": "Fashion Trousers Set", "category": "Fashion", "price_range": "Under ₹1000", "link": "https://amzn.to/4g7fRs4", "description": "Modern style pants for every occasion"},
-    {"id": "4", "name": "Premium Formal Pants", "category": "Fashion", "price_range": "₹1000-5000", "link": "https://amzn.to/485YoOK", "description": "High-quality formal trousers"},
-    {"id": "5", "name": "Designer Trousers", "category": "Fashion", "price_range": "₹1000-5000", "link": "https://amzn.to/4p1cpDv", "description": "Elegant designer wear"},
-    {"id": "6", "name": "Casual Wear Pants", "category": "Fashion", "price_range": "Under ₹1000", "link": "https://amzn.to/4g58AJo", "description": "Comfortable casual pants"}
+    {
+        "id": "1", 
+        "name": "High Waist Formal Trousers for Women", 
+        "category": "Fashion", 
+        "price_range": "₹449", 
+        "link": "https://amzn.to/46k7tSR", 
+        "description": "Flared Korean Style formal pants - elegant workwear for office, college & events",
+        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
+    },
+    {
+        "id": "2", 
+        "name": "Women's Polyester Formal Trouser", 
+        "category": "Fashion", 
+        "price_range": "₹399-₹599", 
+        "link": "https://amzn.to/47mpgdb", 
+        "description": "Comfortable solid color trousers perfect for office and casual wear",
+        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+    },
+    {
+        "id": "3", 
+        "name": "Stylish Fashion Trousers", 
+        "category": "Fashion", 
+        "price_range": "₹599-₹999", 
+        "link": "https://amzn.to/4g7fRs4", 
+        "description": "Modern baggy fit pants suitable for every occasion",
+        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+    },
+    {
+        "id": "4", 
+        "name": "Premium Women's Formal Pants", 
+        "category": "Fashion", 
+        "price_range": "₹799-₹1499", 
+        "link": "https://amzn.to/485YoOK", 
+        "description": "High-quality formal trousers with professional look",
+        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+    },
+    {
+        "id": "5", 
+        "name": "Designer Korean Style Trousers", 
+        "category": "Fashion", 
+        "price_range": "₹899-₹1999", 
+        "link": "https://amzn.to/4p1cpDv", 
+        "description": "Elegant designer wear with high waist fit",
+        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+    },
+    {
+        "id": "6", 
+        "name": "Comfortable Casual Pants", 
+        "category": "Fashion", 
+        "price_range": "₹549-₹899", 
+        "link": "https://amzn.to/4g58AJo", 
+        "description": "Soft, breathable casual pants for daily wear",
+        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+    }
 ]
 
 ROMANTIC_MESSAGES = {
