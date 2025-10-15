@@ -320,11 +320,11 @@ backend:
 
   - task: "Gift Ideas API"
     implemented: true
-    working: true
+    working: "NA"
     file: "server.py"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
         - working: false
         - agent: "main"
@@ -335,6 +335,9 @@ backend:
         - working: true
         - agent: "testing"
         - comment: "✅ FINAL VERIFICATION COMPLETE: Gift Ideas API tested with 30 comprehensive test cases achieving 96.7% success rate. Returns 8 categorized gift suggestions across multiple categories (Romantic, Jewelry, Experiences, Beauty, Food, Home) with proper metadata and price ranges. API fully functional and ready to support enhanced frontend gift browsing features."
+        - working: "NA"
+        - agent: "main"
+        - comment: "🎁 AMAZON AFFILIATE LINKS INTEGRATION WITH PRODUCT IMAGES IMPLEMENTED: Updated Gift Ideas API to display actual product names, images, and descriptions from Amazon affiliate links. BACKEND CHANGES: Modified GIFT_IDEAS constant in server.py (lines 553-560) to include real product data - added 'image' field with Amazon product images (https://m.media-amazon.com/images/...), updated 'name' field with actual product names from links (e.g., 'High Waist Formal Trousers for Women', 'Women's Polyester Formal Trouser'), added 'description' field with detailed product descriptions from Amazon pages, updated 'price_range' with actual Amazon prices (₹449, ₹399-₹599, etc.). FRONTEND CHANGES: Modified GiftsContent.tsx component to display product images - added Image import from react-native, updated Gift interface to include 'description' and 'image' optional fields, replaced icon-based display with actual product images using <Image> component (150px height, cover resize mode), added price tag overlay on product images for better UX, added product description display below product name, updated layout to card-based design with TouchableOpacity for better mobile interaction, modified 'Shop Now' button to 'View on Amazon' with cart icon. UI IMPROVEMENTS: Product cards now show actual Amazon product images (or placeholder with category icon if image unavailable), price tags overlaid on images for clean look, 2-column grid layout maintained, product info section with name (2-line ellipsis), description (2-line ellipsis), and 'View on Amazon' button, improved mobile-responsive design with proper touch targets. The Gifts tab now displays user-friendly product cards similar to Amazon mobile app with real product images and names from the provided affiliate links. Ready for backend testing to verify API response and frontend display."
 
   - task: "Romantic Messages API"
     implemented: true
