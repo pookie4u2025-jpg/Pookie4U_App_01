@@ -8,6 +8,7 @@ import {
   Linking,
   Alert,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../stores/useAuthStore';
@@ -19,6 +20,8 @@ interface Gift {
   category: string;
   price_range: string;
   link: string;
+  description?: string;
+  image?: string;
 }
 
 export default function GiftsContent() {
