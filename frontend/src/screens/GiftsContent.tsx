@@ -203,8 +203,9 @@ export default function GiftsContent() {
                   <Text style={styles.shopButtonText}>View on Amazon</Text>
                 </View>
               </View>
-            </TouchableOpacity>
-          ))}
+            </AnimatedTouchable>
+          );
+          })}
         </View>
 
         {/* Gift Tips */}
