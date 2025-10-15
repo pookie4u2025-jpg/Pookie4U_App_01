@@ -98,7 +98,7 @@ This is used by your backend to validate tokens.
    ```
    https://auth.expo.io
    http://localhost:3000
-   https://relationship-app-4.preview.emergentagent.com
+   https://romance-inspect.preview.emergentagent.com
    ```
 
 3. **Authorized redirect URIs:**
@@ -106,7 +106,7 @@ This is used by your backend to validate tokens.
    https://auth.expo.io/@anonymous/frontend
    https://auth.expo.io/@your-expo-username/pookie4u
    http://localhost:3000
-   https://relationship-app-4.preview.emergentagent.com/auth/callback
+   https://romance-inspect.preview.emergentagent.com/auth/callback
    ```
 
 4. **Create and Save:**

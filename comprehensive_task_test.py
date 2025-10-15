@@ -10,7 +10,7 @@ import time
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://relationship-app-4.preview.emergentagent.com/api"
+BACKEND_URL = "https://romance-inspect.preview.emergentagent.com/api"
 
 def test_task_completion_with_existing_user():
     """Test task completion with a fresh user account"""

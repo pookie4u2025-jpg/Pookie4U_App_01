@@ -12,7 +12,7 @@ from typing import Dict, List, Any
 import time
 
 # Get backend URL from environment
-BACKEND_URL = "https://relationship-app-4.preview.emergentagent.com/api"
+BACKEND_URL = "https://romance-inspect.preview.emergentagent.com/api"
 
 class SameHomeMessagesTest:
     def __init__(self):

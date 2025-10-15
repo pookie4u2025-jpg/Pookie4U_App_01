@@ -13,7 +13,7 @@ from datetime import datetime
 
 class PartnerProfileDateTester:
     def __init__(self):
-        self.base_url = "https://relationship-app-4.preview.emergentagent.com/api"
+        self.base_url = "https://romance-inspect.preview.emergentagent.com/api"
         self.session = requests.Session()
         self.auth_token = None
         self.test_user_email = None

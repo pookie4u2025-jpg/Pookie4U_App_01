@@ -12,7 +12,7 @@ import uuid
 from typing import Dict, List, Any
 
 # Configuration
-BACKEND_URL = "https://relationship-app-4.preview.emergentagent.com/api"
+BACKEND_URL = "https://romance-inspect.preview.emergentagent.com/api"
 
 class GiftIdeasAPITester:
     def __init__(self):
