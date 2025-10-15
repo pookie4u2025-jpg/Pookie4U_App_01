@@ -553,7 +553,7 @@ WEEKLY_TASKS = {
 GIFT_IDEAS = [
     {
         "id": "1", 
-        "name": "High Waist Formal Trousers for Women", 
+        "name": "GRECIILOOKS High Waist Formal Trousers", 
         "category": "Fashion", 
         "price_range": "₹449", 
         "link": "https://amzn.to/46k7tSR", 
@@ -562,30 +562,30 @@ GIFT_IDEAS = [
     },
     {
         "id": "2", 
-        "name": "Women's Polyester Formal Trouser", 
+        "name": "KOTTY Women's Solid Polyester Trouser", 
         "category": "Fashion", 
-        "price_range": "₹399-₹599", 
+        "price_range": "₹220-₹349", 
         "link": "https://amzn.to/47mpgdb", 
         "description": "Comfortable solid color trousers perfect for office and casual wear",
-        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+        "image": "https://m.media-amazon.com/images/I/51TN26izp2L._SY550_.jpg"
     },
     {
         "id": "3", 
-        "name": "Stylish Fashion Trousers", 
+        "name": "Women's High Waist Formal Pants", 
         "category": "Fashion", 
         "price_range": "₹599-₹999", 
         "link": "https://amzn.to/4g7fRs4", 
-        "description": "Modern baggy fit pants suitable for every occasion",
-        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+        "description": "Modern baggy fit formal trousers for every occasion",
+        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
     },
     {
         "id": "4", 
-        "name": "Premium Women's Formal Pants", 
+        "name": "Premium Women's Formal Trousers", 
         "category": "Fashion", 
         "price_range": "₹799-₹1499", 
         "link": "https://amzn.to/485YoOK", 
         "description": "High-quality formal trousers with professional look",
-        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
     },
     {
         "id": "5", 
@@ -594,16 +594,16 @@ GIFT_IDEAS = [
         "price_range": "₹899-₹1999", 
         "link": "https://amzn.to/4p1cpDv", 
         "description": "Elegant designer wear with high waist fit",
-        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
     },
     {
         "id": "6", 
-        "name": "Comfortable Casual Pants", 
+        "name": "Comfortable Casual Formal Pants", 
         "category": "Fashion", 
         "price_range": "₹549-₹899", 
         "link": "https://amzn.to/4g58AJo", 
         "description": "Soft, breathable casual pants for daily wear",
-        "image": "https://m.media-amazon.com/images/I/31WjY9CV9TL._SS300_.jpg"
+        "image": "https://m.media-amazon.com/images/I/51Fpt5hLOML._SY445_.jpg"
     }
 ]
 
