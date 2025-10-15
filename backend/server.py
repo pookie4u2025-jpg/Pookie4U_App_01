@@ -551,12 +551,12 @@ WEEKLY_TASKS = {
 }
 
 GIFT_IDEAS = [
-    {"id": "1", "name": "Personalized Photo Frame", "category": "Romantic", "price_range": "Under ₹500", "link": "https://amzn.to/46k7tSR", "description": "Beautiful personalized frame for your special memories"},
-    {"id": "2", "name": "Couple's Coffee Mug Set", "category": "Home", "price_range": "Under ₹500", "link": "https://amzn.to/47mpgdb", "description": "Matching mugs for your morning coffee together"},
-    {"id": "3", "name": "Romantic Scented Candles", "category": "Romantic", "price_range": "Under ₹1000", "link": "https://amzn.to/4g7fRs4", "description": "Set the perfect romantic mood"},
-    {"id": "4", "name": "Jewelry Gift Set", "category": "Jewelry", "price_range": "₹1000-5000", "link": "https://amzn.to/485YoOK", "description": "Elegant jewelry to make her shine"},
-    {"id": "5", "name": "Luxury Perfume", "category": "Beauty", "price_range": "₹1000-5000", "link": "https://amzn.to/4p1cpDv", "description": "A fragrance she'll love"},
-    {"id": "6", "name": "Gourmet Chocolate Box", "category": "Food", "price_range": "Under ₹1000", "link": "https://amzn.to/4g58AJo", "description": "Premium chocolates for your sweet moments"}
+    {"id": "1", "name": "Women's High Waist Trousers", "category": "Fashion", "price_range": "Under ₹500", "link": "https://amzn.to/46k7tSR", "description": "Stylish and comfortable formal wear"},
+    {"id": "2", "name": "Women's Solid Polyester Trouser", "category": "Fashion", "price_range": "Under ₹500", "link": "https://amzn.to/47mpgdb", "description": "Perfect for office and casual wear"},
+    {"id": "3", "name": "Fashion Trousers Set", "category": "Fashion", "price_range": "Under ₹1000", "link": "https://amzn.to/4g7fRs4", "description": "Modern style pants for every occasion"},
+    {"id": "4", "name": "Premium Formal Pants", "category": "Fashion", "price_range": "₹1000-5000", "link": "https://amzn.to/485YoOK", "description": "High-quality formal trousers"},
+    {"id": "5", "name": "Designer Trousers", "category": "Fashion", "price_range": "₹1000-5000", "link": "https://amzn.to/4p1cpDv", "description": "Elegant designer wear"},
+    {"id": "6", "name": "Casual Wear Pants", "category": "Fashion", "price_range": "Under ₹1000", "link": "https://amzn.to/4g58AJo", "description": "Comfortable casual pants"}
 ]
 
 ROMANTIC_MESSAGES = {
