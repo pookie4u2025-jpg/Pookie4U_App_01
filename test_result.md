@@ -769,30 +769,32 @@ test_plan:
 
 agent_communication:
     - agent: "main"
-    - message: "PHASE 2: Testing NEW AI FEATURES. Just implemented 3 major AI personalization features using GPT-3.5 Turbo. CRITICAL TESTING NEEDED:
+    - message: "PHASE 3: FINAL TESTING - MOCKUP SUBSCRIPTION SYSTEM. Just completed mockup subscription implementation. NEED COMPREHENSIVE TESTING:
     
-    1) /api/ai/generate-message (POST) - AI-powered personalized messages
-       - Requires JWT auth
-       - Test with categories: good_morning, good_night, love_confession, apology, funny_hinglish
-       - Should generate unique romantic messages based on user/partner names and relationship mode
-       - Cost: ~₹0.02 per call
-       
-    2) /api/ai/smart-gifts (GET) - AI-enhanced gift recommendations  
-       - Requires JWT auth
-       - Query params: occasion, budget
-       - Reorders gifts based on partner profile preferences
-       - Falls back to regular gifts if no partner profile
-       - Cost: ~₹0.03 per call
-       
-    3) /api/ai/plan-date (POST) - AI date planner
-       - Requires JWT auth
-       - Body params: budget, preferences (optional), location (optional)
-       - Generates creative date ideas based on relationship mode
-       - Cost: ~₹0.05 per call
+    **NEW SUBSCRIPTION ENDPOINTS**:
+    1) GET /api/subscription/status - Get subscription info with days remaining
+    2) POST /api/subscription/start-trial - Start 14-day free trial
+    3) POST /api/subscription/start-mockup - Activate subscription (mockup, no payment)
     
-    ALSO VERIFY: Gifts endpoint still has unique images for all 6 romantic gifts (fixed duplicate image bug).
+    **UPDATED ENDPOINTS**:
+    - GET /api/user/profile - Now includes subscription fields
     
-    Test complete user flow: Login → Generate AI message → Get smart gifts → Plan date"
+    **TEST SCENARIOS**:
+    1. New user registration flow with subscription selection
+    2. Start free trial - verify 14 days, active status
+    3. Check subscription status endpoint
+    4. Verify subscription data in user profile
+    5. Test mockup monthly subscription
+    6. Test mockup half-yearly subscription
+    7. Verify existing users can still login
+    
+    **VERIFY ALL PREVIOUS FEATURES STILL WORKING**:
+    - AI features (messages, gifts, date planner)
+    - Gifts with unique romantic images
+    - Tasks, events, messages endpoints
+    - Profile and authentication
+    
+    Test complete new user flow: Register → Partner Details → Subscription Screen → Trial Start → Check Status"
     - agent: "testing"
     - message: "🔐 BACKEND AUTHENTICATION VERIFICATION COMPLETED: Conducted comprehensive verification testing of backend authentication system as requested in review with 16 test cases achieving 87.5% success rate (14/16 tests passed). AUTHENTICATION ENDPOINTS FULLY VERIFIED: ✅ POST /api/auth/register working perfectly - user registration with unique emails successful (200), proper error handling for duplicate emails (400), invalid email format validation (422), missing fields validation (422). ✅ POST /api/auth/login working flawlessly - login with valid credentials successful (200), proper error handling for invalid credentials (401), non-existent email rejection (401). ✅ JWT AUTHENTICATION SYSTEM EXCELLENT - token generation working, protected endpoint access with valid token successful (200), proper rejection without token (403), proper rejection with invalid token (401/403). ✅ OAUTH ENDPOINTS ACCESSIBLE - Google OAuth endpoint implemented and accessible (requires configuration), account linking endpoint working with authentication protection, token refresh endpoint working with proper validation. CRITICAL FINDINGS: Email/Password authentication is production-ready and fully functional with no setup required. Mobile authentication is in development mode with mocked SMS functionality. Google OAuth is implemented but needs Client ID/Secret configuration. Apple ID authentication is not yet implemented. All authentication middleware and JWT validation working perfectly. SECURITY MEASURES CONFIRMED: All protected endpoints properly secured, proper error handling for authentication failures, JWT token validation working correctly. Backend authentication system is ready for frontend integration and production use."
     - agent: "testing"
