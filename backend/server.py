@@ -46,6 +46,9 @@ from enhanced_calendar_service import enhanced_calendar_service
 # Import Razorpay Service
 from razorpay_service import razorpay_service
 
+# Import Subscription Service
+from subscription_service import subscription_service, SubscriptionInfo
+
 # Rate limiting storage
 rate_limit_storage = defaultdict(list)
 failed_attempts = defaultdict(list)
