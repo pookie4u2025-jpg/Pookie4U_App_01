@@ -138,34 +138,54 @@ export default function GiftsContent() {
         {/* Gifts Grid */}
         <View style={styles.giftsContainer}>
           {filteredGifts.map((gift) => (
-            <View key={gift.id} style={[styles.giftCard, { backgroundColor: theme.surface }]}>
-              <View style={styles.giftHeader}>
-                <View style={[styles.categoryIconContainer, { backgroundColor: theme.primary + '20' }]}>
+            <TouchableOpacity 
+              key={gift.id} 
+              style={[styles.giftCard, { backgroundColor: theme.surface }]}
+              onPress={() => openLink(gift.link, gift.name)}
+              activeOpacity={0.7}
+            >
+              {/* Product Image */}
+              {gift.image ? (
+                <Image 
+                  source={{ uri: gift.image }}
+                  style={styles.productImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View style={[styles.placeholderImage, { backgroundColor: theme.primary + '20' }]}>
                   <Ionicons 
                     name={getCategoryIcon(gift.category)} 
-                    size={24} 
+                    size={40} 
                     color={theme.primary} 
                   />
                 </View>
-                <View style={[
-                  styles.priceTag,
-                  { backgroundColor: getPriceColor(gift.price_range) }
-                ]}>
-                  <Text style={styles.priceText}>{gift.price_range}</Text>
-                </View>
+              )}
+              
+              {/* Price Tag on Image */}
+              <View style={[
+                styles.priceTagOverlay,
+                { backgroundColor: getPriceColor(gift.price_range) }
+              ]}>
+                <Text style={styles.priceText}>{gift.price_range}</Text>
               </View>
               
-              <Text style={[styles.giftName, { color: theme.text }]}>{gift.name}</Text>
-              <Text style={[styles.giftCategory, { color: theme.textSecondary }]}>{gift.category}</Text>
-              
-              <TouchableOpacity
-                style={[styles.shopButton, { backgroundColor: theme.primary }]}
-                onPress={() => openLink(gift.link, gift.name)}
-              >
-                <Ionicons name="bag" size={16} color="#fff" />
-                <Text style={styles.shopButtonText}>Shop Now</Text>
-              </TouchableOpacity>
-            </View>
+              {/* Product Info */}
+              <View style={styles.productInfo}>
+                <Text style={[styles.giftName, { color: theme.text }]} numberOfLines={2}>
+                  {gift.name}
+                </Text>
+                {gift.description && (
+                  <Text style={[styles.giftDescription, { color: theme.textSecondary }]} numberOfLines={2}>
+                    {gift.description}
+                  </Text>
+                )}
+                
+                <View style={[styles.shopButton, { backgroundColor: theme.primary }]}>
+                  <Ionicons name="cart" size={16} color="#fff" />
+                  <Text style={styles.shopButtonText}>View on Amazon</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
           ))}
         </View>
 
