@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -21,11 +22,15 @@ import { useTheme } from '../contexts/ThemeContext';
 import { formatDateWithDashes } from '../utils/DateFormatter';
 
 export default function ProfileContent() {
-  const { user, logout, updatePartnerProfile, updateRelationshipMode, updateProfileImage } = useAuthStore();
+  const { user, logout, updatePartnerProfile, updateRelationshipMode, updateProfileImage, token } = useAuthStore();
   const { totalPoints, currentLevel, currentStreak, longestStreak, tasksCompleted, badges, loadPersistedData } = useGameStore();
   const { resetOnboarding } = useAppStore();
   const { theme } = useTheme();
   const router = useRouter();
+  
+  // Subscription state
+  const [subscriptionData, setSubscriptionData] = useState<any>(null);
+  const [loadingSubscription, setLoadingSubscription] = useState(true);
 
   const [editMode, setEditMode] = useState(false);
   const [profileImage, setProfileImage] = useState(user?.profile_image || null);
