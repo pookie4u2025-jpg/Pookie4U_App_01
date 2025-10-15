@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Pookie4u Task Completion Flow
-Focus: Testing task completion functionality to resolve "task completion not working" issue
+Backend API Testing Suite for Pookie4u Gift Ideas API
+Testing the updated Gift Ideas API with Amazon affiliate links integration
 """
 
 import requests
@@ -12,9 +12,6 @@ import uuid
 
 # Configuration
 BACKEND_URL = "https://relationship-app-4.preview.emergentagent.com/api"
-TEST_USER_EMAIL = "sarah.johnson@example.com"
-TEST_USER_PASSWORD = "SecurePass123!"
-TEST_USER_NAME = "Sarah Johnson"
 
 class TaskCompletionTester:
     def __init__(self):
