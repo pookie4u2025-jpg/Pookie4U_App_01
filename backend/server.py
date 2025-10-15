@@ -453,6 +453,14 @@ class UserProfile(BaseModel):
     profile_image: Optional[str] = None  # base64 encoded image
     created_at: datetime
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    # Subscription fields
+    subscription_type: str = "none"  # none, trial, monthly, half_yearly
+    subscription_status: str = "inactive"  # inactive, active, expired, cancelled
+    subscription_start_date: Optional[datetime] = None
+    subscription_end_date: Optional[datetime] = None
+    trial_started: bool = False
+    razorpay_subscription_id: Optional[str] = None
+    razorpay_customer_id: Optional[str] = None
 
 # ============================================================================
 # AUTHENTICATION HELPERS
