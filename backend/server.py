@@ -464,6 +464,10 @@ class UserProfile(BaseModel):
     trial_started: bool = False
     razorpay_subscription_id: Optional[str] = None
     razorpay_customer_id: Optional[str] = None
+    # Push notification fields
+    push_token: Optional[str] = None
+    push_token_updated_at: Optional[datetime] = None
+    notification_preferences: Dict[str, bool] = Field(default_factory=dict)
 
 # ============================================================================
 # AUTHENTICATION HELPERS
