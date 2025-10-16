@@ -136,7 +136,7 @@ class NotificationManager {
   }
 
   // Register for push notifications
-  async registerForPushNotifications(): Promise<string | null> {
+  async registerForPushNotifications(authToken?: string): Promise<string | null> {
     if (!Device.isDevice) {
       console.warn('Push notifications require a physical device');
       return null;
@@ -160,10 +160,46 @@ class NotificationManager {
         projectId: Constants.expoConfig?.extra?.eas?.projectId,
       });
       this.expoPushToken = token.data;
+      
+      // Send token to backend if auth token provided
+      if (authToken) {
+        await this.sendTokenToBackend(token.data, authToken);
+      }
+      
       return token.data;
     } catch (error) {
       console.error('Error getting push token:', error);
       return null;
+    }
+  }
+  
+  // Send push token to backend
+  private async sendTokenToBackend(pushToken: string, authToken: string): Promise<void> {
+    try {
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/notifications/register`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          push_token: pushToken,
+          device_info: {
+            platform: Platform.OS,
+            device_name: Device.deviceName || 'Unknown',
+            os_version: Device.osVersion || 'Unknown',
+          },
+        }),
+      });
+      
+      if (response.ok) {
+        console.log('✅ Push token registered with backend');
+      } else {
+        console.error('Failed to register push token with backend:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error sending token to backend:', error);
     }
   }
 
