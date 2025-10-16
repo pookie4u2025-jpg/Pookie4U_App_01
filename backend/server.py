@@ -2021,6 +2021,130 @@ async def create_ai_date_plan(
         print(f"Error generating date plan: {e}")
         raise HTTPException(status_code=500, detail="Failed to generate date plan")
 
+# =======================
+# PUSH NOTIFICATION ENDPOINTS
+# =======================
+
+class RegisterPushTokenRequest(BaseModel):
+    push_token: str
+    device_info: Optional[Dict[str, Any]] = None
+
+@api_router.post("/notifications/register")
+async def register_push_token(
+    request: RegisterPushTokenRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Register or update user's push notification token"""
+    try:
+        # Update user's push token
+        await db.users.update_one(
+            {"_id": current_user["_id"]},
+            {
+                "$set": {
+                    "push_token": request.push_token,
+                    "push_token_updated_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Push token registered successfully"
+        }
+        
+    except Exception as e:
+        print(f"Error registering push token: {e}")
+        raise HTTPException(status_code=500, detail="Failed to register push token")
+
+
+@api_router.post("/notifications/test")
+async def send_test_notification(current_user: dict = Depends(get_current_user)):
+    """Send a test push notification to current user"""
+    try:
+        push_token = current_user.get("push_token")
+        
+        if not push_token:
+            raise HTTPException(
+                status_code=400,
+                detail="No push token registered. Please enable notifications in app."
+            )
+        
+        # Send test notification
+        success = push_notification_service.send_push_notification(
+            push_token=push_token,
+            title="🎉 Test Notification",
+            body="Push notifications are working! You'll receive reminders for events and tasks.",
+            data={"type": "test"}
+        )
+        
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to send notification")
+        
+        return {
+            "success": True,
+            "message": "Test notification sent successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error sending test notification: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/notifications/preferences")
+async def get_notification_preferences(current_user: dict = Depends(get_current_user)):
+    """Get user's notification preferences"""
+    preferences = current_user.get("notification_preferences", {})
+    
+    # Default all to True if not set
+    default_prefs = {
+        "streak_ending": True,
+        "daily_love_message": True,
+        "new_tasks": True,
+        "gift_ideas": True,
+        "upcoming_events_10_days": True,
+        "upcoming_events_3_days": True,
+        "upcoming_events_1_day": True,
+        "weekly_winner": True,
+        "monthly_winner": True,
+        "app_update": True,
+    }
+    
+    return {
+        "success": True,
+        "preferences": {**default_prefs, **preferences}
+    }
+
+
+@api_router.put("/notifications/preferences")
+async def update_notification_preferences(
+    preferences: Dict[str, bool],
+    current_user: dict = Depends(get_current_user)
+):
+    """Update user's notification preferences"""
+    try:
+        await db.users.update_one(
+            {"_id": current_user["_id"]},
+            {
+                "$set": {
+                    "notification_preferences": preferences,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Notification preferences updated",
+            "preferences": preferences
+        }
+        
+    except Exception as e:
+        print(f"Error updating preferences: {e}")
+        raise HTTPException(status_code=500, detail="Failed to update preferences")
+
 @api_router.get("/events")
 async def get_events(
     limit: Optional[int] = None,
