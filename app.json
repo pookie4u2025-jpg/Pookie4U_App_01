@@ -39,15 +39,7 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
-  }
-}
-// app.json (example)
-{
-  "expo": {
-    "name": "Pookie4U",
-    "slug": "pookie4u",
-    ...
+    },
     "extra": {
       "eas": {
         "projectId": "bd5adfc7-3d1d-45f3-b969-d121b9df8c7e"
