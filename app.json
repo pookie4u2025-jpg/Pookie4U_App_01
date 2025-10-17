@@ -12,6 +12,9 @@
       "supportsTablet": true
     },
     "android": {
+  "package": "com.pookie4u.app"
+}
+    {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000"
@@ -42,7 +45,6 @@
     }
   }
 }
-// app.json (example)
 {
   "expo": {
     "name": "Pookie4U",
