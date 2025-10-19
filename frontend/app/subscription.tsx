@@ -9,34 +9,133 @@ import {
   Image,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import RazorpayCheckout from 'react-native-razorpay';
+import { useAuthStore } from '../src/stores/useAuthStore';
 
 const { width } = Dimensions.get('window');
+const RAZORPAY_KEY_ID = process.env.EXPO_PUBLIC_RAZORPAY_KEY_ID || '';
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 export default function SubscriptionScreen() {
   const router = useRouter();
+  const { user, token } = useAuthStore();
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'sixmonth'>('sixmonth');
+  const [loading, setLoading] = useState(false);
 
   const handleSelectPlan = (plan: 'monthly' | 'sixmonth') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedPlan(plan);
   };
 
-  const handleSubscribe = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    Alert.alert(
-      'Coming Soon! 🚀',
-      'Subscription payment integration is coming soon. You\'ll be notified when it\'s ready!',
-      [
-        {
-          text: 'OK',
-          onPress: () => router.push('/tabs'),
+  const handleSubscribe = async () => {
+    if (!user || !token) {
+      Alert.alert('Error', 'Please log in to continue');
+      return;
+    }
+
+    setLoading(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    try {
+      // Step 1: Create subscription on backend
+      const createResponse = await fetch(`${BACKEND_URL}/api/razorpay/subscription/create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
-      ]
-    );
+        body: JSON.stringify({
+          plan_type: selectedPlan,
+        }),
+      });
+
+      if (!createResponse.ok) {
+        throw new Error('Failed to create subscription');
+      }
+
+      const subscriptionData = await createResponse.json();
+      
+      if (!subscriptionData.success) {
+        throw new Error(subscriptionData.error || 'Failed to create subscription');
+      }
+
+      // Step 2: Open Razorpay payment checkout
+      const options = {
+        description: `Pookie4u ${selectedPlan === 'monthly' ? 'Monthly' : '6-Month'} Subscription`,
+        image: 'https://i.imgur.com/3g7nmJC.png', // Your app logo URL
+        currency: 'INR',
+        key: RAZORPAY_KEY_ID,
+        subscription_id: subscriptionData.subscription_id,
+        name: 'Pookie4u',
+        prefill: {
+          email: user.email,
+          contact: '',
+          name: user.name,
+        },
+        theme: { color: '#FF1493' },
+      };
+
+      RazorpayCheckout.open(options)
+        .then(async (data: any) => {
+          // Payment successful - verify on backend
+          try {
+            const verifyResponse = await fetch(`${BACKEND_URL}/api/razorpay/subscription/verify`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_payment_id: data.razorpay_payment_id,
+                razorpay_subscription_id: data.razorpay_subscription_id,
+                razorpay_signature: data.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.success) {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              Alert.alert(
+                '🎉 Welcome to Premium!',
+                'Your 14-day free trial has started. Enjoy all premium features!',
+                [
+                  {
+                    text: 'Get Started',
+                    onPress: () => router.push('/(tabs)'),
+                  },
+                ]
+              );
+            } else {
+              throw new Error('Payment verification failed');
+            }
+          } catch (error) {
+            console.error('Verification error:', error);
+            Alert.alert('Error', 'Payment verification failed. Please contact support.');
+          } finally {
+            setLoading(false);
+          }
+        })
+        .catch((error: any) => {
+          // Payment cancelled or failed
+          setLoading(false);
+          if (error.code !== 0) {
+            // 0 = user cancelled, don't show error
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            Alert.alert('Payment Failed', error.description || 'Something went wrong. Please try again.');
+          }
+        });
+    } catch (error) {
+      setLoading(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'Failed to initiate payment. Please try again.');
+      console.error('Subscription error:', error);
+    }
   };
 
   const handleSkip = () => {
