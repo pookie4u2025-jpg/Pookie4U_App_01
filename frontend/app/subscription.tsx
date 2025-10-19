@@ -499,6 +499,10 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
+  subscribeButtonDisabled: {
+    backgroundColor: '#CCCCCC',
+    shadowOpacity: 0.1,
+  },
   subscribeButtonText: {
     fontSize: 18,
     fontWeight: '700',
