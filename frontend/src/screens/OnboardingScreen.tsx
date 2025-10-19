@@ -102,14 +102,32 @@ export default function OnboardingScreen() {
           console.log('Subscription activated:', data);
           Alert.alert('Success!', data.message || 'Subscription activated successfully!');
         } else {
-          console.error('Subscription error:', await response.text());
+          // Handle error gracefully
+          const errorText = await response.text();
+          console.error('Subscription error:', errorText);
+          
+          // Check if it's the "trial already used" error
+          if (errorText.includes('Free trial already used') || errorText.includes('trial already used')) {
+            Alert.alert(
+              'Free Trial Already Used',
+              'You have already used your free trial. You can still use the app or choose a paid subscription from your profile later.',
+              [{ text: 'OK', style: 'default' }]
+            );
+          } else {
+            // Show generic error for other cases
+            Alert.alert(
+              'Subscription Error',
+              'Unable to activate subscription right now. You can try again from your profile later.',
+              [{ text: 'OK', style: 'default' }]
+            );
+          }
         }
       }
     } catch (error) {
       console.error('Error activating subscription:', error);
       // Continue anyway - don't block onboarding
     } finally {
-      // Complete onboarding regardless
+      // Complete onboarding regardless - don't block user from using the app
       completeOnboarding();
     }
   };
