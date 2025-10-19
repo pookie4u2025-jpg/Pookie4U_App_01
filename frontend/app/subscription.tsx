@@ -84,16 +84,16 @@ export default function SubscriptionScreen() {
         .then(async (data: any) => {
           // Payment successful - verify on backend
           try {
-            const verifyResponse = await fetch(`${BACKEND_URL}/api/razorpay/subscription/verify`, {
+            const verifyResponse = await fetch(`${BACKEND_URL}/api/subscriptions/verify`, {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                razorpay_payment_id: data.razorpay_payment_id,
-                razorpay_subscription_id: data.razorpay_subscription_id,
-                razorpay_signature: data.razorpay_signature,
+                payment_id: data.razorpay_payment_id,
+                subscription_id: data.razorpay_subscription_id,
+                signature: data.razorpay_signature,
               }),
             });
 
