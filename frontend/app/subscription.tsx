@@ -43,7 +43,7 @@ export default function SubscriptionScreen() {
 
     try {
       // Step 1: Create subscription on backend
-      const createResponse = await fetch(`${BACKEND_URL}/api/razorpay/subscription/create`, {
+      const createResponse = await fetch(`${BACKEND_URL}/api/subscriptions/create`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
