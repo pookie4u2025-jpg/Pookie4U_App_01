@@ -217,6 +217,17 @@ export const useAuthStore = create<AuthState>()(
             initialized: true,
           });
 
+          // Register for push notifications after successful OAuth login
+          try {
+            const pushToken = await notificationManager.registerForPushNotifications(access_token);
+            if (pushToken) {
+              console.log('✅ Push notifications registered successfully');
+            }
+          } catch (error) {
+            console.error('Failed to register push notifications:', error);
+            // Don't fail OAuth login if push notification registration fails
+          }
+
           return true;
         } catch (error) {
           set({ 
