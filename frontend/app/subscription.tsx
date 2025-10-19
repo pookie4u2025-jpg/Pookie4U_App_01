@@ -278,16 +278,23 @@ export default function SubscriptionScreen() {
 
         {/* Subscribe Button */}
         <TouchableOpacity
-          style={styles.subscribeButton}
+          style={[styles.subscribeButton, loading && styles.subscribeButtonDisabled]}
           onPress={handleSubscribe}
           activeOpacity={0.8}
+          disabled={loading}
         >
-          <Text style={styles.subscribeButtonText}>
-            Start Free Trial
-          </Text>
-          <Text style={styles.subscribeButtonSubtext}>
-            Cancel anytime • No charges during trial
-          </Text>
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" size="small" />
+          ) : (
+            <>
+              <Text style={styles.subscribeButtonText}>
+                Start Free Trial
+              </Text>
+              <Text style={styles.subscribeButtonSubtext}>
+                Cancel anytime • No charges during trial
+              </Text>
+            </>
+          )}
         </TouchableOpacity>
 
         {/* Skip Button */}
