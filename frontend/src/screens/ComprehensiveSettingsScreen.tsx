@@ -475,6 +475,79 @@ export default function ComprehensiveSettingsScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Edit Account Modal */}
+      <Modal
+        visible={showEditAccountModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowEditAccountModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
+              <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Account</Text>
+              <TouchableOpacity
+                onPress={() => setShowEditAccountModal(false)}
+                style={styles.modalCloseButton}
+              >
+                <Ionicons name="close" size={24} color={theme.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.editAccountForm}>
+              <View style={styles.formGroup}>
+                <Text style={[styles.formLabel, { color: theme.text }]}>Name</Text>
+                <TextInput
+                  style={[styles.formInput, { 
+                    backgroundColor: theme.background, 
+                    color: theme.text,
+                    borderColor: theme.border
+                  }]}
+                  value={editName}
+                  onChangeText={setEditName}
+                  placeholder="Enter your name"
+                  placeholderTextColor={theme.textSecondary}
+                  editable={!isSavingAccount}
+                />
+              </View>
+
+              <View style={styles.formGroup}>
+                <Text style={[styles.formLabel, { color: theme.text }]}>Email</Text>
+                <TextInput
+                  style={[styles.formInput, { 
+                    backgroundColor: theme.background, 
+                    color: theme.text,
+                    borderColor: theme.border
+                  }]}
+                  value={editEmail}
+                  onChangeText={setEditEmail}
+                  placeholder="Enter your email"
+                  placeholderTextColor={theme.textSecondary}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  editable={!isSavingAccount}
+                />
+              </View>
+
+              <TouchableOpacity
+                style={[styles.saveButton, { 
+                  backgroundColor: theme.primary,
+                  opacity: isSavingAccount ? 0.6 : 1
+                }]}
+                onPress={handleSaveAccount}
+                disabled={isSavingAccount}
+              >
+                {isSavingAccount ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <Text style={styles.saveButtonText}>Save Changes</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
