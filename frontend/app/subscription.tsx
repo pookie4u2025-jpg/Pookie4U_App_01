@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import RazorpayCheckout from 'react-native-razorpay';
+import * as WebBrowser from 'expo-web-browser';
 import { useAuthStore } from '../src/stores/useAuthStore';
 
 const { width } = Dimensions.get('window');
