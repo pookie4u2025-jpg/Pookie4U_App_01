@@ -143,11 +143,9 @@ export default function ComprehensiveSettingsScreen() {
   };
 
   const handleEditAccount = () => {
-    Alert.alert(
-      'Edit Account',
-      'Account editing will be available in the next update.',
-      [{ text: 'OK' }]
-    );
+    setShowEditAccountModal(true);
+    setEditName(user?.name || '');
+    setEditEmail(user?.email || '');
   };
 
   const handleRelationshipModePress = () => {
