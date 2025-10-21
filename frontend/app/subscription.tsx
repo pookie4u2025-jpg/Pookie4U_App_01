@@ -64,72 +64,39 @@ export default function SubscriptionScreen() {
         throw new Error(subscriptionData.error || 'Failed to create subscription');
       }
 
-      // Step 2: Open Razorpay payment checkout
-      const options = {
-        description: `Pookie4u ${selectedPlan === 'monthly' ? 'Monthly' : '6-Month'} Subscription`,
-        image: 'https://i.imgur.com/3g7nmJC.png', // Your app logo URL
-        currency: 'INR',
-        key: RAZORPAY_KEY_ID,
-        subscription_id: subscriptionData.subscription_id,
-        name: 'Pookie4u',
-        prefill: {
-          email: user.email,
-          contact: '',
-          name: user.name,
-        },
-        theme: { color: '#FF1493' },
-      };
+      // Step 2: Open Razorpay web checkout in browser
+      const paymentUrl = subscriptionData.short_url;
+      
+      if (!paymentUrl) {
+        throw new Error('No payment URL received');
+      }
 
-      RazorpayCheckout.open(options)
-        .then(async (data: any) => {
-          // Payment successful - verify on backend
-          try {
-            const verifyResponse = await fetch(`${BACKEND_URL}/api/subscriptions/verify`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                payment_id: data.razorpay_payment_id,
-                subscription_id: data.razorpay_subscription_id,
-                signature: data.razorpay_signature,
-              }),
-            });
-
-            const verifyData = await verifyResponse.json();
-
-            if (verifyData.success) {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              Alert.alert(
-                '🎉 Welcome to Premium!',
-                'Your 14-day free trial has started. Enjoy all premium features!',
-                [
-                  {
-                    text: 'Get Started',
-                    onPress: () => router.push('/(tabs)'),
-                  },
-                ]
-              );
-            } else {
-              throw new Error('Payment verification failed');
-            }
-          } catch (error) {
-            console.error('Verification error:', error);
-            Alert.alert('Error', 'Payment verification failed. Please contact support.');
-          } finally {
-            setLoading(false);
-          }
-        })
-        .catch((error: any) => {
-          // Payment cancelled or failed
-          setLoading(false);
-          if (error.code !== 0) {
-            // 0 = user cancelled, don't show error
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-            Alert.alert('Payment Failed', error.description || 'Something went wrong. Please try again.');
-          }
-        });
+      // Open Razorpay checkout in browser
+      const result = await WebBrowser.openBrowserAsync(paymentUrl);
+      
+      setLoading(false);
+      
+      // Show success message (in production, you'd verify via webhook)
+      if (result.type === 'cancel' || result.type === 'dismiss') {
+        Alert.alert(
+          'Payment Cancelled',
+          'You can complete the payment anytime from your profile.',
+          [{ text: 'OK' }]
+        );
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert(
+          '🎉 Payment Initiated!',
+          'Once payment is complete, your subscription will be activated. Check your subscription status in your profile.',
+          [
+            {
+              text: 'Got It',
+              onPress: () => router.push('/(tabs)'),
+            },
+          ]
+        );
+      }
+      
     } catch (error) {
       setLoading(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
