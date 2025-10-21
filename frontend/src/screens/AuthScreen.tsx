@@ -156,6 +156,7 @@ export default function AuthScreen() {
       const oauthData = await completeOAuthFlow();
       
       console.log('✅ OAuth flow completed, authenticating with app...');
+      console.log('OAuth Data:', JSON.stringify(oauthData, null, 2));
       
       // Login with OAuth data
       const success = await loginWithOAuth(oauthData);
@@ -175,15 +176,22 @@ export default function AuthScreen() {
     } catch (error) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       console.error('❌ Google Sign-In error:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       
+      // More detailed error message
+      let userMessage = `We couldn't sign you in with Google.\n\nError: ${errorMessage}`;
+      
+      if (errorMessage.includes('redirect') || errorMessage.includes('URI')) {
+        userMessage += '\n\nThis might be a configuration issue. Please ensure the redirect URI is properly set up in Google Console.';
+      }
+      
       Alert.alert(
         'Sign-In Failed',
-        `We couldn't sign you in with Google: ${errorMessage}`,
+        userMessage,
         [
-          { text: 'Try Again', style: 'default' },
-          { text: 'Cancel', style: 'cancel' }
+          { text: 'OK', style: 'default' }
         ]
       );
     }
