@@ -44,6 +44,10 @@ export default function ComprehensiveSettingsScreen() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [hapticsEnabled, setHapticsEnabled] = useState(true);
   const [showRelationshipModeSelector, setShowRelationshipModeSelector] = useState(false);
+  const [showEditAccountModal, setShowEditAccountModal] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
 
   // Relationship mode options (same as in ProfileContent)
   const RELATIONSHIP_MODES = [
