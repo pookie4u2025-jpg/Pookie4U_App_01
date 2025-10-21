@@ -112,6 +112,15 @@ export default function SubscriptionScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={handleSkip}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
+      </TouchableOpacity>
+      
       <ScrollView 
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
