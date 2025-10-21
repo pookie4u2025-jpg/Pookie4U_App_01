@@ -39,12 +39,12 @@ export const lightTheme: ThemeColors = {
 
 export const darkTheme: ThemeColors = {
   primary: '#E879A6',
-  background: 'transparent',
-  surface: '#FFFFFF',
-  text: '#1F2937',
-  textSecondary: '#6B7280',
-  border: '#E5E7EB',
-  card: '#FFFFFF',
+  background: '#121212',
+  surface: '#1E1E1E',
+  text: '#FFFFFF',
+  textSecondary: '#B0B0B0',
+  border: '#2C2C2C',
+  card: '#1E1E1E',
   notification: '#E879A6',
   error: '#EF4444',
   success: '#10B981',
