@@ -152,6 +152,37 @@ export default function ComprehensiveSettingsScreen() {
     setEditEmail(user?.email || '');
   };
 
+  const handleSaveAccount = async () => {
+    if (!editName.trim()) {
+      Alert.alert('Error', 'Name cannot be empty');
+      return;
+    }
+
+    if (!editEmail.trim()) {
+      Alert.alert('Error', 'Email cannot be empty');
+      return;
+    }
+
+    setIsSavingAccount(true);
+    try {
+      const success = await updateUserProfile({
+        name: editName.trim(),
+        email: editEmail.trim(),
+      });
+
+      if (success) {
+        setShowEditAccountModal(false);
+        Alert.alert('Success', 'Account details updated successfully!');
+      } else {
+        Alert.alert('Error', 'Failed to update account details. Please try again.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update account details. Please try again.');
+    } finally {
+      setIsSavingAccount(false);
+    }
+  };
+
   const handleRelationshipModePress = () => {
     setShowRelationshipModeSelector(true);
   };
