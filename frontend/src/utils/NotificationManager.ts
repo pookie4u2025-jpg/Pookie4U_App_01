@@ -156,8 +156,17 @@ class NotificationManager {
     }
 
     try {
+      // Get project ID from config (optional for development)
+      const projectId = Constants.expoConfig?.extra?.eas?.projectId;
+      
+      // Skip push notifications if no project ID (development mode)
+      if (!projectId) {
+        console.log('Push notifications disabled: No project ID configured');
+        return null;
+      }
+      
       const token = await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig?.extra?.eas?.projectId,
+        projectId: projectId,
       });
       this.expoPushToken = token.data;
       
@@ -168,7 +177,8 @@ class NotificationManager {
       
       return token.data;
     } catch (error) {
-      console.error('Error getting push token:', error);
+      // Silently fail - push notifications are not critical
+      console.log('Push notifications not available in this environment');
       return null;
     }
   }
