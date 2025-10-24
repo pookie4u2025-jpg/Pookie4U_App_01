@@ -26,8 +26,15 @@ export default function SubscriptionScreen() {
   const { user, token } = useAuthStore();
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'sixmonth'>('trial');
   const [loading, setLoading] = useState(false);
+  const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false);
 
   const handleSelectPlan = (plan: 'trial' | 'monthly' | 'sixmonth') => {
+    // Don't allow selecting trial if already used
+    if (plan === 'trial' && trialAlreadyUsed) {
+      Alert.alert('Trial Already Used', 'You have already used your free trial. Please select a paid plan.');
+      return;
+    }
+    
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedPlan(plan);
   };
