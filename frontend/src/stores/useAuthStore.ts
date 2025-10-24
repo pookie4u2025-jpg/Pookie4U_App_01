@@ -277,6 +277,15 @@ export const useAuthStore = create<AuthState>()(
 
           const user = await response.json();
           set({ user, error: null });
+          
+          // Check if partner profile exists and complete onboarding if it does
+          if (user.partner_profile && user.partner_profile.name) {
+            console.log('✅ Partner profile exists, marking onboarding as completed');
+            const { completeOnboarding } = require('./useAppStore').useAppStore.getState();
+            completeOnboarding();
+          } else {
+            console.log('⚠️ No partner profile found, onboarding needed');
+          }
         } catch (error) {
           console.error('Failed to fetch profile:', error);
           
