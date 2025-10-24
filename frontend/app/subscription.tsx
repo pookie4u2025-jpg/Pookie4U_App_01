@@ -222,7 +222,43 @@ export default function SubscriptionScreen() {
 
         {/* Subscription Plans */}
         <View style={styles.plansContainer}>
-          {/* 6-Month Plan (Recommended) */}
+          {/* Free Trial Plan (Default) */}
+          <TouchableOpacity
+            style={[
+              styles.planCard,
+              selectedPlan === 'trial' && styles.planCardSelected,
+            ]}
+            onPress={() => handleSelectPlan('trial')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.planHeader}>
+              <View style={styles.planHeaderLeft}>
+                <View style={[
+                  styles.radioButton,
+                  selectedPlan === 'trial' && styles.radioButtonSelected,
+                ]}>
+                  {selectedPlan === 'trial' && (
+                    <View style={styles.radioButtonInner} />
+                  )}
+                </View>
+                <Text style={styles.planTitle}>Free Trial</Text>
+              </View>
+              <View style={styles.recommendedBadge}>
+                <Text style={styles.recommendedText}>RECOMMENDED</Text>
+              </View>
+            </View>
+            
+            <View style={styles.planPricing}>
+              <Text style={styles.planPrice}>₹0</Text>
+              <Text style={styles.planPeriod}>for 14 days</Text>
+            </View>
+            
+            <View style={styles.savingsBadge}>
+              <Text style={styles.savingsText}>No payment required</Text>
+            </View>
+          </TouchableOpacity>
+
+          {/* 6-Month Plan */}
           <TouchableOpacity
             style={[
               styles.planCard,
