@@ -15,7 +15,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
         <SafeAreaProvider>
-          <StatusBar style="auto" />
+          <StatusBar style="dark" translucent={false} backgroundColor="transparent" />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="tabs" options={{ headerShown: false }} />
