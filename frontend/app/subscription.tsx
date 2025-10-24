@@ -33,6 +33,10 @@ export default function SubscriptionScreen() {
   };
 
   const handleSubscribe = async () => {
+    console.log('🔐 Subscription - Checking auth status:');
+    console.log('  User:', user ? 'Present' : 'Missing');
+    console.log('  Token:', token ? `Present (${token.substring(0, 20)}...)` : 'Missing');
+    
     if (!user || !token) {
       Alert.alert('Error', 'Please log in to continue');
       return;
@@ -43,7 +47,11 @@ export default function SubscriptionScreen() {
 
     try {
       // Step 1: Create subscription on backend
-      const createResponse = await fetch(`${BACKEND_URL}/api/subscriptions/create`, {
+      const url = `${BACKEND_URL}/api/subscriptions/create`;
+      console.log('📤 Creating subscription at:', url);
+      console.log('📤 Plan type:', selectedPlan);
+      
+      const createResponse = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -54,8 +62,13 @@ export default function SubscriptionScreen() {
         }),
       });
 
+      console.log('📥 Response status:', createResponse.status);
+      console.log('📥 Response statusText:', createResponse.statusText);
+
       if (!createResponse.ok) {
-        throw new Error('Failed to create subscription');
+        const errorText = await createResponse.text();
+        console.error('❌ Subscription creation failed:', errorText);
+        throw new Error(`Failed to create subscription: ${createResponse.status} - ${errorText}`);
       }
 
       const subscriptionData = await createResponse.json();
