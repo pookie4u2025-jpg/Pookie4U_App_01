@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EnhancedEventsContent from '../../src/screens/EnhancedEventsContent';
 import GradientBackground from '../../src/components/GradientBackground';
@@ -7,7 +7,8 @@ import GradientBackground from '../../src/components/GradientBackground';
 export default function EventsScreen() {
   return (
     <GradientBackground>
-      <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <View style={styles.spacer} />
         <EnhancedEventsContent />
       </SafeAreaView>
     </GradientBackground>
@@ -17,5 +18,8 @@ export default function EventsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  spacer: {
+    height: 8,
   },
 });
