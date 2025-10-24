@@ -24,12 +24,65 @@ const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 export default function SubscriptionScreen() {
   const router = useRouter();
   const { user, token } = useAuthStore();
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'sixmonth'>('sixmonth');
+  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'sixmonth'>('trial');
   const [loading, setLoading] = useState(false);
 
-  const handleSelectPlan = (plan: 'monthly' | 'sixmonth') => {
+  const handleSelectPlan = (plan: 'trial' | 'monthly' | 'sixmonth') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedPlan(plan);
+  };
+
+  const handleFreeTrial = async () => {
+    console.log('🎁 Starting free trial without payment');
+    
+    if (!user || !token) {
+      Alert.alert('Error', 'Please log in to continue');
+      return;
+    }
+
+    setLoading(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/subscription/start-trial`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('📥 Trial response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to start trial');
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert(
+          '🎉 Free Trial Activated!',
+          'Enjoy 14 days of premium features for free. No payment required!',
+          [
+            {
+              text: 'Get Started',
+              onPress: () => router.push('/(tabs)'),
+            },
+          ]
+        );
+      } else {
+        throw new Error(data.message || 'Failed to activate trial');
+      }
+    } catch (error) {
+      console.error('❌ Trial activation error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to activate trial';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubscribe = async () => {
@@ -115,6 +168,16 @@ export default function SubscriptionScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'Failed to initiate payment. Please try again.');
       console.error('Subscription error:', error);
+    }
+  };
+
+  const handleContinue = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
+    if (selectedPlan === 'trial') {
+      handleFreeTrial();
+    } else {
+      handleSubscribe();
     }
   };
 
