@@ -63,6 +63,19 @@ export default function SubscriptionScreen() {
 
       if (!response.ok) {
         const errorData = await response.json();
+        
+        // Check if trial was already used
+        if (errorData.detail && errorData.detail.includes('already used')) {
+          setTrialAlreadyUsed(true);
+          setSelectedPlan('sixmonth'); // Auto-select 6-month plan
+          Alert.alert(
+            'Trial Already Used',
+            'You have already used your 14-day free trial. Please select a paid plan to continue enjoying premium features.',
+            [{ text: 'OK' }]
+          );
+          return;
+        }
+        
         throw new Error(errorData.detail || 'Failed to start trial');
       }
 
@@ -86,7 +99,11 @@ export default function SubscriptionScreen() {
     } catch (error) {
       console.error('❌ Trial activation error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to activate trial';
-      Alert.alert('Error', errorMessage);
+      
+      // Don't show alert if we already handled the "already used" case
+      if (!errorMessage.includes('already used')) {
+        Alert.alert('Error', errorMessage);
+      }
     } finally {
       setLoading(false);
     }
