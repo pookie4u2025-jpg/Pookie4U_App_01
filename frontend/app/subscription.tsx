@@ -214,10 +214,11 @@ export default function SubscriptionScreen() {
           </Text>
         </View>
 
-        {/* 14-Day Free Trial Badge */}
-        <View style={styles.trialBadge}>
-          <Ionicons name="gift-outline" size={20} color="#FF1493" />
-          <Text style={styles.trialText}>14-Day Free Trial Included</Text>
+        {/* Header Info */}
+        <View style={styles.headerInfo}>
+          <Text style={styles.infoText}>
+            Choose your plan and start your premium experience
+          </Text>
         </View>
 
         {/* Subscription Plans */}
