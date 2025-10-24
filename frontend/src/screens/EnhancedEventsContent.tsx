@@ -163,7 +163,9 @@ export default function EnhancedEventsContent() {
       const limit = 20; // Load 20 events at a time
       
       const url = `${apiUrl}/api/events?limit=${limit}&offset=${offset}`;
-      console.log('Loading events from:', url);
+      console.log('📍 Loading events from:', url);
+      console.log('📍 Token present:', !!token);
+      console.log('📍 Token preview:', token ? token.substring(0, 20) + '...' : 'N/A');
       
       const response = await fetch(url, {
         method: 'GET',
@@ -173,7 +175,8 @@ export default function EnhancedEventsContent() {
         },
       });
       
-      console.log('Events response status:', response.status);
+      console.log('📊 Events response status:', response.status);
+      console.log('📊 Events response headers:', JSON.stringify(response.headers));
       
       if (response.ok) {
         const data = await response.json();
