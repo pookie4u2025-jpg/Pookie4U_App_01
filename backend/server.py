@@ -2607,8 +2607,8 @@ async def create_subscription(
         # Create customer data
         customer_data = {
             'email': email,
-            'name': user.get('name', ''),
-            'phone': user.get('phone', '')
+            'name': current_user.get('name', ''),
+            'phone': current_user.get('phone', '')
         }
         
         # Create subscription
