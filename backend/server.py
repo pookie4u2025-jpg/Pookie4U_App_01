@@ -2588,37 +2588,17 @@ async def start_mockup_subscription(
 @app.post("/api/subscriptions/create", tags=["Subscriptions"])
 async def create_subscription(
     request: CreateSubscriptionRequest,
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    current_user: dict = Depends(get_current_user)
 ):
     """Create a new Razorpay subscription"""
     try:
-        # Get current user
-        token = credentials.credentials
-        print(f"🔐 Subscription create - Token received: {token[:50]}...")
-        
-        try:
-            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            print(f"✅ Token decoded successfully: {payload}")
-        except jwt.ExpiredSignatureError:
-            print("❌ Token expired")
-            raise HTTPException(status_code=401, detail="Token expired")
-        except jwt.InvalidTokenError as e:
-            print(f"❌ Invalid token: {str(e)}")
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        email = payload.get("email")
+        email = current_user.get("email")
         
         if not email:
-            print("❌ No email in token payload")
+            print("❌ No email in user data")
             raise HTTPException(status_code=401, detail="Invalid authentication credentials")
         
-        print(f"✅ Email from token: {email}")
-        
-        # Get user data
-        user = await db.users.find_one({"email": email})
-        if not user:
-            print(f"❌ User not found: {email}")
-            raise HTTPException(status_code=404, detail="User not found")
+        print(f"✅ Creating subscription for: {email}")
         
         # Validate plan type
         if request.plan_type not in ['monthly', 'sixmonth']:
