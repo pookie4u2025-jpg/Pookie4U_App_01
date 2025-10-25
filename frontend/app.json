@@ -34,10 +34,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/pookie4u-long-logo.png",
-          "imageWidth": 280,
+          "image": "./assets/images/pookie4u-splash-logo.png",
+          "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#F7D7DA"
+          "backgroundColor": "#FFFFFF"
         }
       ],
       "expo-font",
