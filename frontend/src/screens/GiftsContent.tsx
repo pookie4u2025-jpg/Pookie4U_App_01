@@ -48,7 +48,9 @@ export default function GiftsContent() {
     try {
       const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/gifts`);
       const data = await response.json();
-      setGifts(data.gifts || []);
+      // Reverse the array to show newest gifts first (highest ID first)
+      const sortedGifts = (data.gifts || []).slice().reverse();
+      setGifts(sortedGifts);
     } catch (error) {
       console.error('Failed to fetch gifts:', error);
     } finally {
