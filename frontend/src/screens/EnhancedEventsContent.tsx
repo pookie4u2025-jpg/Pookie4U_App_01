@@ -184,7 +184,7 @@ export default function EnhancedEventsContent() {
         
         if (loadMore) {
           // Append new events to existing ones with deduplication
-          const existingEventIds = new Set(prev.events.map(e => e.id));
+          const existingEventIds = new Set(calendarData.events.map(e => e.id));
           const newEvents = data.events.filter((e: Event) => !existingEventIds.has(e.id));
           
           setCalendarData(prev => ({
