@@ -37,7 +37,7 @@ export default function GiftsContent() {
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All', 'Romantic', 'Jewelry', 'Experiences', 'Beauty', 'Food', 'Home'];
+  const categories = ['All', 'Romantic', 'Chocolates', 'Footwear', 'Watches', 'Jewelry', 'Soft Toys', 'Health & Wellness', 'Beauty', 'Home', 'Fashion'];
 
   useEffect(() => {
     fetchGifts();
