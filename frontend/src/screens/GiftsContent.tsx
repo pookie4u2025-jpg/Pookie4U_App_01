@@ -89,10 +89,14 @@ export default function GiftsContent() {
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'Romantic': return 'heart';
+      case 'Chocolates': return 'cafe';
+      case 'Footwear': return 'footsteps';
+      case 'Watches': return 'watch';
       case 'Jewelry': return 'diamond';
-      case 'Experiences': return 'camera';
-      case 'Beauty': return 'flower';
-      case 'Food': return 'restaurant';
+      case 'Soft Toys': return 'happy';
+      case 'Health & Wellness': return 'fitness';
+      case 'Beauty': return 'sparkles';
+      case 'Fashion': return 'shirt';
       case 'Home': return 'home';
       default: return 'gift';
     }
