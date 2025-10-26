@@ -1162,6 +1162,27 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
     # Convert partner profile data to handle datetime fields
     partner_data = current_user.get("partner_profile", {})
     
+    # Ensure all partner profile fields exist with defaults
+    partner_defaults = {
+        "name": "",
+        "birthday": None,
+        "anniversary": None,
+        "favorite_color": "",
+        "favorite_food": "",
+        "favorite_flower": "",
+        "favorite_brand": "",
+        "dress_size": "",
+        "ring_size": "",
+        "perfume_preference": "",
+        "top_size": "",
+        "jeans_size": "",
+        "notes": "",
+        "additional_notes": ""
+    }
+    
+    # Merge with defaults to ensure all fields exist
+    partner_data = {**partner_defaults, **partner_data}
+    
     # Convert datetime fields to string format (DD/MM/YYYY)
     if "birthday" in partner_data and partner_data["birthday"] is not None:
         if hasattr(partner_data["birthday"], 'strftime'):
