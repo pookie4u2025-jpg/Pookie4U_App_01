@@ -883,7 +883,7 @@ GIFT_IDEAS = [
         "price_range": "₹1000-₹1500",
         "link": "https://www.amazon.in/HUG-FEEL-SOFT-TOYS-Birthday/dp/B08X3PCGKS",
         "description": "Large 3 feet teddy bear perfect for gifting",
-        "image": "https://m.media-amazon.com/images/I/71lTQrZrZYL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1602734846297-9299fc2d4703?w=400&q=80"
     },
     {
         "id": "34",
@@ -892,7 +892,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/Mirada-Adorable-Toddlers-Stuffed-Birthday/dp/B0DPC27TCF",
         "description": "Cute and cuddly teddy bear for all ages",
-        "image": "https://m.media-amazon.com/images/I/71YqKF0sJaL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1562040506-a9b32cb51b94?w=400&q=80"
     },
     {
         "id": "35",
@@ -901,7 +901,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/Storescent-Stuffed-Plushies-Birthday-Valentine/dp/B0CKXQNXTG",
         "description": "Adorable stuffed plushie for Valentine's Day",
-        "image": "https://m.media-amazon.com/images/I/71mXvQ8HWPL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1556012018-50c5c0da73bf?w=400&q=80"
     },
     {
         "id": "36",
