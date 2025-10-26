@@ -241,6 +241,9 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        console.log('🚪 Logging out user...');
+        
+        // Clear auth state
         set({
           user: null,
           token: null,
@@ -249,6 +252,12 @@ export const useAuthStore = create<AuthState>()(
           error: null,
           initialized: true, // Keep initialized as true after logout
         });
+        
+        // Clear onboarding state so user can see onboarding again if they're a new user next time
+        const { resetOnboarding } = require('./useAppStore').useAppStore.getState();
+        resetOnboarding();
+        
+        console.log('✅ Logout complete');
       },
 
       fetchProfile: async () => {
