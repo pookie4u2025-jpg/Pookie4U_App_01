@@ -217,7 +217,26 @@ export default function EnhancedEventsContent() {
       } else {
         const errorText = await response.text();
         console.error('Events API error:', response.status, errorText);
-        Alert.alert('Error', `Failed to load calendar events (${response.status})`);
+        
+        // Handle authentication errors
+        if (response.status === 401 || response.status === 403) {
+          console.log('❌ Token expired or invalid, logging out...');
+          Alert.alert(
+            'Session Expired',
+            'Your session has expired. Please log in again.',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  // Logout user
+                  useAuthStore.getState().logout();
+                }
+              }
+            ]
+          );
+        } else {
+          Alert.alert('Error', `Failed to load calendar events (${response.status})`);
+        }
       }
     } catch (error) {
       console.error('Events loading error:', error);
