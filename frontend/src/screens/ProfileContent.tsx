@@ -43,7 +43,7 @@ export default function ProfileContent() {
     favorite_food: user?.partner_profile?.favorite_food || '',
     favorite_flower: user?.partner_profile?.favorite_flower || '',
     favorite_brand: user?.partner_profile?.favorite_brand || '',
-    favorite_perfume: user?.partner_profile?.favorite_perfume || '',
+    perfume_preference: user?.partner_profile?.perfume_preference || '',
     dress_size: user?.partner_profile?.dress_size || '',
     top_size: user?.partner_profile?.top_size || '',
     jeans_size: user?.partner_profile?.jeans_size || '',
