@@ -463,23 +463,29 @@ export const useAuthStore = create<AuthState>()(
       validateSession: async () => {
         const { token, isAuthenticated } = get();
         
+        console.log('🔐 Validating session...', { hasToken: !!token, isAuthenticated });
+        
         // If no token or not authenticated, mark as initialized and return
         if (!token || !isAuthenticated) {
+          console.log('⚠️ No token or not authenticated, clearing state');
           set({ initialized: true, isAuthenticated: false });
           return;
         }
 
         try {
+          console.log('📡 Fetching profile to validate token...');
           // Try to fetch profile to validate the token
           const response = await fetch(`${BACKEND_URL}/api/user/profile`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
+            timeout: 5000, // 5 second timeout
           });
 
           if (response.ok) {
             // Token is valid, fetch and update user profile
             const user = await response.json();
+            console.log('✅ Session valid, user authenticated');
             set({ 
               user, 
               initialized: true, 
@@ -488,7 +494,7 @@ export const useAuthStore = create<AuthState>()(
             });
           } else if (response.status === 401 || response.status === 403) {
             // Token is invalid or expired, clear auth state
-            console.log('Token validation failed, clearing auth state');
+            console.log('❌ Token validation failed (401/403), clearing auth state');
             set({
               user: null,
               token: null,
@@ -497,14 +503,16 @@ export const useAuthStore = create<AuthState>()(
               error: null
             });
           } else {
-            // Other error, keep current state but mark as initialized
-            console.log('Profile fetch failed with status:', response.status);
-            set({ initialized: true });
+            // Other error, KEEP current auth state (don't logout on server errors)
+            console.log('⚠️ Profile fetch failed with status:', response.status, '- Keeping auth state');
+            set({ initialized: true }); // Keep user logged in
           }
         } catch (error) {
-          console.error('Session validation error:', error);
-          // Network error, keep current state but mark as initialized
-          set({ initialized: true });
+          console.error('⚠️ Session validation error (network issue?):', error);
+          // Network error, KEEP current auth state (don't logout on network errors)
+          // This ensures users stay logged in even with poor connectivity
+          console.log('🔄 Network error - Keeping user logged in');
+          set({ initialized: true }); // Keep user logged in
         }
       },
     }),
