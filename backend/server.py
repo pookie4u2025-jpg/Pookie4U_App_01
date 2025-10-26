@@ -1310,7 +1310,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/Colorbar-Vegan-Nail-Lacquer-Talk/dp/B0B4K9BSN3",
         "description": "Premium vegan nail polish by Colorbar",
-        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1581839680158-103b461d8886?w=400&q=80"
     },
     {
         "id": "81",
@@ -1319,7 +1319,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/Colorbar-Velvet-Matte-Lipstick-Surprise/dp/B074F216GZ",
         "description": "Long-lasting velvet matte lipstick",
-        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1580680509481-599991254d13?w=400&q=80"
     },
     {
         "id": "82",
@@ -1328,7 +1328,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/Faces-Splash-Enamel-Floral-Dream/dp/B0853LTFMF",
         "description": "Vibrant nail enamel with floral design",
-        "image": "https://m.media-amazon.com/images/I/71QM9xXKYWL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1581839680158-103b461d8886?w=400&q=80"
     },
     {
         "id": "83",
@@ -1337,7 +1337,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/Sugar-Cosmetics-Smudge-Liquid-Lipstick/dp/B01N5QV746",
         "description": "Waterproof liquid lipstick by SUGAR",
-        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1580680509481-599991254d13?w=400&q=80"
     },
     {
         "id": "84",
@@ -1346,7 +1346,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/MyGlamm-Liquid-Matte-Lipstick-Swinger/dp/B0859Q2KXF",
         "description": "High-pigment liquid matte lipstick",
-        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1580680509481-599991254d13?w=400&q=80"
     },
     {
         "id": "85",
@@ -1355,7 +1355,7 @@ GIFT_IDEAS = [
         "price_range": "₹500-₹1000",
         "link": "https://www.amazon.in/Bella-Vita-Organic-Perfumes-Fragrance/dp/B09232XNTX",
         "description": "Organic perfume fragrance gift set",
-        "image": "https://m.media-amazon.com/images/I/71WQ9xYKXQL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1523293182086-7651a899d37f?w=400&q=80"
     },
     {
         "id": "86",
