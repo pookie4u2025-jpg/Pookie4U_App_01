@@ -628,7 +628,7 @@ GIFT_IDEAS = [
     {
         "id": "6", 
         "name": "Gourmet Chocolate Gift Box", 
-        "category": "Food", 
+        "category": "Chocolates", 
         "price_range": "Under ₹1000", 
         "link": "https://amzn.to/premium-chocolates", 
         "description": "Premium assorted chocolates beautifully packaged for your sweet moments",
