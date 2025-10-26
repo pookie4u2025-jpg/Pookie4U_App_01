@@ -24,7 +24,7 @@ import sys
 import traceback
 
 # Configuration
-BASE_URL = "https://pookie-couples-1.preview.emergentagent.com/api"
+BASE_URL = "https://pookie-couple-1.preview.emergentagent.com/api"
 TEST_USER_EMAIL = f"test.user.{uuid.uuid4().hex[:8]}@example.com"
 TEST_USER_NAME = "Sarah Johnson"
 TEST_USER_PASSWORD = "SecurePass123!"
