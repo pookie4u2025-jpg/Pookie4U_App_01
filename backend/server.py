@@ -377,7 +377,10 @@ class PartnerProfile(BaseModel):
     dress_size: str = ""
     ring_size: str = ""
     perfume_preference: str = ""
+    top_size: str = ""
+    jeans_size: str = ""
     notes: str = ""
+    additional_notes: str = ""
 
 class RelationshipMode(BaseModel):
     mode: Literal["SAME_HOME", "DAILY_IRL", "LONG_DISTANCE"]
