@@ -597,7 +597,7 @@ export default function ProfileContent() {
                     placeholderTextColor={theme.textSecondary}
                   />
                 ) : (
-                  <Text style={[styles.inputValue, { color: theme.textSecondary }]}>{partnerData.favorite_perfume || 'Not set'}</Text>
+                  <Text style={[styles.inputValue, { color: theme.textSecondary }]}>{partnerData.perfume_preference || 'Not set'}</Text>
                 )}
               </View>
 
