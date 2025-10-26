@@ -1,33 +1,18 @@
 #!/usr/bin/env python3
 """
-COMPREHENSIVE POOKIE4U BACKEND API TESTING SUITE - SUBSCRIPTION SYSTEM + ALL FEATURES
-=====================================================================================
-
-This test suite conducts exhaustive testing of ALL backend endpoints for the Pookie4u app audit.
-Tests cover subscription system, authentication, AI tasks, calendar events, gifts, messages, profiles, and gamification.
-
-Test Scope:
-- 35+ API endpoints across 9 major systems including NEW SUBSCRIPTION SYSTEM
-- Real user flow testing (register → authenticate → subscription → use features)
-- Critical subscription flow verification (trial, mockup payments, status checks)
-- Production readiness assessment for subscription monetization
+Backend Testing Suite for Pookie4u Gifts Endpoint
+Testing the gifts endpoint to ensure all 99 gift items are loaded correctly
 """
 
-import asyncio
-import aiohttp
+import requests
 import json
-import uuid
-import random
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
 import sys
-import traceback
+from typing import Dict, List, Any
+from collections import Counter
 
 # Configuration
-BASE_URL = "https://pookie-couple-1.preview.emergentagent.com/api"
-TEST_USER_EMAIL = f"test.user.{uuid.uuid4().hex[:8]}@example.com"
-TEST_USER_NAME = "Sarah Johnson"
-TEST_USER_PASSWORD = "SecurePass123!"
+BACKEND_URL = "https://pookie-couple-1.preview.emergentagent.com"
+API_BASE = f"{BACKEND_URL}/api"
 
 class Colors:
     """ANSI color codes for terminal output"""
