@@ -350,9 +350,13 @@ export const useAuthStore = create<AuthState>()(
 
       updateUserProfile: async (profile: { name?: string; email?: string }) => {
         const { token } = get();
-        if (!token) return false;
+        if (!token) {
+          console.log('❌ No token available for profile update');
+          return false;
+        }
 
         try {
+          console.log('📤 Updating user profile:', profile);
           const response = await fetch(`${BACKEND_URL}/api/user/profile`, {
             method: 'PUT',
             headers: {
@@ -362,9 +366,24 @@ export const useAuthStore = create<AuthState>()(
             body: JSON.stringify(profile),
           });
 
+          console.log('📥 Profile update response status:', response.status);
+
           if (!response.ok) {
-            throw new Error('Failed to update user profile');
+            const errorText = await response.text();
+            console.error('❌ Profile update failed:', response.status, errorText);
+            
+            // Handle 401 authentication error
+            if (response.status === 401 || response.status === 403) {
+              console.log('❌ Token expired, user needs to re-login');
+              set({ error: 'Session expired. Please log in again.' });
+              // Don't auto-logout here, let the user know
+            }
+            
+            throw new Error(`Failed to update user profile: ${response.status}`);
           }
+
+          const result = await response.json();
+          console.log('✅ Profile updated successfully:', result);
 
           // Update local state
           set(state => ({
@@ -376,6 +395,7 @@ export const useAuthStore = create<AuthState>()(
 
           return true;
         } catch (error) {
+          console.error('❌ Profile update error:', error);
           set({ error: 'Failed to update user profile' });
           return false;
         }
