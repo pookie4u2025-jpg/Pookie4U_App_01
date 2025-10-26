@@ -579,6 +579,7 @@ WEEKLY_TASKS = {
 }
 
 GIFT_IDEAS = [
+    # Original Romantic Gifts
     {
         "id": "1", 
         "name": "Personalized Photo Frame", 
@@ -632,6 +633,855 @@ GIFT_IDEAS = [
         "link": "https://amzn.to/premium-chocolates", 
         "description": "Premium assorted chocolates beautifully packaged for your sweet moments",
         "image": "https://m.media-amazon.com/images/I/81Cm7HlS6yL._AC_UL320_.jpg"
+    },
+    
+    # Chocolates & Sweets
+    {
+        "id": "7",
+        "name": "Cadbury Diwali Chocolate Potli 283g",
+        "category": "Chocolates",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Cadbury-Diwali-Chocolate-Potli-283g/dp/B07VWGZL7N",
+        "description": "Beautiful Diwali chocolate potli gift pack",
+        "image": "https://m.media-amazon.com/images/I/81pUlQfQ7sL._AC_UL320_.jpg"
+    },
+    {
+        "id": "8",
+        "name": "Ferrero Rocher 16 Pieces",
+        "category": "Chocolates",
+        "price_range": "Under ₹1000",
+        "link": "https://www.amazon.in/Ferrero-78205-Rocher-16-Pieces/dp/B00BYQEIL6",
+        "description": "Premium Ferrero Rocher chocolate gift box",
+        "image": "https://m.media-amazon.com/images/I/81jS0QL24KL._AC_UL320_.jpg"
+    },
+    {
+        "id": "9",
+        "name": "Ferrero Rocher Pack 24 Pieces",
+        "category": "Chocolates",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/Ferrero-Rocher-Pack-24-Pieces/dp/B07G9GDQJD",
+        "description": "Luxurious 24-piece Ferrero Rocher collection",
+        "image": "https://m.media-amazon.com/images/I/71wXbqL8FFL._AC_UL320_.jpg"
+    },
+    {
+        "id": "10",
+        "name": "Omay Foods Superman Dry Fruits Pack",
+        "category": "Chocolates",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Omay-Foods-Fathers-SUPERMAN-Fruits/dp/B07SG8THWH",
+        "description": "Healthy dry fruits gift pack for special occasions",
+        "image": "https://m.media-amazon.com/images/I/71rBp9Y+fJL._AC_UL320_.jpg"
+    },
+    {
+        "id": "11",
+        "name": "Ferrero Rocher Premium Collection",
+        "category": "Chocolates",
+        "price_range": "₹1500-₹2000",
+        "link": "https://www.amazon.in/SFU-Com-Ferrero-Rocher-Pieces/dp/B07G9N5WHW",
+        "description": "Elegant Ferrero Rocher premium gift collection",
+        "image": "https://m.media-amazon.com/images/I/61hHOjJO3TL._AC_UL320_.jpg"
+    },
+    {
+        "id": "12",
+        "name": "Cadbury Celebrations Rich Dry Fruit Chocolate",
+        "category": "Chocolates",
+        "price_range": "Under ₹1000",
+        "link": "https://www.amazon.in/Cadbury-Celebrations-Rich-Fruit-Chocolate/dp/B07HR1YB9Y",
+        "description": "Premium Cadbury chocolate collection with dry fruits",
+        "image": "https://m.media-amazon.com/images/I/81vqZWqgGxL._AC_UL320_.jpg"
+    },
+    {
+        "id": "13",
+        "name": "Cadbury Dairy Milk Silk Special Pack",
+        "category": "Chocolates",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Cadbury-Dairy-Milk-Silk-Special/dp/B07MQL2CHW",
+        "description": "Smooth and creamy Dairy Milk Silk chocolate gift",
+        "image": "https://m.media-amazon.com/images/I/71bVl3QKZOL._AC_UL320_.jpg"
+    },
+    {
+        "id": "14",
+        "name": "Ferrero Rocher Moments Pralines",
+        "category": "Chocolates",
+        "price_range": "Under ₹1000",
+        "link": "https://www.amazon.in/Ferrero-Rocher-Moments-pralines-92-8gm/dp/B0C8NM93L8",
+        "description": "Assorted Ferrero moments praline collection",
+        "image": "https://m.media-amazon.com/images/I/71nQqD6YRZL._AC_UL320_.jpg"
+    },
+    {
+        "id": "15",
+        "name": "Pureheart Cherokee Bournville Designer Chocolate",
+        "category": "Chocolates",
+        "price_range": "Under ₹1000",
+        "link": "https://www.amazon.in/PUREHEART-Cherokee-Bournville-Chocolate-Designer/dp/B0DSC6S99F",
+        "description": "Elegant designer chocolate gift box",
+        "image": "https://m.media-amazon.com/images/I/71wZNQxWqpL._AC_UL320_.jpg"
+    },
+    {
+        "id": "16",
+        "name": "HyperFoods Diwali Gift Hamper",
+        "category": "Chocolates",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/HyperFoods%C2%AE-Diwali-Friends-Corporate-Employees/dp/B0DVLT4HSW",
+        "description": "Premium Diwali gift hamper for loved ones",
+        "image": "https://m.media-amazon.com/images/I/81sXnQRLIxL._AC_UL320_.jpg"
+    },
+    {
+        "id": "17",
+        "name": "Diwali Celebration Pataka Hamper",
+        "category": "Chocolates",
+        "price_range": "₹1500-₹2000",
+        "link": "https://www.amazon.in/Diwali-Celebration-Pataka-Hamper-Healthy/dp/B0DFWR1HHZ",
+        "description": "Festive Diwali celebration gift hamper",
+        "image": "https://m.media-amazon.com/images/I/81q0zXPSo7L._AC_UL320_.jpg"
+    },
+    
+    # Footwear
+    {
+        "id": "18",
+        "name": "FASHIMO Women's Ankle Boot",
+        "category": "Footwear",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/FASHIMO-Womens-Girls-Boot-PN1-Black-9/dp/B08T741S4M",
+        "description": "Stylish women's ankle boots for all occasions",
+        "image": "https://m.media-amazon.com/images/I/71rXNP8ue7L._AC_UL320_.jpg"
+    },
+    {
+        "id": "19",
+        "name": "Doctor Extra Soft Orthopedic Slippers",
+        "category": "Footwear",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/DOCTOR-EXTRA-SOFT-Orthopedic-D-18-Black/dp/B074CZZQ8V",
+        "description": "Comfortable orthopedic slippers for daily wear",
+        "image": "https://m.media-amazon.com/images/I/61KfV+vCgAL._AC_UL320_.jpg"
+    },
+    {
+        "id": "20",
+        "name": "Adidas Factor Running Shoes",
+        "category": "Footwear",
+        "price_range": "₹2000-₹3000",
+        "link": "https://www.amazon.in/Adidas-Factor-Running-DOVGRY-FTWWHT/dp/B08TM7PD6X",
+        "description": "Premium Adidas running shoes for fitness enthusiasts",
+        "image": "https://m.media-amazon.com/images/I/61xD+sOCFnL._AC_UL320_.jpg"
+    },
+    {
+        "id": "21",
+        "name": "ZOVIM Women's Casual Heels White",
+        "category": "Footwear",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/ZOVIM-Women-Casual-Heels-White/dp/B07YDW2FY9",
+        "description": "Elegant white casual heels for women",
+        "image": "https://m.media-amazon.com/images/I/61QwfV1HVWL._AC_UL320_.jpg"
+    },
+    {
+        "id": "22",
+        "name": "KRAFTER Synthetic Leather Casual Sneakers",
+        "category": "Footwear",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/KRAFTER-Synthetic-Leather-Casual-Womens/dp/B08GSRPZPT",
+        "description": "Comfortable synthetic leather casual sneakers",
+        "image": "https://m.media-amazon.com/images/I/71YqsC2KBML._AC_UL320_.jpg"
+    },
+    {
+        "id": "23",
+        "name": "ELISE Women's Green Sneakers",
+        "category": "Footwear",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/ELISE-Womens-Green-Sneakers-4-EVAR-WT19-69/dp/B07XGV1W54",
+        "description": "Trendy green sneakers for casual outings",
+        "image": "https://m.media-amazon.com/images/I/71jZQyWDx9L._AC_UL320_.jpg"
+    },
+    {
+        "id": "24",
+        "name": "VAGON Women's Suede Leather Sandals",
+        "category": "Footwear",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/VAGON-Womens-Suede-Leather-Sandals/dp/B075K8JYXY",
+        "description": "Comfortable suede leather sandals for women",
+        "image": "https://m.media-amazon.com/images/I/71WqrJqvB9L._AC_UL320_.jpg"
+    },
+    
+    # Watches & Jewelry
+    {
+        "id": "25",
+        "name": "Fastrack Limitless FS1+ Smartwatch",
+        "category": "Watches",
+        "price_range": "₹2000-₹3000",
+        "link": "https://www.amazon.in/Fastrack-Limitless-Watchfaces-Calculator-Smartwatch/dp/B0CJJYT2Y9",
+        "description": "Feature-rich smartwatch with multiple watch faces",
+        "image": "https://m.media-amazon.com/images/I/61QqM9xXAYL._AC_UL320_.jpg"
+    },
+    {
+        "id": "26",
+        "name": "Young Forever Designer Vintage Necklace",
+        "category": "Jewelry",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Young-Forever-Designer-Necklace-Vintage/dp/B06XCWW575",
+        "description": "Beautiful vintage designer necklace",
+        "image": "https://m.media-amazon.com/images/I/71dJX4yMKfL._AC_UL320_.jpg"
+    },
+    {
+        "id": "27",
+        "name": "Titan Smartwatch with IP68",
+        "category": "Watches",
+        "price_range": "₹3000-₹5000",
+        "link": "https://www.amazon.in/Titan-Smartwatch-Resolution-Functional-WatchfacesIP68/dp/B0CLR9LP6T",
+        "description": "Premium Titan smartwatch with water resistance",
+        "image": "https://m.media-amazon.com/images/I/61Kq8TXRF4L._AC_UL320_.jpg"
+    },
+    {
+        "id": "28",
+        "name": "Fastrack Reflex Play+ Smartwatch",
+        "category": "Watches",
+        "price_range": "₹2000-₹3000",
+        "link": "https://www.amazon.in/Fastrack-Smartwatch-Functional-Resolution-SingleSync/dp/B0CGTW2QL5",
+        "description": "Advanced Fastrack smartwatch with fitness tracking",
+        "image": "https://m.media-amazon.com/images/I/61wYnI+SejL._AC_UL320_.jpg"
+    },
+    {
+        "id": "29",
+        "name": "NIBOSI Rose Gold Stainless Steel Watch",
+        "category": "Watches",
+        "price_range": "₹1000-₹2000",
+        "link": "https://www.amazon.in/NIBOSI-Stainless-Watches-Waterproof-Color-Rose/dp/B0D147BDLB",
+        "description": "Elegant rose gold waterproof watch for women",
+        "image": "https://m.media-amazon.com/images/I/71qCeKcH6qL._AC_UL320_.jpg"
+    },
+    {
+        "id": "30",
+        "name": "Casio Vintage Digital Grey Watch",
+        "category": "Watches",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/Casio-Vintage-Digital-Grey-Watch-A158WA-1Q/dp/B000GAYQJ0",
+        "description": "Classic Casio vintage digital watch",
+        "image": "https://m.media-amazon.com/images/I/71kQOlztDtL._AC_UL320_.jpg"
+    },
+    {
+        "id": "31",
+        "name": "NIBOSI Diamond Stylish Watch",
+        "category": "Watches",
+        "price_range": "₹1000-₹2000",
+        "link": "https://www.amazon.in/NIBOSI-Watches-Analogue-Stylish-Diamond/dp/B09WMWG32M",
+        "description": "Stylish diamond-studded watch for special occasions",
+        "image": "https://m.media-amazon.com/images/I/71bqJ+5LSEL._AC_UL320_.jpg"
+    },
+    {
+        "id": "32",
+        "name": "Titan Moments Analog Women's Watch",
+        "category": "Watches",
+        "price_range": "₹2000-₹3000",
+        "link": "https://www.amazon.in/Titan-Moments-Analog-Womens-Watch-2606WM09/dp/B08LKVL1V9",
+        "description": "Elegant Titan analog watch for women",
+        "image": "https://m.media-amazon.com/images/I/71dJZGWo1nL._AC_UL320_.jpg"
+    },
+    
+    # Soft Toys & Plushies
+    {
+        "id": "33",
+        "name": "HUG n FEEL Teddy Bear 3 Feet",
+        "category": "Soft Toys",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/HUG-FEEL-SOFT-TOYS-Birthday/dp/B08X3PCGKS",
+        "description": "Large 3 feet teddy bear perfect for gifting",
+        "image": "https://m.media-amazon.com/images/I/71lTQrZrZYL._AC_UL320_.jpg"
+    },
+    {
+        "id": "34",
+        "name": "Mirada Adorable Teddy Bear",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Mirada-Adorable-Toddlers-Stuffed-Birthday/dp/B0DPC27TCF",
+        "description": "Cute and cuddly teddy bear for all ages",
+        "image": "https://m.media-amazon.com/images/I/71YqKF0sJaL._AC_UL320_.jpg"
+    },
+    {
+        "id": "35",
+        "name": "Storescent Stuffed Plushie",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Storescent-Stuffed-Plushies-Birthday-Valentine/dp/B0CKXQNXTG",
+        "description": "Adorable stuffed plushie for Valentine's Day",
+        "image": "https://m.media-amazon.com/images/I/71mXvQ8HWPL._AC_UL320_.jpg"
+    },
+    {
+        "id": "36",
+        "name": "Storio Reversible Octopus Plushie",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Storio-Octopus-Plushie-Reversible-Plush/dp/B0D6Z1YPTZ",
+        "description": "Fun reversible octopus mood plushie",
+        "image": "https://m.media-amazon.com/images/I/71xK9QDTFML._AC_UL320_.jpg"
+    },
+    {
+        "id": "37",
+        "name": "Frantic Teddy Bear - 2 Feet",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/Frantic-Non-Toxic-Birhtday-Anniversary-Valantine/dp/B0924QCJJX",
+        "description": "Soft and huggable 2 feet teddy bear",
+        "image": "https://m.media-amazon.com/images/I/71bULQo0uCL._AC_UL320_.jpg"
+    },
+    {
+        "id": "38",
+        "name": "Frantic Teddy Bear - Brown",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/Frantic-Non-Toxic-Birhtday-Anniversary-Valantine/dp/B08P7WL5VW",
+        "description": "Classic brown teddy bear for special occasions",
+        "image": "https://m.media-amazon.com/images/I/71qkd5KKNRL._AC_UL320_.jpg"
+    },
+    {
+        "id": "39",
+        "name": "Shining Diva Butterfly Necklace",
+        "category": "Jewelry",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Shining-Diva-Fashion-Butterfly-15911np/dp/B0D3DCP7JQ",
+        "description": "Elegant butterfly design necklace",
+        "image": "https://m.media-amazon.com/images/I/71H9ZEKqF7L._AC_UL320_.jpg"
+    },
+    {
+        "id": "40",
+        "name": "Niku Reversible Strawberry Plushie",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Niku-Reversible-Stuffed-plushies-Strawberry/dp/B0CPVNTZ4K",
+        "description": "Cute reversible strawberry plushie toy",
+        "image": "https://m.media-amazon.com/images/I/71wMQ9xXQyL._AC_UL320_.jpg"
+    },
+    {
+        "id": "41",
+        "name": "Babique Rabbit Stuffed Plush",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Babique-Rabbit-Stuffed-Plush-Birthday/dp/B08LTGCVQT",
+        "description": "Soft rabbit plush toy perfect for gifting",
+        "image": "https://m.media-amazon.com/images/I/71dqj+iX+jL._AC_UL320_.jpg"
+    },
+    {
+        "id": "42",
+        "name": "Gege Bear Color Changing Bear",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/Gege-Bear-Natural-Chemical-Free-Changing/dp/B0F7HMB65W",
+        "description": "Unique color-changing teddy bear",
+        "image": "https://m.media-amazon.com/images/I/71WQzMXxVBL._AC_UL320_.jpg"
+    },
+    {
+        "id": "43",
+        "name": "Pikipo Baby Rattle Toy",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Pikipo-Rattle-Squeeze-Handle-Squeaky/dp/B0BZYWTKLB",
+        "description": "Cute rattle toy for babies and toddlers",
+        "image": "https://m.media-amazon.com/images/I/71pQxN8MZXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "44",
+        "name": "VRB Artificial Crochet Bouquet",
+        "category": "Romantic",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/VRB-Dec-Artificial-Crochet-Bouquet/dp/B0DVQ75LVP",
+        "description": "Beautiful handmade crochet flower bouquet",
+        "image": "https://m.media-amazon.com/images/I/81yQlM5CHIL._AC_UL320_.jpg"
+    },
+    {
+        "id": "45",
+        "name": "Desidiya Crystal Night Lamp",
+        "category": "Home",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Desidiya-Crystal-Night-Woodern-Decorations/dp/B0D2P9JK11",
+        "description": "Elegant crystal night lamp for home decor",
+        "image": "https://m.media-amazon.com/images/I/71kXQDyDt3L._AC_UL320_.jpg"
+    },
+    {
+        "id": "46",
+        "name": "AUDBOT Strawberry Plushie",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/AUDBOT-Strawberry-Plushie-Animal-Stuffed/dp/B0DG5P5NQC",
+        "description": "Adorable strawberry stuffed animal plushie",
+        "image": "https://m.media-amazon.com/images/I/71qxK5HNKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "47",
+        "name": "Niwlix Color Changing LED Light",
+        "category": "Home",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Niwlix-Bedroom-Changing-Valentines-Birthday/dp/B0FCRSCT7K",
+        "description": "Beautiful color-changing LED decor light",
+        "image": "https://m.media-amazon.com/images/I/71dMQNx8XNL._AC_UL320_.jpg"
+    },
+    {
+        "id": "48",
+        "name": "Storio Plush Lying Stuffed Animal",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/Storio-Plush-Lying-Stuffed-Animal/dp/B0FJ624J48",
+        "description": "Large lying position stuffed animal toy",
+        "image": "https://m.media-amazon.com/images/I/71MQJ9xL8nL._AC_UL320_.jpg"
+    },
+    {
+        "id": "49",
+        "name": "Amazon Brand Penguin Soft Toy",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Amazon-Brand-Penguin-Super-Soft-Birthday/dp/B0C46HFZX6",
+        "description": "Super soft penguin plush toy",
+        "image": "https://m.media-amazon.com/images/I/61YQJ8MX9FL._AC_UL320_.jpg"
+    },
+    {
+        "id": "50",
+        "name": "Fluffybliss Reversible Octopus Plushie",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Fluffybliss-Reversible-Octopus-Stuffed-Plushie/dp/B0C8NSP666",
+        "description": "Fun reversible mood octopus plushie",
+        "image": "https://m.media-amazon.com/images/I/71WQ8Y9QXDL._AC_UL320_.jpg"
+    },
+    {
+        "id": "51",
+        "name": "AVS Shiba Inu Huggable Pillow",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/AVS-Shiba-Huggable-Valentines-Decorative/dp/B08RX76XGH",
+        "description": "Cute Shiba Inu dog huggable pillow",
+        "image": "https://m.media-amazon.com/images/I/71PQY8xZ5OL._AC_UL320_.jpg"
+    },
+    {
+        "id": "52",
+        "name": "SCOOBA Giraffe Soft Toy",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/SCOOBA-Kids-Favourite-Giraffe-Height/dp/B085TBV2Y7",
+        "description": "Tall giraffe plush toy for kids",
+        "image": "https://m.media-amazon.com/images/I/61QZ8KQ9xFL._AC_UL320_.jpg"
+    },
+    {
+        "id": "53",
+        "name": "Mirada Penguin Soft Toy Turquoise",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Mirada-Penguin-Soft-Toy-Turquoise/dp/B0F249MRNW",
+        "description": "Cute turquoise penguin plush toy",
+        "image": "https://m.media-amazon.com/images/I/71qKQ9YxZ5L._AC_UL320_.jpg"
+    },
+    {
+        "id": "54",
+        "name": "Babique Cute Brown Bear",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/Babique-Cute-Brown-Animal-Birthday/dp/B06XH26KJ4",
+        "description": "Classic brown bear stuffed animal",
+        "image": "https://m.media-amazon.com/images/I/71wQd5MPXYL._AC_UL320_.jpg"
+    },
+    {
+        "id": "55",
+        "name": "Fun4you Elephant Soft Toy",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/Fun4you-Elephant-Soft-Toy-Kids/dp/B0FHPMVWLW",
+        "description": "Adorable elephant plush toy for kids",
+        "image": "https://m.media-amazon.com/images/I/71MQ89xXKYL._AC_UL320_.jpg"
+    },
+    {
+        "id": "56",
+        "name": "Babique Tremp Plush Animal",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Babique-Tremp-Plush-Animal-Decor/dp/B0BFNNS31H",
+        "description": "Unique plush animal home decor",
+        "image": "https://m.media-amazon.com/images/I/71yQM9xXqWL._AC_UL320_.jpg"
+    },
+    {
+        "id": "57",
+        "name": "YBN Cute Panda with Bamboo",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/YBN-Cute-Panda-Plush-Bamboo/dp/B0DJ7VPN1Y",
+        "description": "Cute panda plush with bamboo accessory",
+        "image": "https://m.media-amazon.com/images/I/71QxK5HWQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "58",
+        "name": "Babique Plush Rabbit Toy",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Babique-Richy-Toys-Plush-Rabbit/dp/B01FC8RSAE",
+        "description": "Soft and cuddly rabbit plush toy",
+        "image": "https://m.media-amazon.com/images/I/71WQM8xYXDL._AC_UL320_.jpg"
+    },
+    {
+        "id": "59",
+        "name": "LOVEY DOVEY Huggable Teddy",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/LOVEY-DOVEY-Huggable-Birthday-Valentines/dp/B0F7RK17QW",
+        "description": "Extra huggable teddy bear for Valentine's",
+        "image": "https://m.media-amazon.com/images/I/71qKQ9XWYZL._AC_UL320_.jpg"
+    },
+    {
+        "id": "60",
+        "name": "Nyrwana Coffee Mug Gift Set",
+        "category": "Home",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Nyrwana-Delivering-Coffee-Mug-Birthday/dp/B09XDWKZQJ",
+        "description": "Beautiful coffee mug gift set for birthdays",
+        "image": "https://m.media-amazon.com/images/I/71MQ8YWXQZL._AC_UL320_.jpg"
+    },
+    {
+        "id": "61",
+        "name": "Storio Baby Toys Play Kit",
+        "category": "Soft Toys",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/Storio-Baby-Toys-Play-Kit/dp/B09CTQ7P15",
+        "description": "Complete baby toys play kit set",
+        "image": "https://m.media-amazon.com/images/I/71qWQ8xYXKL._AC_UL320_.jpg"
+    },
+    {
+        "id": "62",
+        "name": "Webby Plush Stuffed Animal",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Webby-Plush-Stuffed-Animal-Adorable/dp/B0B42TFR9D",
+        "description": "Adorable plush stuffed animal toy",
+        "image": "https://m.media-amazon.com/images/I/71YQ8xWKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "63",
+        "name": "ANAB GI Kawaii Mochi Squishy",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/ANAB-GI-Kawaii-Mochi-Squishy/dp/B0CZT7F8B9",
+        "description": "Cute kawaii mochi squishy toys set",
+        "image": "https://m.media-amazon.com/images/I/71WQ9xXKQYL._AC_UL320_.jpg"
+    },
+    {
+        "id": "64",
+        "name": "Birthday Combo - Scrunchies & Earrings",
+        "category": "Jewelry",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Birthday-Combo-Scrunchies-Earring-Bookmark/dp/B0BRYBRGJS",
+        "description": "Beautiful birthday combo gift set",
+        "image": "https://m.media-amazon.com/images/I/71MQ8WXKYXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "65",
+        "name": "One94Store Panda Rechargeable Lamp",
+        "category": "Home",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/One94Store-Panda-Rechargeable-Lamp-Cute/dp/B0CQGH5DFF",
+        "description": "Cute panda-shaped rechargeable LED lamp",
+        "image": "https://m.media-amazon.com/images/I/71WQ9xYKXQL._AC_UL320_.jpg"
+    },
+    {
+        "id": "66",
+        "name": "SCOOBA Avocado Cushion",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/SCOOBA-Super-Avocado-Cushion-Stuffed/dp/B08L9PFC6B",
+        "description": "Super soft avocado cushion plushie",
+        "image": "https://m.media-amazon.com/images/I/71QM8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "67",
+        "name": "Pikipo Bunny Rattle Round Handle",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Pikipo-Bunny-Rattle-Round-Handle/dp/B0BZZ79KN2",
+        "description": "Cute bunny rattle toy for babies",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "68",
+        "name": "MeeTo Clamshell Nightlight",
+        "category": "Home",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/MeeTo-Nightlight-Clamshell-Decoration-Christmas/dp/B0C58JN1FW",
+        "description": "Beautiful clamshell LED nightlight decoration",
+        "image": "https://m.media-amazon.com/images/I/71MQ9xXKYWL._AC_UL320_.jpg"
+    },
+    {
+        "id": "69",
+        "name": "Mirada Pokemon Squirtle Soft Toy",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Mirada-Pokemon-Blue-Squirtle-Soft/dp/B0DPX5BD7X",
+        "description": "Adorable Pokemon Squirtle plush toy",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "70",
+        "name": "Allen Solly Women's Sling Bag",
+        "category": "Fashion",
+        "price_range": "₹1000-₹2000",
+        "link": "https://www.amazon.in/Allen-Solly-Womens-Solid-Sling/dp/B0D3TLT5ZS",
+        "description": "Stylish Allen Solly sling bag for women",
+        "image": "https://m.media-amazon.com/images/I/71QM8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "71",
+        "name": "SCOOBA Baby Penguin Soft Toy",
+        "category": "Soft Toys",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/SCOOBA-Baby-Penguin-Soft-Toy/dp/B09TKYGSBJ",
+        "description": "Cute baby penguin plush toy",
+        "image": "https://m.media-amazon.com/images/I/71WQ9xYKXQL._AC_UL320_.jpg"
+    },
+    
+    # Health & Wellness
+    {
+        "id": "72",
+        "name": "JennaTM Sleeping Eye Mask",
+        "category": "Health & Wellness",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/JennaTM-Sleeping-Insomnia-Meditation-Circles/dp/B083JJPF5N",
+        "description": "Comfortable sleeping eye mask for better rest",
+        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "73",
+        "name": "HEALTH FIT Orthopedic Pillow",
+        "category": "Health & Wellness",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/HEALTH-FIT-Healthfit-Comfortable-Orthopedic/dp/B08BFYD4D9",
+        "description": "Comfortable orthopedic pillow for neck support",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "74",
+        "name": "JennaTM Grey Sleeping Mask",
+        "category": "Health & Wellness",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/JennaTM-Sleeping-Insomnia-Meditation-Circles/dp/B08F3KFRZL",
+        "description": "Premium grey sleeping mask for meditation",
+        "image": "https://m.media-amazon.com/images/I/71QM9xXKYWL._AC_UL320_.jpg"
+    },
+    {
+        "id": "75",
+        "name": "JennaTM Pink Sleeping Mask",
+        "category": "Health & Wellness",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/JennaTM-Sleeping-Insomnia-Meditation-Circles/dp/B083JJLXRG",
+        "description": "Soft pink sleeping mask for insomnia relief",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "76",
+        "name": "JSB Foot Massager with Vibration",
+        "category": "Health & Wellness",
+        "price_range": "₹2000-₹3000",
+        "link": "https://www.amazon.in/JSB-HF04-Improving-Circulation-Vibration/dp/B07JJ93QTM",
+        "description": "Electric foot massager for improved circulation",
+        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "77",
+        "name": "JennaTM Blue Sleeping Mask",
+        "category": "Health & Wellness",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/JennaTM-Sleeping-Insomnia-Meditation-Circles/dp/B083JHZQFC",
+        "description": "Calming blue sleeping mask for better sleep",
+        "image": "https://m.media-amazon.com/images/I/71WQ9xYKXQL._AC_UL320_.jpg"
+    },
+    {
+        "id": "78",
+        "name": "Pyrite Crystal Bracelet",
+        "category": "Health & Wellness",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Pyrite-Crystal-Bracelet-Women-Men/dp/B0B5NF98JM",
+        "description": "Natural pyrite crystal healing bracelet",
+        "image": "https://m.media-amazon.com/images/I/71QM8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "79",
+        "name": "Aqualens Daily Contact Lenses",
+        "category": "Health & Wellness",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/Aqualens-Daily-Disposable-Contact-Lenses/dp/B07ZFFSW67",
+        "description": "Comfortable daily disposable contact lenses",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    
+    # Beauty Products
+    {
+        "id": "80",
+        "name": "Colorbar Vegan Nail Lacquer",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Colorbar-Vegan-Nail-Lacquer-Talk/dp/B0B4K9BSN3",
+        "description": "Premium vegan nail polish by Colorbar",
+        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "81",
+        "name": "Colorbar Velvet Matte Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Colorbar-Velvet-Matte-Lipstick-Surprise/dp/B074F216GZ",
+        "description": "Long-lasting velvet matte lipstick",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "82",
+        "name": "Faces Splash Nail Enamel",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Faces-Splash-Enamel-Floral-Dream/dp/B0853LTFMF",
+        "description": "Vibrant nail enamel with floral design",
+        "image": "https://m.media-amazon.com/images/I/71QM9xXKYWL._AC_UL320_.jpg"
+    },
+    {
+        "id": "83",
+        "name": "SUGAR Smudge Me Not Liquid Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Sugar-Cosmetics-Smudge-Liquid-Lipstick/dp/B01N5QV746",
+        "description": "Waterproof liquid lipstick by SUGAR",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "84",
+        "name": "MyGlamm Liquid Matte Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/MyGlamm-Liquid-Matte-Lipstick-Swinger/dp/B0859Q2KXF",
+        "description": "High-pigment liquid matte lipstick",
+        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "85",
+        "name": "Bella Vita Organic Perfume Set",
+        "category": "Beauty",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/Bella-Vita-Organic-Perfumes-Fragrance/dp/B09232XNTX",
+        "description": "Organic perfume fragrance gift set",
+        "image": "https://m.media-amazon.com/images/I/71WQ9xYKXQL._AC_UL320_.jpg"
+    },
+    {
+        "id": "86",
+        "name": "Maybelline Fit Me Concealer",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Maybelline-York-Concealer-Medium-6-8ml/dp/B0046VGJJA",
+        "description": "Perfect coverage fit me concealer",
+        "image": "https://m.media-amazon.com/images/I/71QM8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "87",
+        "name": "Miss Rose Waterproof Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Miss-Rose-WaterProof-Moisturizing-LipStick/dp/B08HYRQ3LR",
+        "description": "Waterproof moisturizing lipstick set",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "88",
+        "name": "SUGAR Nothing Else Longwear Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/SUGAR-Cosmetics-Nothing-Longwear-Lipstick/dp/B07VX9M2NP",
+        "description": "Ultra-longwear matte lipstick",
+        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "89",
+        "name": "REVLON Colorstay Eyeliner",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/REVLON-Conditioning-Ingredients-Waterproof-Long-Lasting/dp/B07ZZ7DVKY",
+        "description": "Long-lasting waterproof eyeliner",
+        "image": "https://m.media-amazon.com/images/I/71WQ9xYKXQL._AC_UL320_.jpg"
+    },
+    {
+        "id": "90",
+        "name": "SUGAR POP Nail Lacquer",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/SUGAR-POP-Nail-Lacquer-Chip-resistant/dp/B09WZY9DCV",
+        "description": "Chip-resistant nail lacquer polish",
+        "image": "https://m.media-amazon.com/images/I/71QM8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "91",
+        "name": "Maybelline Superstay Matte Ink",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Maybelline-Superstay-Matte-Brooklyn-Blush/dp/B09CLD61KG",
+        "description": "Up to 16-hour stay matte liquid lipstick",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "92",
+        "name": "Lakme Cushion Matte Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Lakm%C3%A9-Cushion-Matte-Lipstick-Toast/dp/B08HSRP7QC",
+        "description": "Smooth cushion matte finish lipstick",
+        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "93",
+        "name": "Lakme Primer Lip Gloss",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Lakme-Primer-Gloss-Colour-Business/dp/B07QFF4N7Y",
+        "description": "High-shine primer lip gloss",
+        "image": "https://m.media-amazon.com/images/I/71WQ9xYKXQL._AC_UL320_.jpg"
+    },
+    {
+        "id": "94",
+        "name": "Lakme Enrich Matte Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Lakme-Enrich-Matte-Lipstick-Shade/dp/B071V63ZY2",
+        "description": "Enriched matte lipstick with vitamins",
+        "image": "https://m.media-amazon.com/images/I/71QM8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "95",
+        "name": "LAKME Absolute Stylist Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/LAKM%C3%89-Absolute-Stylist-Color-Royalty/dp/B08S51JDR2",
+        "description": "Premium stylist color lipstick",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "96",
+        "name": "Powerplay Liquid Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Powerplay-Lipstick-Lightweight-Smudgeproof-Hydrates/dp/B08N84X9TJ",
+        "description": "Lightweight smudgeproof liquid lipstick",
+        "image": "https://m.media-amazon.com/images/I/71MQ8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "97",
+        "name": "OPI Nail Lacquer Barcelona",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/P-I-Nail-Lacquer-Barefoot-Barcelona/dp/B00421X35C",
+        "description": "Professional-grade OPI nail polish",
+        "image": "https://m.media-amazon.com/images/I/71WQ9xYKXQL._AC_UL320_.jpg"
+    },
+    {
+        "id": "98",
+        "name": "Long-Lasting Transferproof Lipstick",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Long-Lasting-Lipstick-Lightweight-Transferproof-Smudgeproof/dp/B0828VX6NQ",
+        "description": "Ultra-long lasting matte lipstick",
+        "image": "https://m.media-amazon.com/images/I/71QM8xYWKXL._AC_UL320_.jpg"
+    },
+    {
+        "id": "99",
+        "name": "Faces Canada Ultime Matte Crayon",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
+        "link": "https://www.amazon.in/Facescanada-Ultime-Matte-Crayon-Coffee/dp/B07J25JRHG",
+        "description": "Easy-to-apply matte lip crayon",
+        "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
     }
 ]
 
