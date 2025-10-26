@@ -592,7 +592,7 @@ export default function ProfileContent() {
                   <TextInput
                     style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
                     value={partnerData.favorite_perfume}
-                    onChangeText={(text) => setPartnerData({...partnerData, favorite_perfume: text})}
+                    onChangeText={(text) => setPartnerData({...partnerData, perfume_preference: text})}
                     placeholder="e.g., Floral, Woody"
                     placeholderTextColor={theme.textSecondary}
                   />
