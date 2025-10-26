@@ -643,7 +643,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/Cadbury-Diwali-Chocolate-Potli-283g/dp/B07VWGZL7N",
         "description": "Beautiful Diwali chocolate potli gift pack",
-        "image": "https://m.media-amazon.com/images/I/81pUlQfQ7sL._AC_UL320_.jpg"
+        "image": "https://images.pexels.com/photos/21581347/pexels-photo-21581347.jpeg?auto=compress&cs=tinysrgb&w=400"
     },
     {
         "id": "8",
@@ -652,7 +652,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹1000",
         "link": "https://www.amazon.in/Ferrero-78205-Rocher-16-Pieces/dp/B00BYQEIL6",
         "description": "Premium Ferrero Rocher chocolate gift box",
-        "image": "https://m.media-amazon.com/images/I/81jS0QL24KL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1644766532391-e5fc3ed1bbb0?w=400&q=80"
     },
     {
         "id": "9",
@@ -661,7 +661,7 @@ GIFT_IDEAS = [
         "price_range": "₹1000-₹1500",
         "link": "https://www.amazon.in/Ferrero-Rocher-Pack-24-Pieces/dp/B07G9GDQJD",
         "description": "Luxurious 24-piece Ferrero Rocher collection",
-        "image": "https://m.media-amazon.com/images/I/71wXbqL8FFL._AC_UL320_.jpg"
+        "image": "https://images.pexels.com/photos/7407224/pexels-photo-7407224.jpeg?auto=compress&cs=tinysrgb&w=400"
     },
     {
         "id": "10",
