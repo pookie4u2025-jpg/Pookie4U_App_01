@@ -809,7 +809,7 @@ GIFT_IDEAS = [
         "price_range": "₹2000-₹3000",
         "link": "https://www.amazon.in/Fastrack-Limitless-Watchfaces-Calculator-Smartwatch/dp/B0CJJYT2Y9",
         "description": "Feature-rich smartwatch with multiple watch faces",
-        "image": "https://m.media-amazon.com/images/I/61QqM9xXAYL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400&q=80"
     },
     {
         "id": "26",
@@ -818,7 +818,7 @@ GIFT_IDEAS = [
         "price_range": "Under ₹500",
         "link": "https://www.amazon.in/Young-Forever-Designer-Necklace-Vintage/dp/B06XCWW575",
         "description": "Beautiful vintage designer necklace",
-        "image": "https://m.media-amazon.com/images/I/71dJX4yMKfL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1643300866907-032b3baeeb1f?w=400&q=80"
     },
     {
         "id": "27",
@@ -827,7 +827,7 @@ GIFT_IDEAS = [
         "price_range": "₹3000-₹5000",
         "link": "https://www.amazon.in/Titan-Smartwatch-Resolution-Functional-WatchfacesIP68/dp/B0CLR9LP6T",
         "description": "Premium Titan smartwatch with water resistance",
-        "image": "https://m.media-amazon.com/images/I/61Kq8TXRF4L._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1660844817855-3ecc7ef21f12?w=400&q=80"
     },
     {
         "id": "28",
@@ -836,7 +836,7 @@ GIFT_IDEAS = [
         "price_range": "₹2000-₹3000",
         "link": "https://www.amazon.in/Fastrack-Smartwatch-Functional-Resolution-SingleSync/dp/B0CGTW2QL5",
         "description": "Advanced Fastrack smartwatch with fitness tracking",
-        "image": "https://m.media-amazon.com/images/I/61wYnI+SejL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400&q=80"
     },
     {
         "id": "29",
@@ -845,7 +845,7 @@ GIFT_IDEAS = [
         "price_range": "₹1000-₹2000",
         "link": "https://www.amazon.in/NIBOSI-Stainless-Watches-Waterproof-Color-Rose/dp/B0D147BDLB",
         "description": "Elegant rose gold waterproof watch for women",
-        "image": "https://m.media-amazon.com/images/I/71qCeKcH6qL._AC_UL320_.jpg"
+        "image": "https://images.unsplash.com/photo-1660844817855-3ecc7ef21f12?w=400&q=80"
     },
     {
         "id": "30",
