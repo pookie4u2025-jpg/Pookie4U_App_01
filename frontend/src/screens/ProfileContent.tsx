@@ -21,6 +21,7 @@ import { useAppStore } from '../stores/useAppStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { formatDateWithDashes } from '../utils/DateFormatter';
 import { FeedbackModal } from '../components/FeedbackModal';
+import { ReferralCard } from '../components/ReferralCard';
 
 export default function ProfileContent() {
   const { user, logout, updatePartnerProfile, updateRelationshipMode, updateProfileImage, token } = useAuthStore();
