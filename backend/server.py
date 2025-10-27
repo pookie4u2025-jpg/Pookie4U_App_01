@@ -4221,22 +4221,11 @@ async def check_reward_milestone(
 @api_router.post("/rewards/redeem")
 async def redeem_reward(
     redemption: RewardRedemption,
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    current_user: dict = Depends(get_current_user)
 ):
     """Redeem reward when user reaches 1000 points"""
     try:
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        current_points = user.get("points", 0)
+        current_points = current_user.get("points", 0)
         
         # Check if user has enough points
         if current_points < 1000:
@@ -4251,7 +4240,7 @@ async def redeem_reward(
                 raise HTTPException(status_code=400, detail="Valid UPI ID is required for UPI transfer")
         
         # Calculate cycle number
-        cycles_completed = user.get("reward_cycles_completed", 0)
+        cycles_completed = current_user.get("reward_cycles_completed", 0)
         new_cycle_number = cycles_completed + 1
         
         # Calculate remaining points after redemption
@@ -4264,9 +4253,9 @@ async def redeem_reward(
         
         # Create reward record
         reward_doc = {
-            "user_id": str(user["_id"]),
-            "user_email": email,
-            "user_name": user.get("name", "User"),
+            "user_id": str(current_user["_id"]),
+            "user_email": current_user["email"],
+            "user_name": current_user.get("name", "User"),
             "reward_type": redemption.reward_type,
             "amount": redemption.amount if redemption.reward_type == "upi_transfer" else None,
             "upi_id": redemption.upi_id if redemption.reward_type == "upi_transfer" else None,
@@ -4286,7 +4275,7 @@ async def redeem_reward(
         
         # Update user points and cycle count
         await db.users.update_one(
-            {"_id": user["_id"]},
+            {"_id": current_user["_id"]},
             {
                 "$set": {
                     "points": remaining_points,
@@ -4297,10 +4286,10 @@ async def redeem_reward(
         )
         
         # Send notification for instant approval (gift coupon)
-        if redemption.reward_type == "gift_coupon" and user.get("push_token"):
+        if redemption.reward_type == "gift_coupon" and current_user.get("push_token"):
             try:
                 push_notification_service.send_reward_approved_notification(
-                    push_token=user["push_token"],
+                    push_token=current_user["push_token"],
                     reward_type="gift_coupon",
                     coupon_code=coupon_code
                 )
