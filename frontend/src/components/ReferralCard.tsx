@@ -135,6 +135,37 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
           Invite friends and you both earn 50 points!
         </Text>
 
+        {/* Current Points Progress */}
+        <View style={[styles.progressContainer, { backgroundColor: theme.background }]}>
+          <View style={styles.progressHeader}>
+            <Text style={[styles.progressLabel, { color: theme.textSecondary }]}>
+              Your Points
+            </Text>
+            <Text style={[styles.progressPoints, { color: '#FFD700' }]}>
+              {currentPoints} / 1000
+            </Text>
+          </View>
+          <View style={styles.progressBarContainer}>
+            <View 
+              style={[
+                styles.progressBar, 
+                { width: `${Math.min((currentPoints / 1000) * 100, 100)}%` }
+              ]} 
+            />
+          </View>
+          {currentPoints >= 1000 && (
+            <TouchableOpacity 
+              style={styles.redeemBanner}
+              onPress={() => setShowMilestoneModal(true)}
+            >
+              <Ionicons name="trophy" size={20} color="#FFD700" />
+              <Text style={styles.redeemBannerText}>
+                🎉 You can redeem a reward! Tap here
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
         {/* Referral Code Display */}
         <View style={[styles.codeContainer, { backgroundColor: theme.background }]}>
           <View>
@@ -220,6 +251,17 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
           onAnimationEnd={() => setShowConfetti(false)}
         />
       )}
+
+      {/* Reward Milestone Modal */}
+      <RewardMilestoneModal
+        visible={showMilestoneModal}
+        onClose={() => setShowMilestoneModal(false)}
+        currentPoints={currentPoints}
+        onRedeemSuccess={(remainingPoints) => {
+          setCurrentPoints(remainingPoints);
+          checkMilestone();
+        }}
+      />
     </>
   );
 };
