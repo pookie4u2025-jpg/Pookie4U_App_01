@@ -4478,3 +4478,6 @@ async def approve_reward(
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
+
+# Include API router with all endpoints
+app.include_router(api_router)
