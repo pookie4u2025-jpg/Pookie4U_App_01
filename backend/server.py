@@ -4012,38 +4012,27 @@ class ReferralCode(BaseModel):
 
 @api_router.get("/referral/my-code")
 async def get_my_referral_code(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    current_user: dict = Depends(get_current_user)
 ):
     """Get or generate user's referral code"""
     try:
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
         # Generate referral code if doesn't exist
-        if not user.get("referral_code"):
+        if not current_user.get("referral_code"):
             while True:
                 code = generate_referral_code()
                 # Check if code already exists
                 existing = await db.users.find_one({"referral_code": code})
                 if not existing:
                     await db.users.update_one(
-                        {"email": email},
+                        {"_id": current_user["_id"]},
                         {"$set": {"referral_code": code}}
                     )
                     break
         else:
-            code = user["referral_code"]
+            code = current_user["referral_code"]
         
         # Get referral stats
-        referrals_count = await db.users.count_documents({"referred_by": str(user["_id"])})
+        referrals_count = await db.users.count_documents({"referred_by": str(current_user["_id"])})
         points_earned = referrals_count * 50
         
         return {
