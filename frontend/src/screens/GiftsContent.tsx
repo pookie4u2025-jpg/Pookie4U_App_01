@@ -16,6 +16,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { useCardAnimation, useFadeInAnimation } from '../utils/animations';
 import { buttonPress } from '../utils/HapticsManager';
+import { GiftSearchBar } from '../components/GiftSearchBar';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -35,9 +36,11 @@ export default function GiftsContent() {
   
   const [gifts, setGifts] = useState<Gift[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-
-  const categories = ['All', 'Romantic', 'Chocolates', 'Footwear', 'Watches', 'Jewelry', 'Soft Toys', 'Health & Wellness', 'Beauty', 'Home', 'Fashion'];
+  const [searching, setSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<Gift[]>([]);
+  const [totalResults, setTotalResults] = useState(0);
+  const [hasActiveSearch, setHasActiveSearch] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
     fetchGifts();
@@ -58,8 +61,49 @@ export default function GiftsContent() {
     }
   };
 
+  const handleSearch = async (query: string, budget: string | null, category: string | null) => {
+    // If no search params, show all gifts
+    if (!query && !budget && !category) {
+      setHasActiveSearch(false);
+      setSearchResults([]);
+      setSuggestions([]);
+      return;
+    }
+
+    setSearching(true);
+    setHasActiveSearch(true);
+    
+    try {
+      const params = new URLSearchParams();
+      if (query) params.append('query', query);
+      if (budget) params.append('budget', budget);
+      if (category && category !== 'All') params.append('category', category);
+
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/gifts/search?${params.toString()}`
+      );
+      const data = await response.json();
+
+      if (data.success) {
+        setSearchResults(data.gifts || []);
+        setTotalResults(data.total_results || 0);
+        setSuggestions(data.suggestions || []);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      Alert.alert('Error', 'Failed to search gifts');
+    } finally {
+      setSearching(false);
+    }
+  };
+
   const onRefresh = async () => {
     await fetchGifts();
+    if (hasActiveSearch) {
+      setHasActiveSearch(false);
+      setSearchResults([]);
+      setSuggestions([]);
+    }
   };
 
   const openLink = async (url: string, giftName: string) => {
