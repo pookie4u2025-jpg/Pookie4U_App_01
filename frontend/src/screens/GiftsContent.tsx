@@ -195,7 +195,7 @@ export default function GiftsContent() {
 
         {/* Gifts Grid */}
         <View style={styles.giftsContainer}>
-          {filteredGifts.map((gift, index) => (
+          {displayedGifts.map((gift, index) => (
             <AnimatedTouchable 
               key={gift.id} 
               style={[styles.giftCard, { backgroundColor: theme.surface }]}
