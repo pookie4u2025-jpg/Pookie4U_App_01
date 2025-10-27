@@ -696,6 +696,9 @@ export default function ProfileContent() {
             </View>
           </View>
 
+          {/* Referral/Invite & Earn Card */}
+          <ReferralCard theme={theme} />
+
           {/* Account Actions */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: theme.text }]}>Account 👤</Text>
