@@ -1482,6 +1482,134 @@ GIFT_IDEAS = [
         "link": "https://www.amazon.in/Facescanada-Ultime-Matte-Crayon-Coffee/dp/B07J25JRHG",
         "description": "Easy-to-apply matte lip crayon",
         "image": "https://m.media-amazon.com/images/I/71WQ8xYKQXL._AC_UL320_.jpg"
+    },
+    
+    # Additional Amazon Products
+    {
+        "id": "100",
+        "name": "Premium Gift Item",
+        "category": "Romantic",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/dp/B0BH92CHFW",
+        "description": "Special gift item perfect for romantic occasions",
+        "image": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&q=80"
+    },
+    {
+        "id": "101",
+        "name": "Classic Gift Set",
+        "category": "Home",
+        "price_range": "Under ₹1000",
+        "link": "https://www.amazon.in/dp/B00J59NFD6",
+        "description": "Timeless gift set for your loved one",
+        "image": "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&q=80"
+    },
+    {
+        "id": "102",
+        "name": "Elegant Accessory",
+        "category": "Fashion",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/dp/B0BMLRHC6T",
+        "description": "Stylish accessory to complement any outfit",
+        "image": "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400&q=80"
+    },
+    {
+        "id": "103",
+        "name": "Premium Lifestyle Product",
+        "category": "Home",
+        "price_range": "₹1000-₹2000",
+        "link": "https://www.amazon.in/dp/B0C6FBL956",
+        "description": "High-quality lifestyle product for everyday use",
+        "image": "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=80"
+    },
+    {
+        "id": "104",
+        "name": "Designer Collection Item",
+        "category": "Fashion",
+        "price_range": "₹1500-₹2000",
+        "link": "https://www.amazon.in/dp/B0D311G6W3",
+        "description": "Exclusive designer piece from premium collection",
+        "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80"
+    },
+    {
+        "id": "105",
+        "name": "Luxury Gift Box",
+        "category": "Romantic",
+        "price_range": "₹2000-₹3000",
+        "link": "https://www.amazon.in/dp/B0CRBGQ33H",
+        "description": "Luxurious gift box perfect for special celebrations",
+        "image": "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=400&q=80"
+    },
+    {
+        "id": "106",
+        "name": "Modern Tech Accessory",
+        "category": "Watches",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/dp/B0CQ4JT6NT",
+        "description": "Contemporary tech accessory with modern design",
+        "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80"
+    },
+    {
+        "id": "107",
+        "name": "Premium Care Set",
+        "category": "Beauty",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/dp/B0BG8W7PJ7",
+        "description": "Complete care set with premium products",
+        "image": "https://images.unsplash.com/photo-1596704017254-9b121068ec31?w=400&q=80"
+    },
+    {
+        "id": "108",
+        "name": "Deluxe Beauty Collection",
+        "category": "Beauty",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/dp/B0BG8X8XTC",
+        "description": "Deluxe beauty collection for special occasions",
+        "image": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&q=80"
+    },
+    {
+        "id": "109",
+        "name": "Comfort Essential",
+        "category": "Home",
+        "price_range": "Under ₹1000",
+        "link": "https://www.amazon.in/dp/B0CXJG8JPV",
+        "description": "Essential comfort item for home relaxation",
+        "image": "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&q=80"
+    },
+    {
+        "id": "110",
+        "name": "Wellness Gift Pack",
+        "category": "Health & Wellness",
+        "price_range": "₹500-₹1000",
+        "link": "https://www.amazon.in/dp/B0F7HF1DR7",
+        "description": "Thoughtful wellness gift pack for better health",
+        "image": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=400&q=80"
+    },
+    {
+        "id": "111",
+        "name": "Stylish Everyday Item",
+        "category": "Fashion",
+        "price_range": "Under ₹1000",
+        "link": "https://www.amazon.in/dp/B09S3SRKMT",
+        "description": "Stylish item perfect for daily wear",
+        "image": "https://images.unsplash.com/photo-1509319117032-f5b5c14f455b?w=400&q=80"
+    },
+    {
+        "id": "112",
+        "name": "Contemporary Design Piece",
+        "category": "Home",
+        "price_range": "₹1000-₹1500",
+        "link": "https://www.amazon.in/dp/B0D813X5DL",
+        "description": "Modern design piece for contemporary homes",
+        "image": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=400&q=80"
+    },
+    {
+        "id": "113",
+        "name": "Special Occasion Gift",
+        "category": "Romantic",
+        "price_range": "₹1000-₹2000",
+        "link": "https://www.amazon.in/dp/B09QD29JRP",
+        "description": "Perfect gift for memorable special occasions",
+        "image": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=400&q=80"
     }
 ]
 
