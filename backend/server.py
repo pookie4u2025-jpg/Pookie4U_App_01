@@ -4080,6 +4080,256 @@ async def get_referral_stats(
         logger.error(f"Error getting referral stats: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to get referral stats: {str(e)}")
 
+# ==================== REWARD MILESTONE SYSTEM ====================
+
+class RewardRedemption(BaseModel):
+    reward_type: Literal["upi_transfer", "gift_coupon"]
+    upi_id: Optional[str] = None  # Required for UPI transfers
+    amount: int = 100  # Fixed amount for now
+
+@api_router.get("/rewards/check-milestone")
+async def check_reward_milestone(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Check if user has reached 1000 points milestone"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        points = user.get("points", 0)
+        eligible = points >= 1000
+        cycles_completed = user.get("reward_cycles_completed", 0)
+        
+        return {
+            "success": True,
+            "eligible": eligible,
+            "current_points": points,
+            "points_to_milestone": max(0, 1000 - points),
+            "cycles_completed": cycles_completed
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error checking milestone: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to check milestone: {str(e)}")
+
+@api_router.post("/rewards/redeem")
+async def redeem_reward(
+    redemption: RewardRedemption,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Redeem reward when user reaches 1000 points"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        current_points = user.get("points", 0)
+        
+        # Check if user has enough points
+        if current_points < 1000:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Insufficient points. You have {current_points} points, need 1000."
+            )
+        
+        # Validate UPI ID if UPI transfer
+        if redemption.reward_type == "upi_transfer":
+            if not redemption.upi_id or len(redemption.upi_id) < 3:
+                raise HTTPException(status_code=400, detail="Valid UPI ID is required for UPI transfer")
+        
+        # Calculate cycle number
+        cycles_completed = user.get("reward_cycles_completed", 0)
+        new_cycle_number = cycles_completed + 1
+        
+        # Calculate remaining points after redemption
+        remaining_points = current_points - 1000
+        
+        # Generate coupon code for gift coupon option
+        coupon_code = None
+        if redemption.reward_type == "gift_coupon":
+            coupon_code = f"POOKIE-{secrets.token_hex(4).upper()}"
+        
+        # Create reward record
+        reward_doc = {
+            "user_id": str(user["_id"]),
+            "user_email": email,
+            "user_name": user.get("name", "User"),
+            "reward_type": redemption.reward_type,
+            "amount": redemption.amount if redemption.reward_type == "upi_transfer" else None,
+            "upi_id": redemption.upi_id if redemption.reward_type == "upi_transfer" else None,
+            "coupon_code": coupon_code,
+            "cycle_number": new_cycle_number,
+            "status": "pending" if redemption.reward_type == "upi_transfer" else "approved",
+            "points_redeemed": 1000,
+            "points_before": current_points,
+            "points_after": remaining_points,
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat(),
+            "approved_at": datetime.utcnow().isoformat() if redemption.reward_type == "gift_coupon" else None,
+            "approved_by": "system" if redemption.reward_type == "gift_coupon" else None
+        }
+        
+        result = await db.rewards.insert_one(reward_doc)
+        
+        # Update user points and cycle count
+        await db.users.update_one(
+            {"_id": user["_id"]},
+            {
+                "$set": {
+                    "points": remaining_points,
+                    "reward_cycles_completed": new_cycle_number,
+                    "last_reward_at": datetime.utcnow().isoformat()
+                }
+            }
+        )
+        
+        response_message = ""
+        if redemption.reward_type == "upi_transfer":
+            response_message = f"UPI transfer request submitted! You'll receive ₹{redemption.amount} once approved by admin."
+        else:
+            response_message = f"Congratulations! Your gift coupon code is: {coupon_code}"
+        
+        return {
+            "success": True,
+            "message": response_message,
+            "reward_id": str(result.inserted_id),
+            "reward_type": redemption.reward_type,
+            "cycle_number": new_cycle_number,
+            "coupon_code": coupon_code,
+            "remaining_points": remaining_points,
+            "status": reward_doc["status"]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error redeeming reward: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to redeem reward: {str(e)}")
+
+@api_router.get("/rewards/history")
+async def get_reward_history(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get user's reward redemption history"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get all rewards for this user
+        rewards = await db.rewards.find(
+            {"user_id": str(user["_id"])}
+        ).sort("created_at", -1).to_list(length=100)
+        
+        # Convert ObjectId to string
+        for reward in rewards:
+            reward["_id"] = str(reward["_id"])
+        
+        return {
+            "success": True,
+            "total_redemptions": len(rewards),
+            "rewards": rewards,
+            "current_points": user.get("points", 0),
+            "cycles_completed": user.get("reward_cycles_completed", 0)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching reward history: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch reward history: {str(e)}")
+
+@api_router.get("/admin/rewards/pending")
+async def get_pending_rewards(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Admin endpoint to get all pending reward requests"""
+    try:
+        # TODO: Add admin authentication check
+        
+        pending_rewards = await db.rewards.find(
+            {"status": "pending"}
+        ).sort("created_at", -1).to_list(length=100)
+        
+        for reward in pending_rewards:
+            reward["_id"] = str(reward["_id"])
+        
+        return {
+            "success": True,
+            "pending_count": len(pending_rewards),
+            "rewards": pending_rewards
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching pending rewards: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch pending rewards: {str(e)}")
+
+@api_router.post("/admin/rewards/{reward_id}/approve")
+async def approve_reward(
+    reward_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Admin endpoint to approve a reward request"""
+    try:
+        # TODO: Add admin authentication check
+        
+        from bson import ObjectId
+        
+        reward = await db.rewards.find_one({"_id": ObjectId(reward_id)})
+        if not reward:
+            raise HTTPException(status_code=404, detail="Reward not found")
+        
+        if reward["status"] != "pending":
+            raise HTTPException(status_code=400, detail="Reward is not pending")
+        
+        # Update reward status
+        await db.rewards.update_one(
+            {"_id": ObjectId(reward_id)},
+            {
+                "$set": {
+                    "status": "approved",
+                    "approved_at": datetime.utcnow().isoformat(),
+                    "approved_by": "admin",
+                    "updated_at": datetime.utcnow().isoformat()
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Reward approved successfully"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error approving reward: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to approve reward: {str(e)}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
