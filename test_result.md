@@ -553,11 +553,11 @@ backend:
 
   - task: "Referral & Reward System"
     implemented: true
-    working: "NA"
+    working: false
     file: "backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
@@ -568,6 +568,9 @@ backend:
         - working: "NA"
         - agent: "main"
         - comment: "Fixed 401 Unauthorized errors in ReferralCard component. Updated fetchUserPoints to get total_points from /api/user/profile endpoint which includes both task and referral points. Enhanced error handling for auth failures. Updated code display to show 'Login Required' or 'Error' messages instead of 'Loading...' when authentication fails. Moved ReferralCard to bottom of Profile page (before Account Actions section). Ready for backend and frontend testing."
+        - working: false
+        - agent: "testing"
+        - comment: "🚨 CRITICAL BACKEND AUTHENTICATION BUG IDENTIFIED: Conducted comprehensive testing of Referral & Reward System backend endpoints with 11 test cases achieving 45.5% success rate (5/11 tests passed). ROOT CAUSE FOUND: JWT authentication mismatch in referral/reward endpoints. The endpoints manually decode JWT tokens expecting 'email' field in payload, but registration/login create tokens with 'sub' (user_id) field only. SPECIFIC FAILURES: ❌ GET /api/referral/my-code returns 401 'Invalid authentication credentials' with valid JWT tokens. ❌ GET /api/rewards/check-milestone returns 401 'Invalid authentication credentials' with valid JWT tokens. ❌ Invalid token handling returns 500 errors instead of proper 401 responses due to JWT decode exceptions. AUTHENTICATION ANALYSIS: ✅ User registration/login working correctly (creates JWT with {'sub': user_id}). ✅ Standard endpoints like GET /api/user/profile work correctly using get_current_user dependency. ❌ Referral/reward endpoints use manual JWT decoding expecting payload.get('email') which doesn't exist. SOLUTION REQUIRED: Replace manual JWT decoding in referral/reward endpoints with standard get_current_user dependency to match authentication pattern used by working endpoints. This explains the user-reported 401 Unauthorized errors in ReferralCard frontend component."
 
 frontend:
   - task: "Subscription Screen UI"
