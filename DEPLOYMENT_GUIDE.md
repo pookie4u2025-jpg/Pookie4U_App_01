@@ -8,7 +8,7 @@ Your app is ready to be built and shared with friends for testing!
 
 ## 📋 PRE-BUILD CHECKLIST (ALREADY DONE!)
 
-✅ **Backend accessible:** https://pookie-couple-1.preview.emergentagent.com
+✅ **Backend accessible:** https://couple-referrals.preview.emergentagent.com
 ✅ **Frontend configured:** EXPO_PUBLIC_BACKEND_URL set correctly
 ✅ **EAS configuration:** eas.json created
 ✅ **App configuration:** app.json ready
@@ -328,7 +328,7 @@ eas login
 
 ### **"Backend not connecting"**
 - Check preview URL is still active
-- Test: `curl https://pookie-couple-1.preview.emergentagent.com/api/gifts`
+- Test: `curl https://couple-referrals.preview.emergentagent.com/api/gifts`
 - Restart backend if needed
 
 ### **"Push notifications not working"**
@@ -339,7 +339,7 @@ eas login
 ### **"Google OAuth redirect_uri_mismatch"**
 - Add redirect URI to Google Cloud Console:
   ```
-  https://pookie-couple-1.preview.emergentagent.com
+  https://couple-referrals.preview.emergentagent.com
   ```
 
 ---

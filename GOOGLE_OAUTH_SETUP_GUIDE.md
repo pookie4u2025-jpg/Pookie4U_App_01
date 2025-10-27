@@ -42,7 +42,7 @@
 4. **Authorized redirect URIs**: Add these URLs:
    ```
    https://auth.expo.io/@your-expo-username/pookie4u
-   https://pookie-couple-1.preview.emergentagent.com/auth/callback
+   https://couple-referrals.preview.emergentagent.com/auth/callback
    ```
 5. Click **"Create"** 
 6. **💾 SAVE**: Copy the **Client ID** and **Client Secret**
@@ -105,12 +105,12 @@ After adding credentials:
 
 ## 🚨 Important URLs
 
-**Your Expo App URL**: https://pookie-couple-1.preview.emergentagent.com
+**Your Expo App URL**: https://couple-referrals.preview.emergentagent.com
 
 **Authorized Redirect URIs to Add**:
 ```
 https://auth.expo.io/@your-expo-username/pookie4u
-https://pookie-couple-1.preview.emergentagent.com/auth/callback
+https://couple-referrals.preview.emergentagent.com/auth/callback
 ```
 
 ## 📱 Testing Checklist

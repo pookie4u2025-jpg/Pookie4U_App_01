@@ -11,7 +11,7 @@ from typing import Dict, List, Any
 from collections import Counter
 
 # Configuration
-BACKEND_URL = "https://pookie-couple-1.preview.emergentagent.com"
+BACKEND_URL = "https://couple-referrals.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class GiftsEndpointTester:
