@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { useAuthStore } from '../stores/useAuthStore';
+import { RewardMilestoneModal } from './RewardMilestoneModal';
 
 interface ReferralData {
   code: string;
@@ -28,12 +29,39 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
   const [referralData, setReferralData] = useState<ReferralData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [currentPoints, setCurrentPoints] = useState(0);
+  const [showMilestoneModal, setShowMilestoneModal] = useState(false);
   const confettiRef = useRef<any>(null);
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
 
   useEffect(() => {
     fetchReferralCode();
+    checkMilestone();
   }, []);
+
+  const checkMilestone = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/rewards/check-milestone`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setCurrentPoints(data.current_points);
+        // Auto-show milestone modal if eligible
+        if (data.eligible && data.current_points >= 1000) {
+          setTimeout(() => setShowMilestoneModal(true), 1000);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking milestone:', error);
+    }
+  };
 
   const fetchReferralCode = async () => {
     try {
