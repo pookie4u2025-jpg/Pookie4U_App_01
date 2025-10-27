@@ -81,12 +81,28 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
         }
       );
 
-      const data = await response.json();
-      if (response.ok && data.success) {
-        setReferralData(data);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setReferralData(data);
+        }
+      } else {
+        // If endpoint fails, set default data
+        console.log('Referral endpoint failed, using defaults');
+        setReferralData({
+          code: 'N/A',
+          referrals_count: 0,
+          points_earned: 0
+        });
       }
     } catch (error) {
       console.error('Error fetching referral code:', error);
+      // Set default data on error
+      setReferralData({
+        code: 'N/A',
+        referrals_count: 0,
+        points_earned: 0
+      });
     } finally {
       setLoading(false);
     }
