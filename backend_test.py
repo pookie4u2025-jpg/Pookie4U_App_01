@@ -54,7 +54,7 @@ class ReferralRewardTester:
                 "name": f"Referral Test User {timestamp}"
             }
             
-            response = await self.client.post(f"{API_BASE}/register", json=register_data)
+            response = await self.client.post(f"{API_BASE}/auth/register", json=register_data)
             
             if response.status_code == 200:
                 data = response.json()
@@ -615,7 +615,7 @@ class ReferralRewardTester:
                 "name": f"Referral Test User 2 {timestamp}"
             }
             
-            response = await self.client.post(f"{API_BASE}/register", json=register_data)
+            response = await self.client.post(f"{API_BASE}/auth/register", json=register_data)
             
             if response.status_code != 200:
                 await self.log_result(
