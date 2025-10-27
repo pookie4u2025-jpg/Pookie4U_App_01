@@ -716,6 +716,14 @@ export default function ProfileContent() {
                 <Text style={[styles.actionText, { color: '#2196F3' }]}>Reset Onboarding</Text>
               </TouchableOpacity>
               
+              <TouchableOpacity 
+                style={[styles.actionItem, { borderBottomColor: theme.border }]}
+                onPress={() => setFeedbackModalVisible(true)}
+              >
+                <Ionicons name="chatbox-ellipses" size={20} color="#FF1493" />
+                <Text style={[styles.actionText, { color: '#FF1493' }]}>Feedback & Suggestions</Text>
+              </TouchableOpacity>
+              
               <TouchableOpacity style={[styles.actionItem, { borderBottomColor: theme.border }]} onPress={handleLogout}>
                 <Ionicons name="log-out" size={20} color="#FF5722" />
                 <Text style={[styles.actionText, { color: '#FF5722' }]}>Logout</Text>
