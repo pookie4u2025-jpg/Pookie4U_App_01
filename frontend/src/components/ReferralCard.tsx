@@ -315,7 +315,7 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
         currentPoints={currentPoints}
         onRedeemSuccess={(remainingPoints) => {
           setCurrentPoints(remainingPoints);
-          checkMilestone();
+          fetchUserPoints();
         }}
       />
     </>
