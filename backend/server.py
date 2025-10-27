@@ -2856,6 +2856,116 @@ async def generate_tasks_manually(
 async def get_gift_ideas():
     return {"gifts": GIFT_IDEAS}
 
+@api_router.get("/gifts/search")
+async def search_gifts(
+    query: Optional[str] = None,
+    budget: Optional[str] = None,
+    category: Optional[str] = None
+):
+    """Search and filter gifts by occasion, budget, category, or product name"""
+    
+    # Occasion to category mapping
+    occasion_mapping = {
+        "birthday": ["Chocolates", "Watches", "Jewelry", "Soft Toys", "Fashion", "Home", "Beauty"],
+        "anniversary": ["Romantic", "Jewelry", "Watches", "Chocolates", "Beauty"],
+        "valentine": ["Romantic", "Chocolates", "Jewelry", "Soft Toys", "Beauty"],
+        "valentines": ["Romantic", "Chocolates", "Jewelry", "Soft Toys", "Beauty"],
+        "wedding": ["Jewelry", "Watches", "Romantic", "Home"],
+        "christmas": ["Chocolates", "Soft Toys", "Home", "Jewelry"],
+        "diwali": ["Chocolates", "Jewelry", "Home", "Watches"],
+        "graduation": ["Watches", "Fashion", "Home", "Jewelry"],
+        "romantic": ["Romantic", "Chocolates", "Jewelry"],
+        "love": ["Romantic", "Chocolates", "Jewelry", "Soft Toys"]
+    }
+    
+    # Budget mapping
+    budget_ranges = {
+        "under_500": ["Under ₹500"],
+        "under_1000": ["Under ₹500", "Under ₹1000", "₹500-₹1000"],
+        "under_2000": ["Under ₹500", "Under ₹1000", "₹500-₹1000", "₹1000-₹1500", "₹1000-₹2000"],
+        "luxury": ["₹2000-₹3000", "₹3000-₹5000", "₹1500-₹2000"]
+    }
+    
+    filtered_gifts = GIFT_IDEAS.copy()
+    filters_applied = {
+        "occasion": None,
+        "budget": None,
+        "category": None,
+        "search_term": None
+    }
+    
+    # Apply filters
+    if query:
+        query_lower = query.lower().strip()
+        filters_applied["search_term"] = query
+        
+        # Check if query matches an occasion
+        matched_occasion = None
+        for occasion, categories in occasion_mapping.items():
+            if occasion in query_lower:
+                matched_occasion = occasion
+                filters_applied["occasion"] = occasion
+                # Filter by occasion categories
+                filtered_gifts = [g for g in filtered_gifts if g["category"] in categories]
+                break
+        
+        # Check if query contains budget keywords
+        if "under 500" in query_lower or "500" in query_lower and "1000" not in query_lower:
+            budget = "under_500"
+            filters_applied["budget"] = "under_500"
+        elif "under 1000" in query_lower or "1000" in query_lower:
+            budget = "under_1000"
+            filters_applied["budget"] = "under_1000"
+        elif "under 2000" in query_lower or "2000" in query_lower:
+            budget = "under_2000"
+            filters_applied["budget"] = "under_2000"
+        elif "luxury" in query_lower or "expensive" in query_lower or "premium" in query_lower:
+            budget = "luxury"
+            filters_applied["budget"] = "luxury"
+        
+        # If not an occasion, search in name and description
+        if not matched_occasion:
+            filtered_gifts = [
+                g for g in filtered_gifts 
+                if query_lower in g["name"].lower() 
+                or query_lower in g["description"].lower()
+                or query_lower in g["category"].lower()
+            ]
+    
+    # Apply budget filter
+    if budget:
+        budget_filter = budget_ranges.get(budget, [])
+        if budget_filter:
+            filters_applied["budget"] = budget
+            filtered_gifts = [g for g in filtered_gifts if g["price_range"] in budget_filter]
+    
+    # Apply category filter
+    if category and category != "All":
+        filters_applied["category"] = category
+        filtered_gifts = [g for g in filtered_gifts if g["category"] == category]
+    
+    # Generate suggestions based on results
+    suggestions = []
+    if len(filtered_gifts) == 0:
+        suggestions = [
+            "chocolates under 1000",
+            "anniversary gifts",
+            "romantic jewelry",
+            "birthday watches"
+        ]
+    elif len(filtered_gifts) < 5:
+        # Suggest related searches
+        categories_in_results = list(set([g["category"] for g in filtered_gifts]))
+        suggestions = [f"{cat.lower()} gifts" for cat in categories_in_results[:3]]
+    
+    return {
+        "success": True,
+        "total_results": len(filtered_gifts),
+        "filters_applied": filters_applied,
+        "gifts": filtered_gifts,
+        "suggestions": suggestions
+    }
+
 @api_router.get("/messages/{category}")
 async def get_messages(category: str):
     if category not in ROMANTIC_MESSAGES:
