@@ -4321,24 +4321,13 @@ async def redeem_reward(
 
 @api_router.get("/rewards/history")
 async def get_reward_history(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    current_user: dict = Depends(get_current_user)
 ):
     """Get user's reward redemption history"""
     try:
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
         # Get all rewards for this user
         rewards = await db.rewards.find(
-            {"user_id": str(user["_id"])}
+            {"user_id": str(current_user["_id"])}
         ).sort("created_at", -1).to_list(length=100)
         
         # Convert ObjectId to string
@@ -4349,8 +4338,8 @@ async def get_reward_history(
             "success": True,
             "total_redemptions": len(rewards),
             "rewards": rewards,
-            "current_points": user.get("points", 0),
-            "cycles_completed": user.get("reward_cycles_completed", 0)
+            "current_points": current_user.get("points", 0),
+            "cycles_completed": current_user.get("reward_cycles_completed", 0)
         }
         
     except HTTPException:
