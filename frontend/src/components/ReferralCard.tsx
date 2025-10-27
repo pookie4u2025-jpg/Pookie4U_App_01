@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { useAuthStore } from '../stores/useAuthStore';
 import { RewardMilestoneModal } from './RewardMilestoneModal';
+import { useGameStore } from '../stores/useGameStore';
 
 interface ReferralData {
   code: string;
@@ -33,6 +34,7 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
   const confettiRef = useRef<any>(null);
   const { token, user } = useAuthStore();
+  const { totalPoints } = useGameStore(); // Get task points from game store
 
   useEffect(() => {
     fetchReferralCode();
@@ -52,14 +54,18 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
 
       const data = await response.json();
       if (response.ok && data.success) {
-        setCurrentPoints(data.current_points);
+        // Combine referral points + task points
+        const totalUserPoints = data.current_points + totalPoints;
+        setCurrentPoints(totalUserPoints);
         // Auto-show milestone modal if eligible
-        if (data.eligible && data.current_points >= 1000) {
+        if (data.eligible && totalUserPoints >= 1000) {
           setTimeout(() => setShowMilestoneModal(true), 1000);
         }
       }
     } catch (error) {
       console.error('Error checking milestone:', error);
+      // Fallback to just task points if backend fails
+      setCurrentPoints(totalPoints);
     }
   };
 
