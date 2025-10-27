@@ -118,9 +118,8 @@ export default function GiftsContent() {
     }
   };
 
-  const filteredGifts = selectedCategory === 'All' 
-    ? gifts 
-    : gifts.filter(gift => gift.category === selectedCategory);
+  // Display search results if active search, otherwise show all gifts
+  const displayedGifts = hasActiveSearch ? searchResults : gifts;
 
   const getPriceColor = (priceRange: string) => {
     if (priceRange.includes('Free')) return theme.success;
