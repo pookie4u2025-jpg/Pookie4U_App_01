@@ -3528,9 +3528,6 @@ async def update_event_reminder(
         print(f"Error updating reminder: {e}")
         raise HTTPException(status_code=500, detail="Unable to update reminder")
 
-# Include the router in the main app
-app.include_router(api_router)
-
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
