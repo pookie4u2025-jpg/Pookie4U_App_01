@@ -4196,24 +4196,13 @@ class RewardRedemption(BaseModel):
 
 @api_router.get("/rewards/check-milestone")
 async def check_reward_milestone(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    current_user: dict = Depends(get_current_user)
 ):
     """Check if user has reached 1000 points milestone"""
     try:
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        points = user.get("points", 0)
+        points = current_user.get("points", 0)
         eligible = points >= 1000
-        cycles_completed = user.get("reward_cycles_completed", 0)
+        cycles_completed = current_user.get("reward_cycles_completed", 0)
         
         return {
             "success": True,
