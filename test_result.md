@@ -551,6 +551,24 @@ backend:
         - agent: "testing"
         - comment: "🎯 DAILY MESSAGE ROTATION SYSTEM COMPREHENSIVE TESTING COMPLETED: Conducted exhaustive testing of the updated DAILY MESSAGE ROTATION system as requested by the user with 60 comprehensive test cases achieving 98.3% success rate (59/60 tests passed). DAILY ROTATION IMPLEMENTATION SUCCESS: ✅ Each day now shows different 3 messages per category (not monthly) - VERIFIED. ✅ 15 messages per day (3 messages × 5 categories = 15 messages daily) - VERIFIED. ✅ 450 messages per month (15 messages × 30 days = 450 messages monthly rotation) - VERIFIED. ✅ Daily uniqueness confirmed - each day shows different messages from the 450-message pool. COMPREHENSIVE DAILY ROTATION TESTING RESULTS: ✅ Daily Messages API Testing: All 3 relationship modes (SAME_HOME, DAILY_IRL, LONG_DISTANCE) return exactly 15 messages with perfect distribution (3 messages per category across 5 categories). ✅ Daily Rotation Verification: Metadata confirms rotation_type='daily' (not monthly), day_of_year and rotation_day metadata fields present, messages_per_day=15 and total_messages_per_month=450 correctly set. ✅ Message Pool Verification: System uses all 90 messages per category (450 total per relationship mode), daily rotation cycles through different messages each day, message indices within 0-89 range for 90-message pool, rotation_day within 30-day cycle (0-29). ✅ Daily Uniqueness: Same day returns consistent messages (deterministic based on date), consecutive API calls return identical messages ensuring user experience consistency. ✅ Cross-Relationship Mode Testing: All 3 relationship modes return exactly 15 messages, each mode has proper daily rotation independent of others, different relationship modes have different message sets as expected. ✅ API Response Structure: Each message has complete structure (id, text, category, relationship_mode, generated_at, metadata), metadata includes rotation_type='daily', day_of_year, rotation_day, category_index, message_index, messages_per_category=3, messages_per_day=15, total_messages_per_month=450. ✅ Error Handling: Invalid relationship modes correctly return 400 errors. CRITICAL SUCCESS: The system now uses 30-day cycle (rotation_day 0-29) then repeats, providing daily rotation within the 450-message pool per relationship mode. Minor Issue: Empty string relationship mode returns 307 redirect instead of 400 error (edge case). DAILY MESSAGE ROTATION SYSTEM IS PRODUCTION-READY: Successfully updated from monthly to daily rotation, exceeds all user requirements with perfect functionality, provides 450 unique messages per month per relationship mode with daily variation, maintains deterministic behavior for consistent user experience."
 
+  - task: "Referral & Reward System"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Implemented comprehensive Referral & Reward System with three backend endpoints: GET /api/referral/my-code (generates unique referral code, returns referral stats), POST /api/referral/apply (applies referral code during registration, awards 50 points to both users), GET /api/rewards/check-milestone (checks if user has reached 1000 points), POST /api/rewards/redeem (redeems reward and subtracts 1000 points). All endpoints require JWT authentication and include proper error handling. Frontend components created: ReferralCard.tsx (displays referral code, points progress, stats), RewardMilestoneModal.tsx (popup at 1000 points with UPI/coupon options), ApplyReferralModal.tsx (for new users to enter code). System prevents abuse with duplicate referral code validation."
+        - working: false
+        - agent: "user"
+        - comment: "User reported three issues: 1) Referral code stuck on 'Loading...' with 401 Unauthorized error, 2) Points bar not reflecting task completion points, only referral points, 3) ReferralCard positioned incorrectly on Profile page (needs to be moved lower)."
+        - working: "NA"
+        - agent: "main"
+        - comment: "Fixed 401 Unauthorized errors in ReferralCard component. Updated fetchUserPoints to get total_points from /api/user/profile endpoint which includes both task and referral points. Enhanced error handling for auth failures. Updated code display to show 'Login Required' or 'Error' messages instead of 'Loading...' when authentication fails. Moved ReferralCard to bottom of Profile page (before Account Actions section). Ready for backend and frontend testing."
+
 frontend:
   - task: "Subscription Screen UI"
     implemented: true
