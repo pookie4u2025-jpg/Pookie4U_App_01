@@ -359,9 +359,6 @@ export default function ProfileContent() {
             )}
           </View>
 
-          {/* Referral/Invite & Earn Card */}
-          <ReferralCard theme={theme} />
-
           {/* Subscription Status Card */}
           {!loadingSubscription && subscriptionData && (
             <View style={[styles.subscriptionCard, { backgroundColor: theme.surface }]}>
