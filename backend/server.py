@@ -4024,6 +4024,17 @@ async def apply_referral_code(
         }
         await db.referrals.insert_one(referral_log)
         
+        # Send notification to referrer
+        if referrer.get("push_token"):
+            try:
+                push_notification_service.send_referral_success_notification(
+                    push_token=referrer["push_token"],
+                    referee_name=new_user.get("name", "A friend"),
+                    points_earned=50
+                )
+            except Exception as e:
+                logger.error(f"Failed to send referral notification: {str(e)}")
+        
         return {
             "success": True,
             "message": "Referral code applied! You both earned 50 points 🎉",
