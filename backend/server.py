@@ -3798,6 +3798,100 @@ async def cancel_subscription(
         logger.error(f"Error cancelling subscription: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to cancel subscription: {str(e)}")
 
+# ==================== FEEDBACK SYSTEM ====================
+
+class FeedbackSubmission(BaseModel):
+    type: Literal["bug", "feature", "general"]
+    message: str = Field(..., min_length=10, max_length=1000)
+    email: Optional[str] = None
+    images: Optional[List[str]] = Field(default=[], max_items=3)
+
+@api_router.post("/feedback")
+async def submit_feedback(
+    feedback: FeedbackSubmission,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Submit user feedback, bug reports, or feature requests"""
+    try:
+        # Get current user
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        # Get user data
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Create feedback document
+        feedback_doc = {
+            "user_id": str(user["_id"]),
+            "user_email": email,
+            "user_name": user.get("name", "Anonymous"),
+            "type": feedback.type,
+            "message": feedback.message,
+            "contact_email": feedback.email or email,
+            "images": feedback.images or [],
+            "status": "pending",
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+        
+        # Save to database
+        result = await db.feedback.insert_one(feedback_doc)
+        
+        return {
+            "success": True,
+            "message": "Thanks for helping make Pookie4U better ❤️",
+            "feedback_id": str(result.inserted_id)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error submitting feedback: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to submit feedback: {str(e)}")
+
+@api_router.get("/feedback/my")
+async def get_my_feedback(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get user's feedback history"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get user's feedback
+        feedback_list = await db.feedback.find(
+            {"user_id": str(user["_id"])}
+        ).sort("created_at", -1).to_list(length=50)
+        
+        # Convert ObjectId to string
+        for item in feedback_list:
+            item["_id"] = str(item["_id"])
+        
+        return {
+            "success": True,
+            "feedback": feedback_list
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching feedback: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch feedback: {str(e)}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
