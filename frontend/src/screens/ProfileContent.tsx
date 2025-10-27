@@ -20,6 +20,7 @@ import { useGameStore } from '../stores/useGameStore';
 import { useAppStore } from '../stores/useAppStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { formatDateWithDashes } from '../utils/DateFormatter';
+import { FeedbackModal } from '../components/FeedbackModal';
 
 export default function ProfileContent() {
   const { user, logout, updatePartnerProfile, updateRelationshipMode, updateProfileImage, token } = useAuthStore();
@@ -31,6 +32,9 @@ export default function ProfileContent() {
   // Subscription state
   const [subscriptionData, setSubscriptionData] = useState<any>(null);
   const [loadingSubscription, setLoadingSubscription] = useState(true);
+  
+  // Feedback modal state
+  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
   const [profileImage, setProfileImage] = useState(user?.profile_image || null);
