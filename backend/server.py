@@ -4341,6 +4341,19 @@ async def approve_reward(
             }
         )
         
+        # Send notification to user
+        user = await db.users.find_one({"_id": ObjectId(reward["user_id"])})
+        if user and user.get("push_token"):
+            try:
+                push_notification_service.send_reward_approved_notification(
+                    push_token=user["push_token"],
+                    reward_type=reward["reward_type"],
+                    amount=reward.get("amount"),
+                    coupon_code=reward.get("coupon_code")
+                )
+            except Exception as e:
+                logger.error(f"Failed to send approval notification: {str(e)}")
+        
         return {
             "success": True,
             "message": "Reward approved successfully"
