@@ -1487,129 +1487,129 @@ GIFT_IDEAS = [
     # Additional Amazon Products
     {
         "id": "100",
-        "name": "Premium Gift Item",
-        "category": "Romantic",
-        "price_range": "₹500-₹1000",
+        "name": "Plum BodyLovin Vanilla Vibes Body Mist 100ml",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
         "link": "https://www.amazon.in/dp/B0BH92CHFW",
-        "description": "Special gift item perfect for romantic occasions",
-        "image": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&q=80"
+        "description": "Refreshing vanilla scented body mist",
+        "image": "https://images.unsplash.com/photo-1541643600914-78b084683601?w=400&q=80"
     },
     {
         "id": "101",
-        "name": "Classic Gift Set",
-        "category": "Home",
-        "price_range": "Under ₹1000",
+        "name": "Beauche Kojic Beauty Soap Bar 90g",
+        "category": "Beauty",
+        "price_range": "Under ₹500",
         "link": "https://www.amazon.in/dp/B00J59NFD6",
-        "description": "Timeless gift set for your loved one",
-        "image": "https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&q=80"
+        "description": "Skin brightening kojic acid soap bar",
+        "image": "https://images.unsplash.com/photo-1585155770998-c1a296e352f4?w=400&q=80"
     },
     {
         "id": "102",
-        "name": "Elegant Accessory",
+        "name": "Women's Fashion Handbag",
         "category": "Fashion",
         "price_range": "₹1000-₹1500",
         "link": "https://www.amazon.in/dp/B0BMLRHC6T",
-        "description": "Stylish accessory to complement any outfit",
-        "image": "https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400&q=80"
+        "description": "Stylish handbag perfect for daily use",
+        "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&q=80"
     },
     {
         "id": "103",
-        "name": "Premium Lifestyle Product",
+        "name": "Premium Home Decor Set",
         "category": "Home",
         "price_range": "₹1000-₹2000",
         "link": "https://www.amazon.in/dp/B0C6FBL956",
-        "description": "High-quality lifestyle product for everyday use",
-        "image": "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=80"
+        "description": "Elegant home decoration items",
+        "image": "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=400&q=80"
     },
     {
         "id": "104",
-        "name": "Designer Collection Item",
+        "name": "Designer Ethnic Wear",
         "category": "Fashion",
         "price_range": "₹1500-₹2000",
         "link": "https://www.amazon.in/dp/B0D311G6W3",
-        "description": "Exclusive designer piece from premium collection",
-        "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80"
+        "description": "Beautiful ethnic clothing for special occasions",
+        "image": "https://images.unsplash.com/photo-1610652492500-ded49ceeb4d8?w=400&q=80"
     },
     {
         "id": "105",
-        "name": "Luxury Gift Box",
+        "name": "Romantic Gift Hamper",
         "category": "Romantic",
         "price_range": "₹2000-₹3000",
         "link": "https://www.amazon.in/dp/B0CRBGQ33H",
-        "description": "Luxurious gift box perfect for special celebrations",
-        "image": "https://images.unsplash.com/photo-1513201099705-a9746e1e201f?w=400&q=80"
+        "description": "Curated gift hamper for your special someone",
+        "image": "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&q=80"
     },
     {
         "id": "106",
-        "name": "Modern Tech Accessory",
+        "name": "Wireless Earbuds",
         "category": "Watches",
         "price_range": "₹1000-₹1500",
         "link": "https://www.amazon.in/dp/B0CQ4JT6NT",
-        "description": "Contemporary tech accessory with modern design",
-        "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&q=80"
+        "description": "High-quality wireless bluetooth earbuds",
+        "image": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&q=80"
     },
     {
         "id": "107",
-        "name": "Premium Care Set",
+        "name": "Skincare Gift Set",
         "category": "Beauty",
         "price_range": "₹500-₹1000",
         "link": "https://www.amazon.in/dp/B0BG8W7PJ7",
-        "description": "Complete care set with premium products",
-        "image": "https://images.unsplash.com/photo-1596704017254-9b121068ec31?w=400&q=80"
+        "description": "Complete skincare routine gift set",
+        "image": "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&q=80"
     },
     {
         "id": "108",
-        "name": "Deluxe Beauty Collection",
+        "name": "Makeup Cosmetics Kit",
         "category": "Beauty",
         "price_range": "₹1000-₹1500",
         "link": "https://www.amazon.in/dp/B0BG8X8XTC",
-        "description": "Deluxe beauty collection for special occasions",
+        "description": "Professional makeup kit with essentials",
         "image": "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&q=80"
     },
     {
         "id": "109",
-        "name": "Comfort Essential",
+        "name": "Cozy Throw Blanket",
         "category": "Home",
         "price_range": "Under ₹1000",
         "link": "https://www.amazon.in/dp/B0CXJG8JPV",
-        "description": "Essential comfort item for home relaxation",
-        "image": "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=400&q=80"
+        "description": "Soft and comfortable blanket for home",
+        "image": "https://images.unsplash.com/photo-1631633762612-e3e9efc0c474?w=400&q=80"
     },
     {
         "id": "110",
-        "name": "Wellness Gift Pack",
+        "name": "Aromatherapy Essential Oils Set",
         "category": "Health & Wellness",
         "price_range": "₹500-₹1000",
         "link": "https://www.amazon.in/dp/B0F7HF1DR7",
-        "description": "Thoughtful wellness gift pack for better health",
-        "image": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=400&q=80"
+        "description": "Natural essential oils for relaxation and wellness",
+        "image": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400&q=80"
     },
     {
         "id": "111",
-        "name": "Stylish Everyday Item",
-        "category": "Fashion",
+        "name": "Fashion Jewelry Set",
+        "category": "Jewelry",
         "price_range": "Under ₹1000",
         "link": "https://www.amazon.in/dp/B09S3SRKMT",
-        "description": "Stylish item perfect for daily wear",
-        "image": "https://images.unsplash.com/photo-1509319117032-f5b5c14f455b?w=400&q=80"
+        "description": "Trendy jewelry set for everyday wear",
+        "image": "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&q=80"
     },
     {
         "id": "112",
-        "name": "Contemporary Design Piece",
+        "name": "LED String Lights",
         "category": "Home",
         "price_range": "₹1000-₹1500",
         "link": "https://www.amazon.in/dp/B0D813X5DL",
-        "description": "Modern design piece for contemporary homes",
-        "image": "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=400&q=80"
+        "description": "Decorative LED lights for room ambiance",
+        "image": "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=400&q=80"
     },
     {
         "id": "113",
-        "name": "Special Occasion Gift",
+        "name": "Personalized Photo Album",
         "category": "Romantic",
         "price_range": "₹1000-₹2000",
         "link": "https://www.amazon.in/dp/B09QD29JRP",
-        "description": "Perfect gift for memorable special occasions",
-        "image": "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=400&q=80"
+        "description": "Custom photo album for cherished memories",
+        "image": "https://images.unsplash.com/photo-1542435503-956c469947f6?w=400&q=80"
     }
 ]
 
