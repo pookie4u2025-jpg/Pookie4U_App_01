@@ -37,14 +37,26 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
   const { totalPoints } = useGameStore(); // Get task points from game store
 
   useEffect(() => {
-    fetchReferralCode();
-    checkMilestone();
-  }, []);
+    if (token && user) {
+      fetchReferralCode();
+      fetchUserPoints();
+    } else {
+      // No valid auth, show default data
+      setReferralData({
+        code: 'N/A',
+        referrals_count: 0,
+        points_earned: 0
+      });
+      setCurrentPoints(totalPoints);
+      setLoading(false);
+    }
+  }, [token, user]);
 
-  const checkMilestone = async () => {
+  const fetchUserPoints = async () => {
     try {
+      // Fetch user profile to get total_points which includes task completion points
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/rewards/check-milestone`,
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/user/profile`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -52,19 +64,26 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
         }
       );
 
-      const data = await response.json();
-      if (response.ok && data.success) {
-        // Combine referral points + task points
-        const totalUserPoints = data.current_points + totalPoints;
+      if (response.ok) {
+        const data = await response.json();
+        // total_points includes both task and referral points
+        const totalUserPoints = data.total_points || 0;
         setCurrentPoints(totalUserPoints);
-        // Auto-show milestone modal if eligible
-        if (data.eligible && totalUserPoints >= 1000) {
+        
+        // Check if eligible for milestone (1000 points)
+        if (totalUserPoints >= 1000) {
           setTimeout(() => setShowMilestoneModal(true), 1000);
         }
+      } else if (response.status === 401) {
+        console.log('Auth token expired or invalid');
+        setCurrentPoints(totalPoints);
+      } else {
+        console.log('Failed to fetch user points, using game store points');
+        setCurrentPoints(totalPoints);
       }
     } catch (error) {
-      console.error('Error checking milestone:', error);
-      // Fallback to just task points if backend fails
+      console.error('Error fetching user points:', error);
+      // Fallback to game store points
       setCurrentPoints(totalPoints);
     }
   };
@@ -85,9 +104,21 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
         const data = await response.json();
         if (data.success) {
           setReferralData(data);
+        } else {
+          setReferralData({
+            code: 'N/A',
+            referrals_count: 0,
+            points_earned: 0
+          });
         }
+      } else if (response.status === 401) {
+        console.log('Auth token expired or invalid for referral code');
+        setReferralData({
+          code: 'AUTH_ERROR',
+          referrals_count: 0,
+          points_earned: 0
+        });
       } else {
-        // If endpoint fails, set default data
         console.log('Referral endpoint failed, using defaults');
         setReferralData({
           code: 'N/A',
@@ -97,9 +128,8 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
       }
     } catch (error) {
       console.error('Error fetching referral code:', error);
-      // Set default data on error
       setReferralData({
-        code: 'N/A',
+        code: 'ERROR',
         referrals_count: 0,
         points_earned: 0
       });
