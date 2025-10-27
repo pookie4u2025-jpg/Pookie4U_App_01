@@ -738,6 +738,12 @@ export default function ProfileContent() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      
+      {/* Feedback Modal */}
+      <FeedbackModal
+        visible={feedbackModalVisible}
+        onClose={() => setFeedbackModalVisible(false)}
+      />
     </View>
   );
 }
