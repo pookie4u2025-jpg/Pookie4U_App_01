@@ -149,6 +149,12 @@ def generate_device_id() -> str:
     """Generate a secure device identifier"""
     return secrets.token_urlsafe(32)
 
+def generate_referral_code() -> str:
+    """Generate a unique referral code in format POO-XXXXXX"""
+    characters = string.ascii_uppercase + string.digits
+    code = ''.join(random.choices(characters, k=6))
+    return f"POO-{code}"
+
 # Rate limiting functions
 def check_rate_limit(key: str, max_attempts: int, window_minutes: int) -> bool:
     """Check if rate limit is exceeded"""
