@@ -1,100 +1,141 @@
 <analysis>
-This trajectory details the continuous development of the Pookie4u app, transitioning from a comprehensive audit to targeted feature implementations and critical bug fixes. Initially, the AI engineer confirmed the scope of the audit: documenting, testing, fixing, and providing architectural recommendations. Key challenges addressed included fixing duplicate/irrelevant gift images on the Gifts tab by replacing them with romantic suggestions, resolving Google OAuth  errors by providing exact setup instructions, and implementing app-wide animations and haptics. Subsequent user requests led to the integration of three new AI features (personalized messages, gift recommendations, date planner) using GPT-3.5 Turbo via Emergent LLM Key, and the development of a mockup subscription system including free trial management and UI display on Profile/Onboarding screens. Lastly, a full push notification system was integrated, followed by extensive troubleshooting for building an Android APK for friend testing, primarily addressing configuration mismatches and environment-specific build issues. The most recent task involved fixing a Free trial already used error on the Onboarding screen.
+The trajectory details a continued development effort on the Pookie4u mobile app. Initially, the AI engineer focused on enhancing the Gifts section by adding numerous Amazon gift links, dynamically extracting product names from URLs, and integrating real product images (using a vision agent when scraping failed). This involved significant updates to  and , including sorting gifts by latest and refining category filters.
+
+Following this, the user requested a series of new features. The AI engineer implemented a **Feedback System**, including a backend endpoint, a , and  (Chat Message 117-160). Next, a **Referral Rewards System** was built, adding referral code generation, points tracking endpoints in , and a  in the frontend (Chat Message 161-187). A **Reward Milestone System** for 1000 points was then integrated, with backend endpoints and a  (Chat Message 188-204). The existing **Push Notification System** was extended to support milestone and reward approval notifications (Chat Message 206-227).
+
+A new **Smart Gift Search & Filter System** was implemented, requiring a new backend search endpoint in  and a  component, updating  for integration (Chat Message 228-255). The latest interaction focuses on debugging the referral system, specifically a Loading... state for the referral code and incorrect points display due to a  error. The engineer identified a critical issue with  placement in  causing the routes to not register, which was fixed. The current state is debugging the  error in the .
 </analysis>
 
 <product_requirements>
-Pookie4u is a gamified mobile app for couples, offering AI-powered tasks, event notifications, curated gifts, and daily love messages, supporting Email/Google authentication with a subscription model (₹79/month or ₹450/6-month after 14-day free trial). The user aims for a polished, native-feeling app with enhancements like relationship-mode content, sortable event lists, persistent points/streaks, dark mode (pending), DD/MM/YYYY date format, haptics, editable account fields, and enhanced event management. Recent explicit requests and implementations in this trajectory include:
-1.  **Gifts Tab Enhancement**: Displaying actual product names and unique, romantic gift images scraped from Amazon affiliate links, replacing generic fashion items.
-2.  **App-wide Animations and Haptics**: Implementing subtle, permanent animations and haptic feedback across the application.
-3.  **New AI Features**: Integrating AI-powered personalized messages, intelligent gift recommendations, and an AI date planner.
-4.  **Subscription Flow**: Implementing a mockup subscription system, including a 14-day free trial, showing subscription status on the profile, and directing new users to subscription plans after registration.
-5.  **Push Notifications**: Implementing a full push notification system (backend + frontend) for timely alerts.
-6.  **Google OAuth Fix**: Resolving  errors for Google authentication.
-7.  **Deployment**: Guiding the user through building an Android APK for friend testing with all features working.
+Pookie4u is a gamified mobile app for couples, designed to foster relationships through AI-powered tasks, event notifications, curated gifts, and daily love messages. Key existing features include Email/Google authentication, a subscription model (14-day free trial, then paid 1-month/6-month plans via Razorpay web checkout), and a comprehensive push notification system.
+
+The application aims for a polished, native-feeling user experience with relationship-mode content, sortable event lists, persistent points/streaks, dark mode, DD/MM/YYYY date format, haptics, editable account fields, and enhanced event management.
+
+Recent explicit requests and implementations:
+1.  **Gifts Tab Enhancement**: Displaying unique, romantic gift images and names, with initial duplicate image fixes.
+2.  **App-wide Animations and Haptics**: Implementing subtle animations and haptic feedback.
+3.  **New AI Features**: Integrating personalized messages, gift recommendations, and an AI date planner.
+4.  **Subscription Flow**: Implementing a flexible subscription system (standalone 14-day free trial, then paid 1-month/6-month plans without trial), displaying status, and processing payments via Razorpay (web checkout).
+5.  **Push Notifications**: Full backend/frontend integration, with graceful error handling in development, extended to include milestone and reward approval notifications.
+6.  **Google OAuth Fix**: Initially resolved redirect issues, later handled Expo Go limitations by guiding to APK builds.
+7.  **Deployment**: Provided guides for Android APK builds and Play Store upload.
+8.  **UI/UX Refinements**: Fixed status bar visibility, removed redundant headers, added content spacers, improved dark mode theming, and ensuring new UI elements are responsive.
+9.  **Data Persistence**: Ensured partner profile details (e.g., perfume preference, sizes) and login state persist across sessions.
+10. **Gift List Expansion**: Continuously adding new Amazon gift links, extracting names and images (using a vision agent when scraping fails).
+11. **Gift Display Order**: Displaying the latest gifts first (new to old) on the gift page.
+12. **Gift Search & Filter System**: Implementing a search bar and filter chips for gifts by occasion, budget, or product name with real-time, debounced search.
+13. **Feedback System**: A button/floating icon to submit bug reports, feature requests, or general feedback with optional screenshots, saved to a database.
+14. **Referral Rewards System**: Generate unique referral codes, award 50 points to both referrer and new user upon successful referral, prevent abuse, and include confetti animation.
+15. **Reward Milestone System**: Trigger a popup at 1000 points, offering UPI transfer or gift coupon, subtracting 1000 points after redemption, and allowing unlimited cycles.
+16. **Leaderboard System**: Display top 20 users by points (weekly/all-time) with username, profile pic, total points, and city.
+17. **Reward History Page**: Subpage in Profile showing redeemed rewards with filters and export options.
 </product_requirements>
 
 <key_technical_concepts>
-- **Frontend**: React Native, Expo (Expo Router, AuthSession, Haptics), Zustand, , .
-- **Backend**: FastAPI (Python), MongoDB, Pydantic, .
-- **AI**: OpenAI GPT-3.5/GPT-4 (via Emergent LLM Key), .
-- **Authentication**: Google OAuth (Code flow, PKCE), Email/Password.
-- **Deployment**: Expo Application Services (EAS CLI), Android APK builds, Git/GitHub.
+- **Frontend**: React Native, Expo (Expo Router, AuthSession, Haptics, WebBrowser, ImagePicker), Zustand, , , , .
+- **Backend**: FastAPI (Python), MongoDB, Pydantic, , .
+- **AI**: OpenAI GPT-3.5/GPT-4 (via Emergent LLM Key).
+- **Authentication**: Google OAuth (PKCE), Email/Password, JWT.
+- **Payments**: Razorpay (Web Checkout integration).
+- **Deployment**: Expo Application Services (EAS CLI), Android App Bundle (AAB) builds.
 </key_technical_concepts>
 
 <code_architecture>
-The application employs an Expo React Native frontend, a FastAPI backend, and a MongoDB database.
 
 
-
 -   ****:
-    -   **Changes**: Updated  with romantic gifts and unique images. Fixed a duplicate  endpoint to also serve these new gifts. Added new AI endpoints (, , ). Modified  and  schemas to include subscription status (, , ) and . Added mockup subscription endpoints (, ) and push notification endpoints (, ).
-    -   **Importance**: Central API entry point. Crucial for data fetching, user management, and service orchestration.
--   ** (NEW)**:
-    -   **Summary**: Created to house logic for AI-powered personalized messages, intelligent gift recommendations, and the AI date planner.
-    -   **Importance**: Decouples new AI features from  for better organization.
--   ** (NEW)**:
-    -   **Summary**: Created for handling subscription-related business logic, including trial initiation and status management.
-    -   **Importance**: Centralizes subscription logic for modularity.
--   ** (NEW)**:
-    -   **Summary**: Created to manage sending push notifications using .
-    -   **Importance**: Handles the server-side logic for push notifications.
+    -   **Importance**: The core FastAPI backend application handling all API routes.
+    -   **Changes**:
+        -   Expanded  list multiple times with numerous Amazon gift links, extracting names from URLs and incorporating real product images (from vision agent).
+        -   Added new gift categories and refined existing ones for improved organization.
+        -   Added feedback endpoints () for bug reports, feature requests, and general feedback.
+        -   Updated  model to include  and .
+        -   Added referral system endpoints (, ).
+        -   Added reward milestone endpoints (, ).
+        -   **Critical Fix**: Corrected the placement of  to ensure it's called *after* all routes are defined, fixing 404 errors for new endpoints.
 -   ****:
-    -   **Changes**: Refactored to display new romantic product images and names from the backend. Integrated  for animations and  with dedicated animated components.
-    -   **Importance**: Displays the Gifts tab content, including AI-enhanced recommendations.
+    -   **Importance**: Stores backend environment variables.
+    -   **Changes**: Razorpay plan IDs were corrected/swapped.
 -   ****:
-    -   **Changes**: Modified to add a subscription step for new users after registration. Updated  to call the backend's mockup subscription API. Recently fixed to handle Free trial already used errors gracefully.
-    -   **Importance**: Manages the initial user setup, including partner details and now subscription choices.
--   ** (NEW)**:
-    -   **Summary**: Created to present subscription plan options to new users during onboarding.
-    -   **Importance**: Integrates subscription selection into the new user journey.
+    -   **Importance**: Manages sending push notifications.
+    -   **Changes**: Added new functions (, ) to handle notifications for the reward system.
 -   ****:
-    -   **Changes**: Updated to fetch and display the user's subscription status, including trial details, via a new  UI component and corresponding styles.
-    -   **Importance**: Displays user's profile information and now their subscription status.
+    -   **Importance**: Handles subscription plan selection and payment.
+    -   **Changes**: Re-architected UI for 3-option subscription model, fixed layout, enhanced error handling, updated API endpoint paths.
 -   ****:
-    -   **Changes**: Modified to register the device's push notification token with the backend.
-    -   **Importance**: Manages local and remote push notification permissions and token registration.
+    -   **Importance**: Manages user authentication state.
+    -   **Changes**: Added  calls after login/registration. Modified  for  logic. Updated  and .
 -   ****:
-    -   **Changes**: Updated with new Google Client ID and Client Secret.  will need to be configured for deployment.
-    -   **Importance**: Stores environment-specific variables and API keys.
+    -   **Importance**: Manages push notification permissions and token registration.
+    -   **Changes**: Modified to gracefully handle missing  in  during development.
 -   ****:
-    -   **Changes**:  updated to  to match Expo project ID. Added  permissions for notifications. Added .
     -   **Importance**: Core Expo application configuration.
--   ** (NEW)**:
-    -   **Summary**: Created for Expo Application Services (EAS) build configurations, including , , and  profiles.
-    -   **Changes**: Added  to the  profile to resolve keystore generation issues during cloud builds.
-    -   **Importance**: Defines how the app is built and distributed via Expo.
--   ** (NEW)**, ** (NEW)**, **================================================
-🚀 POOKIE4U APK BUILD SCRIPT
-================================================
-
-Step 1: Checking if you're logged in to Expo...
-❌ Not logged in to Expo
-
-Please run: eas login
-Then run this script again. (NEW)**:
-    -   **Summary**: Documentation and a script created to assist the user with app deployment for friend testing, including detailed instructions for Android APK builds, installation, and backend accessibility.
-    -   **Importance**: Essential for external testing and distribution.
+    -   **Changes**: Added . Corrected image asset paths.
+-   ****:
+    -   **Importance**: Defines root layout and global components.
+    -   **Changes**: Removed hardcoded pink background from , set  and .
+-   **, , , , , **:
+    -   **Importance**: Main tab screens.
+    -   **Changes**: Removed explicit header  components, added invisible 8px spacer with updated  edges for consistent spacing and status bar handling.
+-   ****:
+    -   **Importance**: Displays event data.
+    -   **Changes**: Fixed  error, added robust 401 error handling.
+-   ****:
+    -   **Importance**: Manages user settings.
+    -   **Changes**: Implemented full account editing functionality and 401 error handling.
+-   ****:
+    -   **Importance**: Displays user profile and partner details.
+    -   **Changes**: Corrected field name mismatches for partner profile. Integrated  and . Added  component.
+-   ****:
+    -   **Importance**: Provides theme context.
+    -   **Changes**: Updated  object with appropriate dark colors.
+-   ****:
+    -   **Importance**: Expo Application Services configuration for builds.
+    -   **Changes**: Configured  build for Android to use  (Android App Bundle).
+-   ****:
+    -   **Importance**: Displays gifts and handles gift-related logic.
+    -   **Changes**: Implemented gift sorting (newest first). Updated category filters and icons. Integrated  for search and filtering.
+-   ** (new file)**:
+    -   **Importance**: Provides UI for users to submit feedback.
+    -   **Changes**: Created component with tabs for Bug Report, Feature Request, General Feedback, message input, and image upload.
+-   ** (new file)**:
+    -   **Importance**: A persistent button for accessing the feedback modal.
+    -   **Changes**: Created component to float across screens or integrate into profile.
+-   ** (new file)**:
+    -   **Importance**: Displays user's referral code and allows applying codes.
+    -   **Changes**: Created component to show referral code, current points, and an input for applying codes.
+-   ** (new file)**:
+    -   **Importance**: Displays a popup when a user reaches a reward milestone.
+    -   **Changes**: Created modal with reward options (UPI transfer, gift coupon) and handles redemption logic.
+-   ** (new file)**:
+    -   **Importance**: A modal for new users to enter a referral code.
+    -   **Changes**: Created component for referral code input.
+-   ** (new file)**:
+    -   **Importance**: Provides the search input and filter chips for the Gifts section.
+    -   **Changes**: Created component with debounced search, clear button, and filter chips for budget, occasion, and category.
 </code_architecture>
 
 <pending_tasks>
-- Frontend integration for Razorpay (Subscription Screen UI is done, but real payment processing is not).
-- Implement comprehensive subtle, permanent animations across *all* app screens (currently implemented in GiftsContent and AnimatedButton, but not app-wide).
-- Finalize the full push notification system by calling  when the user logs in.
+- Implement comprehensive subtle, permanent animations across *all* app screens (currently only in GiftsContent and AnimatedButton).
+- Implement the Leaderboard System (Top Lovers).
+- Implement the Reward History Page (subpage in Profile).
+- Fix the Loading... state for the referral code in .
+- Ensure task completion points are added to the total points displayed in .
+- Move the Referral Card down to the bottom section of the Profile page.
+- Address the  error when fetching referral code and checking milestones.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was actively working on fixing an error encountered during the user's attempt to test the onboarding flow. The user reported a Free trial already used error (screenshot provided) when trying to start a subscription on the .
+Immediately before this summary request, the AI engineer was actively debugging the **Referral Rewards System**. The user reported three issues:
+1.  The referral code was stuck on Loading... and not displaying, accompanied by a  error in the backend API logs for .
+2.  The Your points bar in the  was not reflecting task completion points, only referral points.
+3.  The  was positioned incorrectly on the Profile page, needing to be moved lower.
 
-The AI engineer identified that this error occurred because the backend was correctly preventing a second free trial for a user who had already used one, but the frontend ( line 105) was not handling this specific error gracefully. Instead of displaying a user-friendly message, it was causing an abrupt halt or an unclear error state.
+The engineer's actions focused on resolving the  error. It was discovered that the  statement in  was placed *before* the referral and reward routes were defined, preventing them from being registered. This was corrected by moving the  call to the end of the file after all routes.
 
-The work involved modifying  to:
-1.  Intercept the Free trial already used error specifically.
-2.  Display a more informative and user-friendly message to the user via an .
-3.  Allow the user to proceed past the onboarding flow even if they've already used their free trial, ensuring a smoother user experience without getting stuck.
-
-The AI engineer has successfully implemented this fix and is currently in the process of committing and pushing these changes to the GitHub repository.
+After fixing the router placement, the  error changed to a  error, indicating the endpoint is now accessible but the authentication token is invalid or expired. The immediate focus is to debug this  error in the  component and integrate task completion points into the total points displayed. The last action was an edit to  to handle this better and fetch total points from the user profile.
 </current_work>
 
 <optional_next_step>
-Commit and push the fix for the Free trial already used error to GitHub.
+Address the  error in  by implementing proper error handling and ensuring valid token usage, then integrate task completion points.
 </optional_next_step>
