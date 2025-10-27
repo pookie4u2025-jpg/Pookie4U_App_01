@@ -434,4 +434,52 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     lineHeight: 20,
   },
+  resultsHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  resultsCount: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  emptyState: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 32,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  suggestionsContainer: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  suggestionsTitle: {
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  suggestionChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 16,
+    marginBottom: 8,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  suggestionText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });
