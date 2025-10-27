@@ -165,8 +165,48 @@ export default function GiftsContent() {
         <GiftSearchBar
           onSearch={handleSearch}
           loading={searching}
-          suggestions={suggestions}
+          theme={theme}
         />
+
+        {/* Results Count */}
+        {hasActiveSearch && (
+          <View style={styles.resultsHeader}>
+            <Text style={[styles.resultsCount, { color: theme.text }]}>
+              {totalResults} {totalResults === 1 ? 'gift' : 'gifts'} found
+            </Text>
+          </View>
+        )}
+
+        {/* Empty State */}
+        {hasActiveSearch && displayedGifts.length === 0 && !searching && (
+          <View style={styles.emptyState}>
+            <Ionicons name="search-outline" size={64} color={theme.textSecondary} />
+            <Text style={[styles.emptyTitle, { color: theme.text }]}>
+              No gifts found
+            </Text>
+            <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
+              Try searching for different keywords
+            </Text>
+            {suggestions.length > 0 && (
+              <View style={styles.suggestionsContainer}>
+                <Text style={[styles.suggestionsTitle, { color: theme.textSecondary }]}>
+                  Try searching for:
+                </Text>
+                {suggestions.map((suggestion, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[styles.suggestionChip, { backgroundColor: theme.surface }]}
+                    onPress={() => handleSearch(suggestion, null, null)}
+                  >
+                    <Text style={[styles.suggestionText, { color: theme.primary }]}>
+                      {suggestion}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Gifts Grid */}
         <View style={styles.giftsContainer}>
