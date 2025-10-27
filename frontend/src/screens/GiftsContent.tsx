@@ -161,37 +161,12 @@ export default function GiftsContent() {
           </Text>
         </View>
 
-        {/* Category Filter */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoriesContainer}
-          contentContainerStyle={styles.categoriesContent}
-        >
-          {categories.map((category, index) => (
-              <AnimatedTouchable
-                key={category}
-                style={[
-                  styles.categoryButton,
-                  { backgroundColor: theme.surface, borderColor: theme.border },
-                  selectedCategory === category && { backgroundColor: theme.primary, borderColor: theme.primary }
-                ]}
-                onPress={() => {
-                  buttonPress();
-                  setSelectedCategory(category);
-                }}
-                activeOpacity={0.7}
-              >
-                <Text style={[
-                  styles.categoryText,
-                  { color: theme.textSecondary },
-                  selectedCategory === category && { color: '#fff' }
-                ]}>
-                  {category}
-                </Text>
-              </AnimatedTouchable>
-          ))}
-        </ScrollView>
+        {/* Search Bar */}
+        <GiftSearchBar
+          onSearch={handleSearch}
+          loading={searching}
+          suggestions={suggestions}
+        />
 
         {/* Gifts Grid */}
         <View style={styles.giftsContainer}>
