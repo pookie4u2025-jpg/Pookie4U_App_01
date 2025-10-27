@@ -3898,6 +3898,188 @@ async def get_my_feedback(
         logger.error(f"Error fetching feedback: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch feedback: {str(e)}")
 
+# ==================== REFERRAL SYSTEM ====================
+
+class ReferralCode(BaseModel):
+    code: str = Field(..., pattern=r'^POO-[A-Z0-9]{6}$')
+
+@api_router.get("/referral/my-code")
+async def get_my_referral_code(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get or generate user's referral code"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Generate referral code if doesn't exist
+        if not user.get("referral_code"):
+            while True:
+                code = generate_referral_code()
+                # Check if code already exists
+                existing = await db.users.find_one({"referral_code": code})
+                if not existing:
+                    await db.users.update_one(
+                        {"email": email},
+                        {"$set": {"referral_code": code}}
+                    )
+                    break
+        else:
+            code = user["referral_code"]
+        
+        # Get referral stats
+        referrals_count = await db.users.count_documents({"referred_by": str(user["_id"])})
+        points_earned = referrals_count * 50
+        
+        return {
+            "success": True,
+            "code": code,
+            "referrals_count": referrals_count,
+            "points_earned": points_earned
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting referral code: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get referral code: {str(e)}")
+
+@api_router.post("/referral/apply")
+async def apply_referral_code(
+    referral_data: ReferralCode,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Apply referral code (for new users during registration)"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        new_user = await db.users.find_one({"email": email})
+        if not new_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Check if user already used a referral code
+        if new_user.get("referred_by"):
+            raise HTTPException(status_code=400, detail="You have already used a referral code")
+        
+        # Check if user is trying to use own code
+        if new_user.get("referral_code") == referral_data.code:
+            raise HTTPException(status_code=400, detail="Cannot use your own referral code")
+        
+        # Find referrer
+        referrer = await db.users.find_one({"referral_code": referral_data.code})
+        if not referrer:
+            raise HTTPException(status_code=404, detail="Invalid referral code")
+        
+        # Prevent using code from same device/account (anti-fraud)
+        if new_user.get("created_at"):
+            user_age_hours = (datetime.utcnow() - datetime.fromisoformat(new_user["created_at"])).total_seconds() / 3600
+            if user_age_hours > 24:  # Can only apply within 24 hours of registration
+                raise HTTPException(status_code=400, detail="Referral code can only be applied within 24 hours of registration")
+        
+        # Award points to both users
+        referrer_points = referrer.get("points", 0) + 50
+        new_user_points = new_user.get("points", 0) + 50
+        
+        # Update referrer
+        await db.users.update_one(
+            {"_id": referrer["_id"]},
+            {
+                "$set": {"points": referrer_points},
+                "$inc": {"referral_count": 1}
+            }
+        )
+        
+        # Update new user
+        await db.users.update_one(
+            {"_id": new_user["_id"]},
+            {
+                "$set": {
+                    "referred_by": str(referrer["_id"]),
+                    "referral_code_used": referral_data.code,
+                    "points": new_user_points
+                }
+            }
+        )
+        
+        # Log referral in history
+        referral_log = {
+            "referrer_id": str(referrer["_id"]),
+            "referee_id": str(new_user["_id"]),
+            "referral_code": referral_data.code,
+            "points_awarded": 50,
+            "created_at": datetime.utcnow().isoformat()
+        }
+        await db.referrals.insert_one(referral_log)
+        
+        return {
+            "success": True,
+            "message": "Referral code applied! You both earned 50 points 🎉",
+            "points_earned": 50,
+            "total_points": new_user_points
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error applying referral code: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to apply referral code: {str(e)}")
+
+@api_router.get("/referral/stats")
+async def get_referral_stats(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get detailed referral statistics"""
+    try:
+        token = credentials.credentials
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("email")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+        
+        user = await db.users.find_one({"email": email})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Get referred users
+        referred_users = await db.users.find(
+            {"referred_by": str(user["_id"])},
+            {"name": 1, "created_at": 1}
+        ).to_list(length=100)
+        
+        return {
+            "success": True,
+            "total_referrals": len(referred_users),
+            "total_points_earned": len(referred_users) * 50,
+            "referral_code": user.get("referral_code", ""),
+            "referred_users": [
+                {
+                    "name": u["name"],
+                    "joined_at": u.get("created_at", "")
+                }
+                for u in referred_users
+            ]
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting referral stats: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get referral stats: {str(e)}")
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
