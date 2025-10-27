@@ -4211,6 +4211,17 @@ async def redeem_reward(
             }
         )
         
+        # Send notification for instant approval (gift coupon)
+        if redemption.reward_type == "gift_coupon" and user.get("push_token"):
+            try:
+                push_notification_service.send_reward_approved_notification(
+                    push_token=user["push_token"],
+                    reward_type="gift_coupon",
+                    coupon_code=coupon_code
+                )
+            except Exception as e:
+                logger.error(f"Failed to send reward notification: {str(e)}")
+        
         response_message = ""
         if redemption.reward_type == "upi_transfer":
             response_message = f"UPI transfer request submitted! You'll receive ₹{redemption.amount} once approved by admin."
