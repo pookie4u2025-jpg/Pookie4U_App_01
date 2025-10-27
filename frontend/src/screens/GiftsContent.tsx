@@ -279,23 +279,7 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     fontSize: 14,
   },
-  categoriesContainer: {
-    marginBottom: 20,
-  },
-  categoriesContent: {
-    paddingHorizontal: 20,
-    gap: 10,
-  },
-  categoryButton: {
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderWidth: 1,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
+  // Removed unused category styles
   giftsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
