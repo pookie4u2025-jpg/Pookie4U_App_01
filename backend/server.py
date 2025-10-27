@@ -4051,27 +4051,16 @@ async def get_my_referral_code(
 @api_router.post("/referral/apply")
 async def apply_referral_code(
     referral_data: ReferralCode,
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    current_user: dict = Depends(get_current_user)
 ):
     """Apply referral code (for new users during registration)"""
     try:
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        new_user = await db.users.find_one({"email": email})
-        if not new_user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
         # Check if user already used a referral code
-        if new_user.get("referred_by"):
+        if current_user.get("referred_by"):
             raise HTTPException(status_code=400, detail="You have already used a referral code")
         
         # Check if user is trying to use own code
-        if new_user.get("referral_code") == referral_data.code:
+        if current_user.get("referral_code") == referral_data.code:
             raise HTTPException(status_code=400, detail="Cannot use your own referral code")
         
         # Find referrer
@@ -4080,14 +4069,14 @@ async def apply_referral_code(
             raise HTTPException(status_code=404, detail="Invalid referral code")
         
         # Prevent using code from same device/account (anti-fraud)
-        if new_user.get("created_at"):
-            user_age_hours = (datetime.utcnow() - datetime.fromisoformat(new_user["created_at"])).total_seconds() / 3600
+        if current_user.get("created_at"):
+            user_age_hours = (datetime.utcnow() - datetime.fromisoformat(current_user["created_at"])).total_seconds() / 3600
             if user_age_hours > 24:  # Can only apply within 24 hours of registration
                 raise HTTPException(status_code=400, detail="Referral code can only be applied within 24 hours of registration")
         
         # Award points to both users
         referrer_points = referrer.get("points", 0) + 50
-        new_user_points = new_user.get("points", 0) + 50
+        new_user_points = current_user.get("points", 0) + 50
         
         # Update referrer
         await db.users.update_one(
@@ -4100,7 +4089,7 @@ async def apply_referral_code(
         
         # Update new user
         await db.users.update_one(
-            {"_id": new_user["_id"]},
+            {"_id": current_user["_id"]},
             {
                 "$set": {
                     "referred_by": str(referrer["_id"]),
@@ -4113,7 +4102,7 @@ async def apply_referral_code(
         # Log referral in history
         referral_log = {
             "referrer_id": str(referrer["_id"]),
-            "referee_id": str(new_user["_id"]),
+            "referee_id": str(current_user["_id"]),
             "referral_code": referral_data.code,
             "points_awarded": 50,
             "created_at": datetime.utcnow().isoformat()
@@ -4125,7 +4114,7 @@ async def apply_referral_code(
             try:
                 push_notification_service.send_referral_success_notification(
                     push_token=referrer["push_token"],
-                    referee_name=new_user.get("name", "A friend"),
+                    referee_name=current_user.get("name", "A friend"),
                     points_earned=50
                 )
             except Exception as e:
