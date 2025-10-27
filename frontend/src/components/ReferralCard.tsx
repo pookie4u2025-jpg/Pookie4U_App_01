@@ -307,6 +307,51 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     lineHeight: 20
   },
+  progressContainer: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16
+  },
+  progressHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  progressLabel: {
+    fontSize: 14,
+    fontWeight: '600'
+  },
+  progressPoints: {
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
+  progressBarContainer: {
+    height: 8,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 4,
+    overflow: 'hidden'
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#FFD700',
+    borderRadius: 4
+  },
+  redeemBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    padding: 12,
+    backgroundColor: '#FFF8DC',
+    borderRadius: 8,
+    gap: 8
+  },
+  redeemBannerText: {
+    fontSize: 14,
+    color: '#FF8C00',
+    fontWeight: 'bold'
+  },
   codeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
