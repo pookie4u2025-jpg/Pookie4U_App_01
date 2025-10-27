@@ -225,7 +225,11 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
               Your Referral Code
             </Text>
             <Text style={[styles.code, { color: theme.primary }]}>
-              {referralData?.code || 'Loading...'}
+              {referralData?.code === 'AUTH_ERROR' 
+                ? 'Login Required' 
+                : referralData?.code === 'ERROR' 
+                ? 'Error' 
+                : referralData?.code || 'Loading...'}
             </Text>
           </View>
           <TouchableOpacity
