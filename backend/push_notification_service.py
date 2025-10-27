@@ -284,6 +284,82 @@ class PushNotificationService:
             category="subscription",
             priority="high" if days_remaining <= 3 else "default"
         )
+    
+    def send_milestone_reached_notification(
+        self,
+        push_token: str,
+        points: int,
+        cycle_number: int = 1
+    ) -> bool:
+        """Send notification when user reaches 1000 points milestone"""
+        
+        cycle_text = f" (Cycle {cycle_number})" if cycle_number > 1 else ""
+        
+        return self.send_push_notification(
+            push_token=push_token,
+            title=f"🎉 You reached {points} points!{cycle_text}",
+            body="You just unlocked a reward! Open Pookie4U to claim it 🎁",
+            data={
+                "type": "milestone_reached",
+                "points": points,
+                "cycle_number": cycle_number
+            },
+            category="reward",
+            priority="high",
+            badge=1
+        )
+    
+    def send_reward_approved_notification(
+        self,
+        push_token: str,
+        reward_type: str,
+        amount: Optional[int] = None,
+        coupon_code: Optional[str] = None
+    ) -> bool:
+        """Send notification when reward is approved"""
+        
+        if reward_type == "upi_transfer":
+            title = "✅ UPI Transfer Approved!"
+            body = f"Your ₹{amount} reward has been processed and sent to your UPI ID"
+        else:
+            title = "🎁 Gift Coupon Ready!"
+            body = f"Your coupon code: {coupon_code}. Use it now!"
+        
+        return self.send_push_notification(
+            push_token=push_token,
+            title=title,
+            body=body,
+            data={
+                "type": "reward_approved",
+                "reward_type": reward_type,
+                "amount": amount,
+                "coupon_code": coupon_code
+            },
+            category="reward",
+            priority="high",
+            badge=1
+        )
+    
+    def send_referral_success_notification(
+        self,
+        push_token: str,
+        referee_name: str,
+        points_earned: int = 50
+    ) -> bool:
+        """Send notification when referral is successful"""
+        
+        return self.send_push_notification(
+            push_token=push_token,
+            title="🎉 Referral Successful!",
+            body=f"{referee_name} joined using your code! You both earned {points_earned} points",
+            data={
+                "type": "referral_success",
+                "referee_name": referee_name,
+                "points_earned": points_earned
+            },
+            category="reward",
+            priority="default"
+        )
 
 
 # Initialize service
