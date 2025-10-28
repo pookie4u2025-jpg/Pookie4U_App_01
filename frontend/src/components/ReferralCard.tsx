@@ -330,7 +330,7 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
       )}
 
       {/* Reward Milestone Modal */}
-      <RewardMilestoneModal
+      <MilestoneRewardModal
         visible={showMilestoneModal}
         onClose={() => setShowMilestoneModal(false)}
         currentPoints={currentPoints}
