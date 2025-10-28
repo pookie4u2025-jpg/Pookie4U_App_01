@@ -99,7 +99,7 @@ class BackendTester:
         
         # Step 1: Register a new user
         user_data = self.generate_test_user_data()
-        response = self.make_request("POST", "/register", user_data)
+        response = self.make_request("POST", "/auth/register", user_data)
         
         if not response:
             self.log_result("1.1 User Registration", False, "Network error during registration")
