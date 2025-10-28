@@ -261,48 +261,90 @@ export default function SubscriptionScreen() {
 
         {/* Header Info */}
         <View style={styles.headerInfo}>
-          <Text style={styles.infoText}>
-            Choose your plan and start your premium experience
-          </Text>
+          {subscriptionData?.is_active ? (
+            <View style={styles.currentSubCard}>
+              <View style={styles.currentSubHeader}>
+                <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
+                <Text style={styles.currentSubTitle}>Active Subscription</Text>
+              </View>
+              <Text style={styles.currentSubPlan}>
+                {subscriptionData.type === 'monthly' ? 'Premium Monthly' : 
+                 subscriptionData.type === 'half_yearly' ? 'Premium 6-Month' : 
+                 'Free Trial'}
+              </Text>
+              {subscriptionData.renewal_date_display && (
+                <>
+                  <Text style={styles.renewalText}>
+                    {subscriptionData.auto_renewal_enabled ? 'Renews on:' : 'Expires on:'} {subscriptionData.renewal_date_display}
+                  </Text>
+                  {subscriptionData.auto_renewal_enabled && (
+                    <View style={styles.autoRenewalBadge}>
+                      <Ionicons name="sync" size={16} color="#2196F3" />
+                      <Text style={styles.autoRenewalText}>Auto-Renewal Enabled</Text>
+                    </View>
+                  )}
+                </>
+              )}
+            </View>
+          ) : (
+            <Text style={styles.infoText}>
+              {trialAlreadyUsed 
+                ? 'Choose a plan to continue enjoying premium features' 
+                : 'Choose your plan and start your premium experience'}
+            </Text>
+          )}
         </View>
 
         {/* Subscription Plans */}
         <View style={styles.plansContainer}>
-          {/* Free Trial Plan (Default) */}
-          <TouchableOpacity
-            style={[
-              styles.planCard,
-              selectedPlan === 'trial' && styles.planCardSelected,
-            ]}
-            onPress={() => handleSelectPlan('trial')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.planHeader}>
-              <View style={styles.planHeaderLeft}>
-                <View style={[
-                  styles.radioButton,
-                  selectedPlan === 'trial' && styles.radioButtonSelected,
-                ]}>
-                  {selectedPlan === 'trial' && (
-                    <View style={styles.radioButtonInner} />
-                  )}
+          {/* Free Trial Plan - Only show if not already used */}
+          {!trialAlreadyUsed && !subscriptionData?.is_active && (
+            <TouchableOpacity
+              style={[
+                styles.planCard,
+                selectedPlan === 'trial' && styles.planCardSelected,
+              ]}
+              onPress={() => handleSelectPlan('trial' as any)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.planHeader}>
+                <View style={styles.planHeaderLeft}>
+                  <View style={[
+                    styles.radioButton,
+                    selectedPlan === 'trial' && styles.radioButtonSelected,
+                  ]}>
+                    {selectedPlan === 'trial' && (
+                      <View style={styles.radioButtonInner} />
+                    )}
+                  </View>
+                  <Text style={styles.planTitle}>Free Trial</Text>
                 </View>
-                <Text style={styles.planTitle}>Free Trial</Text>
+                <View style={styles.recommendedBadge}>
+                  <Text style={styles.recommendedText}>RECOMMENDED</Text>
+                </View>
               </View>
-              <View style={styles.recommendedBadge}>
-                <Text style={styles.recommendedText}>RECOMMENDED</Text>
+              
+              <View style={styles.planPricing}>
+                <Text style={styles.planPrice}>₹0</Text>
+                <Text style={styles.planPeriod}>for 14 days</Text>
               </View>
+              
+              <View style={styles.savingsBadge}>
+                <Text style={styles.savingsText}>No payment required</Text>
+              </View>
+              <Text style={styles.oneTimeOnly}>⚠️ One-time offer only</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Show message if trial was already used */}
+          {trialAlreadyUsed && !subscriptionData?.is_active && (
+            <View style={styles.trialUsedBanner}>
+              <Ionicons name="information-circle" size={24} color="#FF9800" />
+              <Text style={styles.trialUsedText}>
+                You've already used your 14-day free trial. Select a paid plan below.
+              </Text>
             </View>
-            
-            <View style={styles.planPricing}>
-              <Text style={styles.planPrice}>₹0</Text>
-              <Text style={styles.planPeriod}>for 14 days</Text>
-            </View>
-            
-            <View style={styles.savingsBadge}>
-              <Text style={styles.savingsText}>No payment required</Text>
-            </View>
-          </TouchableOpacity>
+          )}
 
           {/* 6-Month Plan */}
           <TouchableOpacity
