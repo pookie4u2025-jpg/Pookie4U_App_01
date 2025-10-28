@@ -3923,31 +3923,18 @@ class FeedbackSubmission(BaseModel):
 @api_router.post("/feedback")
 async def submit_feedback(
     feedback: FeedbackSubmission,
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    current_user: dict = Depends(get_current_user)
 ):
     """Submit user feedback, bug reports, or feature requests"""
     try:
-        # Get current user
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        # Get user data
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
         # Create feedback document
         feedback_doc = {
-            "user_id": str(user["_id"]),
-            "user_email": email,
-            "user_name": user.get("name", "Anonymous"),
+            "user_id": str(current_user["_id"]),
+            "user_email": current_user["email"],
+            "user_name": current_user.get("name", "Anonymous"),
             "type": feedback.type,
             "message": feedback.message,
-            "contact_email": feedback.email or email,
+            "contact_email": feedback.email or current_user["email"],
             "images": feedback.images or [],
             "status": "pending",
             "created_at": datetime.utcnow().isoformat(),
