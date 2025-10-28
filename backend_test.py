@@ -137,7 +137,7 @@ class BackendTester:
             "password": self.test_user_password
         }
         
-        response = self.make_request("POST", "/login", login_data)
+        response = self.make_request("POST", "/auth/login", login_data)
         
         if not response:
             self.log_result("1.2 User Login", False, "Network error during login")
