@@ -151,6 +151,12 @@ class PushNotificationService:
         elif days_until <= 3:
             title = f"⏰ {event_name} in {days_until} days"
             body = f"Coming up soon: {event_name}"
+        elif days_until == 7:
+            title = f"📆 {event_name} in 1 week"
+            body = f"One week until {event_name}! Start planning!"
+        elif days_until == 10:
+            title = f"📆 {event_name} in 10 days"
+            body = f"Coming up: {event_name} on {event_date}"
         else:
             title = f"📆 {event_name} in {days_until} days"
             body = f"Mark your calendar: {event_name} on {event_date}"
