@@ -439,7 +439,7 @@ export default function EventsContent() {
             )}
 
             {/* Edit and Delete buttons for custom events */}
-            {selectedEvent.type === 'personal' && selectedEvent.id && selectedEvent.id.startsWith('custom_') && (
+            {selectedEvent.id && !selectedEvent.hasOwnProperty('prefilled') && selectedEvent.id.startsWith('custom_') && (
               <View style={styles.actionButtons}>
                 <TouchableOpacity
                   style={[styles.editButton, { backgroundColor: theme.primary }]}
