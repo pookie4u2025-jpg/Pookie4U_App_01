@@ -3706,6 +3706,120 @@ async def start_mockup_subscription(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/api/subscription/create-order", tags=["Subscriptions"])
+async def create_subscription_order(
+    request: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Create Razorpay order for subscription payment"""
+    try:
+        plan_type = request.get("plan_type", "monthly")
+        
+        # Validate plan type
+        if plan_type not in ['monthly', 'sixmonth']:
+            raise HTTPException(status_code=400, detail="Invalid plan type. Must be 'monthly' or 'sixmonth'")
+        
+        # Get customer data
+        customer_data = {
+            'email': current_user.get('email'),
+            'name': current_user.get('name', ''),
+            'phone': current_user.get('phone', '')
+        }
+        
+        # Create subscription using razorpay service
+        result = razorpay_service.create_subscription(plan_type, customer_data)
+        
+        if not result.get('success'):
+            raise HTTPException(status_code=500, detail=result.get('error', 'Failed to create order'))
+        
+        # Save pending subscription info
+        await db.users.update_one(
+            {"_id": current_user["_id"]},
+            {"$set": {
+                "pending_subscription": {
+                    "subscription_id": result['subscription_id'],
+                    "plan_type": plan_type,
+                    "plan_id": result['plan_id'],
+                    "status": "created",
+                    "created_at": datetime.utcnow().isoformat()
+                }
+            }}
+        )
+        
+        return {
+            "success": True,
+            "subscription_id": result['subscription_id'],
+            "plan_id": result['plan_id'],
+            "status": result['status'],
+            "short_url": result.get('short_url')
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating subscription order: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/subscription/verify-payment", tags=["Subscriptions"])
+async def verify_subscription_payment(
+    request: dict,
+    current_user: dict = Depends(get_current_user)
+):
+    """Verify Razorpay subscription payment"""
+    try:
+        subscription_id = request.get("subscription_id")
+        payment_id = request.get("payment_id")
+        signature = request.get("signature")
+        
+        if not subscription_id or not payment_id or not signature:
+            raise HTTPException(status_code=400, detail="Missing required payment parameters")
+        
+        # Verify payment signature
+        is_valid = razorpay_service.verify_payment_signature(
+            subscription_id=subscription_id,
+            payment_id=payment_id,
+            signature=signature
+        )
+        
+        if not is_valid:
+            raise HTTPException(status_code=400, detail="Invalid payment signature")
+        
+        # Get pending subscription
+        pending_sub = current_user.get("pending_subscription", {})
+        plan_type = pending_sub.get("plan_type", "monthly")
+        
+        # Activate subscription
+        subscription_data = subscription_service.create_subscription(
+            plan_type,
+            subscription_id,
+            current_user["_id"]
+        )
+        
+        # Update user with active subscription
+        await db.users.update_one(
+            {"_id": current_user["_id"]},
+            {"$set": subscription_data, "$unset": {"pending_subscription": ""}}
+        )
+        
+        return {
+            "success": True,
+            "message": "Payment verified and subscription activated!",
+            "subscription": {
+                "type": plan_type,
+                "status": "active",
+                "end_date": subscription_data["subscription_end_date"].isoformat()
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error verifying payment: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 @app.post("/api/subscriptions/create", tags=["Subscriptions"])
 async def create_subscription(
     request: CreateSubscriptionRequest,
