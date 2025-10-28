@@ -235,7 +235,7 @@ class Pookie4uTester:
             return False
             
         tasks = response.json()
-        if not tasks:
+        if not tasks or len(tasks) == 0:
             await self.log_result("Complete Task", False, "No tasks available to complete")
             return False
             
