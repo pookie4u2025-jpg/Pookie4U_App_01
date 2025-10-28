@@ -17,552 +17,710 @@ TEST_USER_EMAIL = "sarah.johnson@example.com"
 TEST_USER_PASSWORD = "SecurePass123!"
 TEST_USER_NAME = "Sarah Johnson"
 
-class BackendTester:
+class EventCRUDTester:
     def __init__(self):
-        self.base_url = BASE_URL
-        self.headers = HEADERS.copy()
-        self.access_token = None
-        self.test_user_email = None
-        self.test_user_password = None
+        self.client = httpx.AsyncClient(timeout=30.0)
+        self.auth_token = None
         self.test_results = []
+        self.created_events = []  # Track created events for cleanup
         
-    def log_result(self, test_name, success, message, details=None):
-        """Log test result"""
+    async def log_result(self, test_name: str, success: bool, details: str = "", response_data: Any = None):
+        """Log test result with details"""
         result = {
             "test": test_name,
             "success": success,
-            "message": message,
-            "timestamp": datetime.now().isoformat(),
-            "details": details or {}
+            "details": details,
+            "timestamp": datetime.now().isoformat()
         }
+        if response_data:
+            result["response_data"] = response_data
         self.test_results.append(result)
+        
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status}: {test_name} - {message}")
+        print(f"{status}: {test_name}")
         if details:
             print(f"   Details: {details}")
+        if not success and response_data:
+            print(f"   Response: {response_data}")
         print()
 
-    def generate_test_user_data(self):
-        """Generate realistic test user data"""
-        random_suffix = ''.join(random.choices(string.digits, k=6))
-        self.test_user_email = f"emma.wilson{random_suffix}@example.com"
-        self.test_user_password = "SecurePass123!"
-        return {
-            "email": self.test_user_email,
-            "password": self.test_user_password,
-            "name": "Emma Wilson"
-        }
-
-    def make_request(self, method, endpoint, data=None, auth_required=False):
-        """Make HTTP request with proper error handling"""
-        url = f"{self.base_url}{endpoint}"
-        headers = self.headers.copy()
-        
-        if auth_required and self.access_token:
-            headers["Authorization"] = f"Bearer {self.access_token}"
-        
+    async def register_and_login(self) -> bool:
+        """Register a test user and get authentication token"""
         try:
-            print(f"Making {method} request to: {url}")
-            if data:
-                print(f"Request data: {json.dumps(data, indent=2)}")
+            # Try to register user
+            register_data = {
+                "email": TEST_USER_EMAIL,
+                "password": TEST_USER_PASSWORD,
+                "name": TEST_USER_NAME
+            }
             
-            if method.upper() == "GET":
-                response = requests.get(url, headers=headers, timeout=30)
-            elif method.upper() == "POST":
-                response = requests.post(url, headers=headers, json=data, timeout=30)
-            elif method.upper() == "PUT":
-                response = requests.put(url, headers=headers, json=data, timeout=30)
-            else:
-                raise ValueError(f"Unsupported method: {method}")
+            register_response = await self.client.post(
+                f"{BACKEND_URL}/auth/register",
+                json=register_data
+            )
             
-            print(f"Response status: {response.status_code}")
-            return response
-        except requests.exceptions.Timeout as e:
-            print(f"Request timeout: {e}")
-            return None
-        except requests.exceptions.ConnectionError as e:
-            print(f"Connection error: {e}")
-            return None
-        except requests.exceptions.RequestException as e:
-            print(f"Request error: {e}")
-            return None
-        except Exception as e:
-            print(f"Unexpected error: {e}")
-            return None
-
-    def test_1_authentication_login_fix(self):
-        """Test 1: Authentication Login Fix"""
-        print("🔐 TESTING AUTHENTICATION LOGIN FIX")
-        print("=" * 50)
-        
-        # Step 1: Register a new user
-        user_data = self.generate_test_user_data()
-        response = self.make_request("POST", "/auth/register", user_data)
-        
-        if not response:
-            self.log_result("1.1 User Registration", False, "Network error during registration")
-            return False
+            # Login to get token (whether registration succeeded or user already exists)
+            login_data = {
+                "email": TEST_USER_EMAIL,
+                "password": TEST_USER_PASSWORD
+            }
             
-        if response.status_code == 200:
-            try:
-                reg_data = response.json()
-                if "access_token" in reg_data and "token_type" in reg_data:
-                    self.log_result("1.1 User Registration", True, 
-                                  f"User registered successfully with token", 
-                                  {"email": self.test_user_email, "token_type": reg_data.get("token_type")})
-                else:
-                    self.log_result("1.1 User Registration", False, 
-                                  "Registration response missing required fields",
-                                  {"response": reg_data})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("1.1 User Registration", False, "Invalid JSON response from registration")
-                return False
-        else:
-            try:
-                error_data = response.json()
-                self.log_result("1.1 User Registration", False, 
-                              f"Registration failed with status {response.status_code}",
-                              {"error": error_data})
-            except:
-                self.log_result("1.1 User Registration", False, 
-                              f"Registration failed with status {response.status_code}")
-            return False
-
-        # Step 2: Login with the same credentials
-        login_data = {
-            "email": self.test_user_email,
-            "password": self.test_user_password
-        }
-        
-        response = self.make_request("POST", "/auth/login", login_data)
-        
-        if not response:
-            self.log_result("1.2 User Login", False, "Network error during login")
-            return False
+            login_response = await self.client.post(
+                f"{BACKEND_URL}/auth/login",
+                json=login_data
+            )
             
-        if response.status_code == 200:
-            try:
-                login_response = response.json()
-                if "access_token" in login_response and "token_type" in login_response:
-                    self.access_token = login_response["access_token"]
-                    self.log_result("1.2 User Login", True, 
-                                  "Login successful with access token",
-                                  {"token_type": login_response.get("token_type")})
-                else:
-                    self.log_result("1.2 User Login", False, 
-                                  "Login response missing required fields",
-                                  {"response": login_response})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("1.2 User Login", False, "Invalid JSON response from login")
-                return False
-        else:
-            try:
-                error_data = response.json()
-                self.log_result("1.2 User Login", False, 
-                              f"Login failed with status {response.status_code}",
-                              {"error": error_data})
-            except:
-                self.log_result("1.2 User Login", False, 
-                              f"Login failed with status {response.status_code}")
-            return False
-
-        # Step 3: Test token validity with authenticated endpoint
-        response = self.make_request("GET", "/user/profile", auth_required=True)
-        
-        if not response:
-            self.log_result("1.3 Token Validation", False, "Network error during token validation")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                profile_data = response.json()
-                if "email" in profile_data and profile_data["email"] == self.test_user_email:
-                    self.log_result("1.3 Token Validation", True, 
-                                  "Token is valid and can access authenticated endpoints",
-                                  {"profile_email": profile_data["email"]})
-                    return True
-                else:
-                    self.log_result("1.3 Token Validation", False, 
-                                  "Profile data doesn't match expected user",
-                                  {"expected": self.test_user_email, "got": profile_data.get("email")})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("1.3 Token Validation", False, "Invalid JSON response from profile")
-                return False
-        else:
-            self.log_result("1.3 Token Validation", False, 
-                          f"Token validation failed with status {response.status_code}")
-            return False
-
-    def test_2_task_completion(self):
-        """Test 2: Task Completion"""
-        print("📋 TESTING TASK COMPLETION")
-        print("=" * 50)
-        
-        if not self.access_token:
-            self.log_result("2.0 Prerequisites", False, "No access token available for task completion test")
-            return False
-
-        # Step 1: Get daily tasks
-        response = self.make_request("GET", "/tasks/daily", auth_required=True)
-        
-        if not response:
-            self.log_result("2.1 Get Daily Tasks", False, "Network error getting daily tasks")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                tasks_response = response.json()
-                # Handle both direct list and nested format
-                if isinstance(tasks_response, dict) and 'tasks' in tasks_response:
-                    tasks_data = tasks_response['tasks']
-                elif isinstance(tasks_response, list):
-                    tasks_data = tasks_response
-                else:
-                    tasks_data = []
-                    
-                if isinstance(tasks_data, list) and len(tasks_data) > 0:
-                    task_to_complete = tasks_data[0]
-                    task_id = task_to_complete.get("id")
-                    if task_id:
-                        self.log_result("2.1 Get Daily Tasks", True, 
-                                      f"Retrieved {len(tasks_data)} daily tasks",
-                                      {"first_task_id": task_id, "task_title": task_to_complete.get("title", "N/A")})
-                    else:
-                        self.log_result("2.1 Get Daily Tasks", False, 
-                                      "Tasks missing required 'id' field",
-                                      {"task_structure": task_to_complete})
-                        return False
-                else:
-                    self.log_result("2.1 Get Daily Tasks", False, 
-                                  "No daily tasks returned or invalid format",
-                                  {"response": tasks_data})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("2.1 Get Daily Tasks", False, "Invalid JSON response from daily tasks")
-                return False
-        else:
-            self.log_result("2.1 Get Daily Tasks", False, 
-                          f"Failed to get daily tasks with status {response.status_code}")
-            return False
-
-        # Step 2: Complete the first task
-        complete_data = {"task_id": task_id}
-        response = self.make_request("POST", "/tasks/complete", complete_data, auth_required=True)
-        
-        if not response:
-            self.log_result("2.2 Complete Task", False, "Network error completing task")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                completion_data = response.json()
-                if "points_earned" in completion_data:
-                    points_earned = completion_data["points_earned"]
-                    # Check for success field or assume success if points_earned > 0
-                    is_success = completion_data.get("success", True) if points_earned > 0 else False
-                    if is_success and points_earned > 0:
-                        self.log_result("2.2 Complete Task", True, 
-                                      f"Task completed successfully with {points_earned} points earned",
-                                      {"task_id": task_id, "points": points_earned})
-                    else:
-                        self.log_result("2.2 Complete Task", False, 
-                                      "Task completion returned success=false or 0 points",
-                                      {"response": completion_data})
-                        return False
-                else:
-                    self.log_result("2.2 Complete Task", False, 
-                                  "Task completion response missing required fields",
-                                  {"response": completion_data})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("2.2 Complete Task", False, "Invalid JSON response from task completion")
-                return False
-        else:
-            try:
-                error_data = response.json()
-                self.log_result("2.2 Complete Task", False, 
-                              f"Task completion failed with status {response.status_code}",
-                              {"error": error_data})
-            except:
-                self.log_result("2.2 Complete Task", False, 
-                              f"Task completion failed with status {response.status_code}")
-            return False
-
-        # Step 3: Verify points are updated in user profile
-        response = self.make_request("GET", "/user/profile", auth_required=True)
-        
-        if not response:
-            self.log_result("2.3 Verify Points Update", False, "Network error getting updated profile")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                profile_data = response.json()
-                total_points = profile_data.get("total_points", 0)
-                tasks_completed = profile_data.get("tasks_completed", 0)
-                
-                if total_points >= points_earned and tasks_completed >= 1:
-                    self.log_result("2.3 Verify Points Update", True, 
-                                  f"Points updated correctly in profile",
-                                  {"total_points": total_points, "tasks_completed": tasks_completed})
-                    return True
-                else:
-                    self.log_result("2.3 Verify Points Update", False, 
-                                  "Points not properly updated in profile",
-                                  {"total_points": total_points, "tasks_completed": tasks_completed, "expected_points": points_earned})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("2.3 Verify Points Update", False, "Invalid JSON response from profile")
-                return False
-        else:
-            self.log_result("2.3 Verify Points Update", False, 
-                          f"Failed to get updated profile with status {response.status_code}")
-            return False
-
-    def test_3_subscription_payment_endpoints(self):
-        """Test 3: Subscription Payment Endpoints"""
-        print("💳 TESTING SUBSCRIPTION PAYMENT ENDPOINTS")
-        print("=" * 50)
-        
-        if not self.access_token:
-            self.log_result("3.0 Prerequisites", False, "No access token available for subscription test")
-            return False
-
-        # Step 1: Test create-order endpoint
-        order_data = {"plan_type": "monthly"}
-        response = self.make_request("POST", "/subscription/create-order", order_data, auth_required=True)
-        
-        if not response:
-            self.log_result("3.1 Create Order", False, "Network error creating subscription order")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                order_response = response.json()
-                required_fields = ["subscription_id", "plan_id", "status"]
-                missing_fields = [field for field in required_fields if field not in order_response]
-                
-                if not missing_fields:
-                    subscription_id = order_response["subscription_id"]
-                    plan_id = order_response["plan_id"]
-                    status = order_response["status"]
-                    
-                    self.log_result("3.1 Create Order", True, 
-                                  "Subscription order created successfully",
-                                  {"subscription_id": subscription_id, "plan_id": plan_id, "status": status})
-                else:
-                    self.log_result("3.1 Create Order", False, 
-                                  f"Create order response missing required fields: {missing_fields}",
-                                  {"response": order_response})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("3.1 Create Order", False, "Invalid JSON response from create order")
-                return False
-        else:
-            try:
-                error_data = response.json()
-                self.log_result("3.1 Create Order", False, 
-                              f"Create order failed with status {response.status_code}",
-                              {"error": error_data})
-            except:
-                self.log_result("3.1 Create Order", False, 
-                              f"Create order failed with status {response.status_code}")
-            return False
-
-        # Step 2: Test verify-payment endpoint (with mock data)
-        payment_data = {
-            "razorpay_payment_id": "pay_mock123456789",
-            "razorpay_subscription_id": subscription_id,
-            "razorpay_signature": "mock_signature_12345"
-        }
-        
-        response = self.make_request("POST", "/subscription/verify-payment", payment_data, auth_required=True)
-        
-        if response is None:
-            self.log_result("3.2 Verify Payment", False, "Network error verifying payment")
-            return False
-            
-        # For verify-payment, we expect it to handle gracefully (may fail validation but endpoint should exist)
-        if response.status_code in [200, 400, 422]:  # Accept these as valid responses
-            try:
-                verify_response = response.json()
-                if response.status_code == 200:
-                    self.log_result("3.2 Verify Payment", True, 
-                                  "Payment verification endpoint working (success response)",
-                                  {"response": verify_response})
-                else:
-                    # 400/422 is expected for mock data, but endpoint exists and handles gracefully
-                    self.log_result("3.2 Verify Payment", True, 
-                                  f"Payment verification endpoint working (graceful failure with status {response.status_code})",
-                                  {"response": verify_response})
+            if login_response.status_code == 200:
+                login_result = login_response.json()
+                self.auth_token = login_result.get("access_token")
+                await self.log_result(
+                    "User Authentication Setup",
+                    True,
+                    f"Successfully authenticated user: {TEST_USER_EMAIL}",
+                    {"token_received": bool(self.auth_token)}
+                )
                 return True
-            except json.JSONDecodeError:
-                self.log_result("3.2 Verify Payment", False, "Invalid JSON response from verify payment")
+            else:
+                await self.log_result(
+                    "User Authentication Setup",
+                    False,
+                    f"Login failed with status {login_response.status_code}",
+                    login_response.text
+                )
                 return False
-        else:
-            try:
-                error_data = response.json()
-                self.log_result("3.2 Verify Payment", False, 
-                              f"Verify payment failed with unexpected status {response.status_code}",
-                              {"error": error_data})
-            except:
-                self.log_result("3.2 Verify Payment", False, 
-                              f"Verify payment failed with unexpected status {response.status_code}")
-            return False
-
-    def test_4_push_notification_registration(self):
-        """Test 4: Push Notification Registration"""
-        print("🔔 TESTING PUSH NOTIFICATION REGISTRATION")
-        print("=" * 50)
-        
-        if not self.access_token:
-            self.log_result("4.0 Prerequisites", False, "No access token available for push notification test")
-            return False
-
-        # Step 1: Test push notification registration
-        push_data = {
-            "push_token": f"ExponentPushToken[mock_token_{random.randint(100000, 999999)}]",
-            "device_type": "ios",
-            "app_version": "1.0.0"
-        }
-        
-        response = self.make_request("POST", "/notifications/register", push_data, auth_required=True)
-        
-        if not response:
-            self.log_result("4.1 Register Push Token", False, "Network error registering push token")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                register_response = response.json()
-                if "success" in register_response and register_response["success"]:
-                    self.log_result("4.1 Register Push Token", True, 
-                                  "Push token registered successfully",
-                                  {"push_token": push_data["push_token"], "response": register_response})
-                else:
-                    self.log_result("4.1 Register Push Token", False, 
-                                  "Push token registration returned success=false",
-                                  {"response": register_response})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("4.1 Register Push Token", False, "Invalid JSON response from push registration")
-                return False
-        else:
-            try:
-                error_data = response.json()
-                self.log_result("4.1 Register Push Token", False, 
-                              f"Push registration failed with status {response.status_code}",
-                              {"error": error_data})
-            except:
-                self.log_result("4.1 Register Push Token", False, 
-                              f"Push registration failed with status {response.status_code}")
-            return False
-
-        # Step 2: Verify token is saved to user document
-        response = self.make_request("GET", "/user/profile", auth_required=True)
-        
-        if not response:
-            self.log_result("4.2 Verify Token Saved", False, "Network error getting profile to verify token")
-            return False
-            
-        if response.status_code == 200:
-            try:
-                profile_data = response.json()
-                saved_push_token = profile_data.get("push_token")
                 
-                if saved_push_token == push_data["push_token"]:
-                    self.log_result("4.2 Verify Token Saved", True, 
-                                  "Push token correctly saved to user document",
-                                  {"saved_token": saved_push_token})
-                    return True
-                else:
-                    self.log_result("4.2 Verify Token Saved", False, 
-                                  "Push token not properly saved to user document",
-                                  {"expected": push_data["push_token"], "saved": saved_push_token})
-                    return False
-            except json.JSONDecodeError:
-                self.log_result("4.2 Verify Token Saved", False, "Invalid JSON response from profile")
-                return False
-        else:
-            self.log_result("4.2 Verify Token Saved", False, 
-                          f"Failed to get profile to verify token with status {response.status_code}")
+        except Exception as e:
+            await self.log_result(
+                "User Authentication Setup",
+                False,
+                f"Authentication error: {str(e)}"
+            )
             return False
 
-    def run_all_tests(self):
-        """Run all critical bug fix tests"""
-        print("🚀 STARTING CRITICAL BUG FIXES TESTING")
-        print("=" * 60)
-        print(f"Backend URL: {self.base_url}")
-        print(f"Test Started: {datetime.now().isoformat()}")
-        print("=" * 60)
-        print()
-        
-        test_results = []
-        
-        # Test 1: Authentication Login Fix
-        test_results.append(self.test_1_authentication_login_fix())
-        print()
-        
-        # Test 2: Task Completion
-        test_results.append(self.test_2_task_completion())
-        print()
-        
-        # Test 3: Subscription Payment Endpoints
-        test_results.append(self.test_3_subscription_payment_endpoints())
-        print()
-        
-        # Test 4: Push Notification Registration
-        test_results.append(self.test_4_push_notification_registration())
-        print()
-        
-        # Summary
-        self.print_summary(test_results)
-        
-        return test_results
+    def get_auth_headers(self) -> Dict[str, str]:
+        """Get authorization headers"""
+        if not self.auth_token:
+            return {}
+        return {"Authorization": f"Bearer {self.auth_token}"}
 
-    def print_summary(self, test_results):
-        """Print test summary"""
-        print("📊 TEST SUMMARY")
+    async def test_get_events_endpoint(self):
+        """Test GET /api/events - Fetch all events"""
+        try:
+            # Test without authentication (should fail)
+            response = await self.client.get(f"{BACKEND_URL}/events")
+            
+            if response.status_code == 403:
+                await self.log_result(
+                    "GET /events - Authentication Required",
+                    True,
+                    "Correctly rejects unauthenticated requests with 403"
+                )
+            else:
+                await self.log_result(
+                    "GET /events - Authentication Required",
+                    False,
+                    f"Expected 403, got {response.status_code}",
+                    response.text
+                )
+            
+            # Test with authentication
+            response = await self.client.get(
+                f"{BACKEND_URL}/events",
+                headers=self.get_auth_headers()
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify response structure
+                has_events_array = "events" in data and isinstance(data["events"], list)
+                
+                if has_events_array:
+                    events = data["events"]
+                    
+                    # Check for proper event structure
+                    event_structure_valid = True
+                    custom_events_found = 0
+                    prefilled_events_found = 0
+                    
+                    for event in events:
+                        required_fields = ["id", "name", "date"]
+                        if not all(field in event for field in required_fields):
+                            event_structure_valid = False
+                            break
+                        
+                        # Count event types
+                        if event.get("category") == "custom":
+                            custom_events_found += 1
+                        if event.get("prefilled") == True:
+                            prefilled_events_found += 1
+                    
+                    await self.log_result(
+                        "GET /events - Response Structure",
+                        event_structure_valid and has_events_array,
+                        f"Events array with {len(events)} events. Custom: {custom_events_found}, Prefilled: {prefilled_events_found}",
+                        {
+                            "total_events": len(events),
+                            "custom_events": custom_events_found,
+                            "prefilled_events": prefilled_events_found,
+                            "has_events_array": has_events_array
+                        }
+                    )
+                else:
+                    await self.log_result(
+                        "GET /events - Response Structure",
+                        False,
+                        "Response missing 'events' array",
+                        data
+                    )
+            else:
+                await self.log_result(
+                    "GET /events - Authenticated Request",
+                    False,
+                    f"Expected 200, got {response.status_code}",
+                    response.text
+                )
+                
+        except Exception as e:
+            await self.log_result(
+                "GET /events - Exception",
+                False,
+                f"Error testing GET /events: {str(e)}"
+            )
+
+    async def test_create_custom_event(self) -> Optional[str]:
+        """Test POST /api/events/custom - Create custom event"""
+        try:
+            # Test without authentication (should fail)
+            event_data = {
+                "name": "Test Event",
+                "date": "2025-06-15T00:00:00Z",
+                "recurring": False
+            }
+            
+            response = await self.client.post(
+                f"{BACKEND_URL}/events/custom",
+                json=event_data
+            )
+            
+            if response.status_code == 403:
+                await self.log_result(
+                    "POST /events/custom - Authentication Required",
+                    True,
+                    "Correctly rejects unauthenticated requests with 403"
+                )
+            else:
+                await self.log_result(
+                    "POST /events/custom - Authentication Required",
+                    False,
+                    f"Expected 403, got {response.status_code}",
+                    response.text
+                )
+            
+            # Test with authentication - valid event
+            event_data = {
+                "name": "Sarah's Birthday Party",
+                "date": "2025-06-15T00:00:00Z",
+                "recurring": False,
+                "description": "Celebrating Sarah's special day with friends and family",
+                "importance": "high"
+            }
+            
+            response = await self.client.post(
+                f"{BACKEND_URL}/events/custom",
+                json=event_data,
+                headers=self.get_auth_headers()
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify response structure
+                has_event = "event" in data and isinstance(data["event"], dict)
+                has_message = "message" in data
+                
+                if has_event:
+                    event = data["event"]
+                    event_id = event.get("id")
+                    
+                    # Verify event properties
+                    correct_category = event.get("category") == "custom"
+                    has_required_fields = all(
+                        field in event for field in ["id", "name", "date", "category"]
+                    )
+                    
+                    if event_id:
+                        self.created_events.append(event_id)
+                    
+                    await self.log_result(
+                        "POST /events/custom - Create Event",
+                        has_event and has_message and correct_category and has_required_fields,
+                        f"Created event '{event.get('name')}' with ID: {event_id}",
+                        {
+                            "event_id": event_id,
+                            "category": event.get("category"),
+                            "has_required_fields": has_required_fields
+                        }
+                    )
+                    
+                    return event_id
+                else:
+                    await self.log_result(
+                        "POST /events/custom - Create Event",
+                        False,
+                        "Response missing event object",
+                        data
+                    )
+            else:
+                await self.log_result(
+                    "POST /events/custom - Create Event",
+                    False,
+                    f"Expected 200, got {response.status_code}",
+                    response.text
+                )
+            
+            # Test validation - missing required fields
+            invalid_event_data = {
+                "description": "Event without name or date"
+            }
+            
+            response = await self.client.post(
+                f"{BACKEND_URL}/events/custom",
+                json=invalid_event_data,
+                headers=self.get_auth_headers()
+            )
+            
+            validation_works = response.status_code in [400, 422]
+            await self.log_result(
+                "POST /events/custom - Validation",
+                validation_works,
+                f"Validation correctly rejects invalid data with status {response.status_code}" if validation_works else f"Expected 400/422, got {response.status_code}",
+                response.text if not validation_works else None
+            )
+                
+        except Exception as e:
+            await self.log_result(
+                "POST /events/custom - Exception",
+                False,
+                f"Error testing POST /events/custom: {str(e)}"
+            )
+        
+        return None
+
+    async def test_update_custom_event(self, event_id: str):
+        """Test PATCH /api/events/custom/{event_id} - Update custom event"""
+        if not event_id:
+            await self.log_result(
+                "PATCH /events/custom/{id} - Skipped",
+                False,
+                "No event ID available for update test"
+            )
+            return
+            
+        try:
+            # Test without authentication (should fail)
+            update_data = {
+                "name": "Updated Event Name"
+            }
+            
+            response = await self.client.patch(
+                f"{BACKEND_URL}/events/custom/{event_id}",
+                json=update_data
+            )
+            
+            if response.status_code == 403:
+                await self.log_result(
+                    "PATCH /events/custom/{id} - Authentication Required",
+                    True,
+                    "Correctly rejects unauthenticated requests with 403"
+                )
+            else:
+                await self.log_result(
+                    "PATCH /events/custom/{id} - Authentication Required",
+                    False,
+                    f"Expected 403, got {response.status_code}",
+                    response.text
+                )
+            
+            # Test with authentication - valid update
+            update_data = {
+                "name": "Updated Birthday Celebration",
+                "date": "2025-06-20T00:00:00Z",
+                "description": "Updated description for the birthday party",
+                "importance": "medium"
+            }
+            
+            response = await self.client.patch(
+                f"{BACKEND_URL}/events/custom/{event_id}",
+                json=update_data,
+                headers=self.get_auth_headers()
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify response structure
+                has_event = "event" in data and isinstance(data["event"], dict)
+                has_message = "message" in data
+                
+                if has_event:
+                    event = data["event"]
+                    
+                    # Verify updates were applied
+                    name_updated = event.get("name") == update_data["name"]
+                    description_updated = event.get("description") == update_data["description"]
+                    
+                    await self.log_result(
+                        "PATCH /events/custom/{id} - Update Event",
+                        has_event and has_message and name_updated,
+                        f"Updated event: name={name_updated}, description={description_updated}",
+                        {
+                            "updated_name": event.get("name"),
+                            "updated_description": event.get("description")
+                        }
+                    )
+                else:
+                    await self.log_result(
+                        "PATCH /events/custom/{id} - Update Event",
+                        False,
+                        "Response missing event object",
+                        data
+                    )
+            else:
+                await self.log_result(
+                    "PATCH /events/custom/{id} - Update Event",
+                    False,
+                    f"Expected 200, got {response.status_code}",
+                    response.text
+                )
+            
+            # Test validation - empty update
+            response = await self.client.patch(
+                f"{BACKEND_URL}/events/custom/{event_id}",
+                json={},
+                headers=self.get_auth_headers()
+            )
+            
+            validation_works = response.status_code == 400
+            await self.log_result(
+                "PATCH /events/custom/{id} - Empty Update Validation",
+                validation_works,
+                f"Correctly rejects empty update with status {response.status_code}" if validation_works else f"Expected 400, got {response.status_code}",
+                response.text if not validation_works else None
+            )
+            
+            # Test non-existent event
+            fake_event_id = "fake_event_12345"
+            response = await self.client.patch(
+                f"{BACKEND_URL}/events/custom/{fake_event_id}",
+                json={"name": "Test"},
+                headers=self.get_auth_headers()
+            )
+            
+            not_found_works = response.status_code == 404
+            await self.log_result(
+                "PATCH /events/custom/{id} - Non-existent Event",
+                not_found_works,
+                f"Correctly returns 404 for non-existent event" if not_found_works else f"Expected 404, got {response.status_code}",
+                response.text if not not_found_works else None
+            )
+                
+        except Exception as e:
+            await self.log_result(
+                "PATCH /events/custom/{id} - Exception",
+                False,
+                f"Error testing PATCH /events/custom: {str(e)}"
+            )
+
+    async def test_delete_custom_event(self, event_id: str):
+        """Test DELETE /api/events/custom/{event_id} - Delete custom event"""
+        if not event_id:
+            await self.log_result(
+                "DELETE /events/custom/{id} - Skipped",
+                False,
+                "No event ID available for delete test"
+            )
+            return
+            
+        try:
+            # Test without authentication (should fail)
+            response = await self.client.delete(f"{BACKEND_URL}/events/custom/{event_id}")
+            
+            if response.status_code == 403:
+                await self.log_result(
+                    "DELETE /events/custom/{id} - Authentication Required",
+                    True,
+                    "Correctly rejects unauthenticated requests with 403"
+                )
+            else:
+                await self.log_result(
+                    "DELETE /events/custom/{id} - Authentication Required",
+                    False,
+                    f"Expected 403, got {response.status_code}",
+                    response.text
+                )
+            
+            # Test non-existent event first
+            fake_event_id = "fake_event_12345"
+            response = await self.client.delete(
+                f"{BACKEND_URL}/events/custom/{fake_event_id}",
+                headers=self.get_auth_headers()
+            )
+            
+            not_found_works = response.status_code == 404
+            await self.log_result(
+                "DELETE /events/custom/{id} - Non-existent Event",
+                not_found_works,
+                f"Correctly returns 404 for non-existent event" if not_found_works else f"Expected 404, got {response.status_code}",
+                response.text if not not_found_works else None
+            )
+            
+            # Test with authentication - valid delete
+            response = await self.client.delete(
+                f"{BACKEND_URL}/events/custom/{event_id}",
+                headers=self.get_auth_headers()
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Verify response structure
+                has_message = "message" in data
+                has_deleted_id = "deleted_event_id" in data
+                correct_id = data.get("deleted_event_id") == event_id
+                
+                await self.log_result(
+                    "DELETE /events/custom/{id} - Delete Event",
+                    has_message and has_deleted_id and correct_id,
+                    f"Successfully deleted event {event_id}",
+                    {
+                        "deleted_event_id": data.get("deleted_event_id"),
+                        "message": data.get("message")
+                    }
+                )
+                
+                # Verify event no longer appears in GET /events
+                await asyncio.sleep(1)  # Brief delay for consistency
+                get_response = await self.client.get(
+                    f"{BACKEND_URL}/events",
+                    headers=self.get_auth_headers()
+                )
+                
+                if get_response.status_code == 200:
+                    events_data = get_response.json()
+                    events = events_data.get("events", [])
+                    
+                    # Check if deleted event still exists
+                    deleted_event_exists = any(
+                        event.get("id") == event_id for event in events
+                    )
+                    
+                    await self.log_result(
+                        "DELETE /events/custom/{id} - Verification",
+                        not deleted_event_exists,
+                        f"Event {event_id} {'still exists' if deleted_event_exists else 'successfully removed'} from events list",
+                        {"event_still_exists": deleted_event_exists}
+                    )
+                else:
+                    await self.log_result(
+                        "DELETE /events/custom/{id} - Verification",
+                        False,
+                        f"Could not verify deletion - GET /events failed with {get_response.status_code}"
+                    )
+            else:
+                await self.log_result(
+                    "DELETE /events/custom/{id} - Delete Event",
+                    False,
+                    f"Expected 200, got {response.status_code}",
+                    response.text
+                )
+                
+        except Exception as e:
+            await self.log_result(
+                "DELETE /events/custom/{id} - Exception",
+                False,
+                f"Error testing DELETE /events/custom: {str(e)}"
+            )
+
+    async def test_event_crud_flow(self):
+        """Test complete CRUD flow end-to-end"""
+        try:
+            # Create multiple events for comprehensive testing
+            event1_data = {
+                "name": "Anniversary Dinner",
+                "date": "2025-07-15T19:00:00Z",
+                "recurring": True,
+                "description": "Romantic anniversary dinner at favorite restaurant",
+                "importance": "high"
+            }
+            
+            event2_data = {
+                "name": "Weekend Getaway",
+                "date": "2025-08-20T10:00:00Z",
+                "recurring": False,
+                "description": "Relaxing weekend trip to the mountains",
+                "importance": "medium"
+            }
+            
+            # Create first event
+            response1 = await self.client.post(
+                f"{BACKEND_URL}/events/custom",
+                json=event1_data,
+                headers=self.get_auth_headers()
+            )
+            
+            # Create second event
+            response2 = await self.client.post(
+                f"{BACKEND_URL}/events/custom",
+                json=event2_data,
+                headers=self.get_auth_headers()
+            )
+            
+            events_created = 0
+            event_ids = []
+            
+            if response1.status_code == 200:
+                events_created += 1
+                event_ids.append(response1.json()["event"]["id"])
+                
+            if response2.status_code == 200:
+                events_created += 1
+                event_ids.append(response2.json()["event"]["id"])
+            
+            # Verify events appear in GET /events
+            get_response = await self.client.get(
+                f"{BACKEND_URL}/events",
+                headers=self.get_auth_headers()
+            )
+            
+            events_visible = 0
+            if get_response.status_code == 200:
+                events_data = get_response.json()
+                events = events_data.get("events", [])
+                
+                for event_id in event_ids:
+                    if any(event.get("id") == event_id for event in events):
+                        events_visible += 1
+            
+            await self.log_result(
+                "Event CRUD Flow - Create & List",
+                events_created == 2 and events_visible == 2,
+                f"Created {events_created}/2 events, {events_visible}/2 visible in list",
+                {
+                    "events_created": events_created,
+                    "events_visible": events_visible,
+                    "event_ids": event_ids
+                }
+            )
+            
+            # Update and delete events
+            if event_ids:
+                # Update first event
+                update_response = await self.client.patch(
+                    f"{BACKEND_URL}/events/custom/{event_ids[0]}",
+                    json={"name": "Updated Anniversary Celebration"},
+                    headers=self.get_auth_headers()
+                )
+                
+                # Delete second event
+                delete_response = await self.client.delete(
+                    f"{BACKEND_URL}/events/custom/{event_ids[1]}",
+                    headers=self.get_auth_headers()
+                )
+                
+                update_success = update_response.status_code == 200
+                delete_success = delete_response.status_code == 200
+                
+                await self.log_result(
+                    "Event CRUD Flow - Update & Delete",
+                    update_success and delete_success,
+                    f"Update: {'success' if update_success else 'failed'}, Delete: {'success' if delete_success else 'failed'}",
+                    {
+                        "update_status": update_response.status_code,
+                        "delete_status": delete_response.status_code
+                    }
+                )
+                
+                # Clean up remaining event
+                if event_ids[0]:
+                    await self.client.delete(
+                        f"{BACKEND_URL}/events/custom/{event_ids[0]}",
+                        headers=self.get_auth_headers()
+                    )
+                
+        except Exception as e:
+            await self.log_result(
+                "Event CRUD Flow - Exception",
+                False,
+                f"Error in CRUD flow test: {str(e)}"
+            )
+
+    async def run_all_tests(self):
+        """Run comprehensive Event CRUD API tests"""
+        print("🚀 Starting Event CRUD Backend API Testing")
         print("=" * 60)
         
-        passed_tests = sum(1 for result in test_results if result)
-        total_tests = len(test_results)
+        # Setup authentication
+        auth_success = await self.register_and_login()
+        if not auth_success:
+            print("❌ Authentication failed - cannot proceed with tests")
+            return
         
-        print(f"Total Critical Bug Tests: {total_tests}")
+        # Test individual endpoints
+        await self.test_get_events_endpoint()
+        
+        # Create event and get ID for update/delete tests
+        created_event_id = await self.test_create_custom_event()
+        
+        # Test update and delete with the created event
+        await self.test_update_custom_event(created_event_id)
+        await self.test_delete_custom_event(created_event_id)
+        
+        # Test complete CRUD flow
+        await self.test_event_crud_flow()
+        
+        # Generate summary
+        await self.generate_summary()
+
+    async def generate_summary(self):
+        """Generate test summary"""
+        total_tests = len(self.test_results)
+        passed_tests = sum(1 for result in self.test_results if result["success"])
+        failed_tests = total_tests - passed_tests
+        success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
+        
+        print("\n" + "=" * 60)
+        print("📊 EVENT CRUD API TESTING SUMMARY")
+        print("=" * 60)
+        print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
-        print(f"Failed: {total_tests - passed_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
-        print()
+        print(f"Failed: {failed_tests}")
+        print(f"Success Rate: {success_rate:.1f}%")
         
-        # Individual test results
-        test_names = [
-            "1. Authentication Login Fix",
-            "2. Task Completion", 
-            "3. Subscription Payment Endpoints",
-            "4. Push Notification Registration"
-        ]
-        
-        for i, (name, result) in enumerate(zip(test_names, test_results)):
-            status = "✅ PASS" if result else "❌ FAIL"
-            print(f"{status}: {name}")
-        
-        print()
-        print("=" * 60)
-        print(f"Test Completed: {datetime.now().isoformat()}")
-        
-        # Detailed results
-        if self.test_results:
-            print("\n📋 DETAILED TEST RESULTS:")
-            print("-" * 40)
+        if failed_tests > 0:
+            print(f"\n❌ FAILED TESTS ({failed_tests}):")
             for result in self.test_results:
-                status = "✅" if result["success"] else "❌"
-                print(f"{status} {result['test']}: {result['message']}")
-                if result["details"]:
-                    print(f"   Details: {result['details']}")
+                if not result["success"]:
+                    print(f"  • {result['test']}: {result['details']}")
+        
+        print(f"\n✅ PASSED TESTS ({passed_tests}):")
+        for result in self.test_results:
+            if result["success"]:
+                print(f"  • {result['test']}")
+        
+        print("\n" + "=" * 60)
+
+    async def cleanup(self):
+        """Clean up resources"""
+        await self.client.aclose()
+
+async def main():
+    """Main test execution"""
+    tester = EventCRUDTester()
+    try:
+        await tester.run_all_tests()
+    finally:
+        await tester.cleanup()
 
 if __name__ == "__main__":
-    tester = BackendTester()
-    results = tester.run_all_tests()
+    asyncio.run(main())
