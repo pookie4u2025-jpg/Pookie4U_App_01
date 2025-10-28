@@ -74,11 +74,8 @@ export default function EventsContent() {
       });
       const data = await response.json();
       if (response.ok) {
-        // Combine pre-loaded and custom events
-        const allEvents = [
-          ...(data.pre_loaded_events || []),
-          ...(data.custom_events || [])
-        ];
+        // Backend returns events in a single array
+        const allEvents = data.events || [];
         
         // Sort events by date (ascending - nearest first)
         const sortedEvents = allEvents.sort((a, b) => {
