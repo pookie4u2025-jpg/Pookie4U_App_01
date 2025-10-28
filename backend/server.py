@@ -3161,24 +3161,27 @@ async def register_push_token(
     """Register or update user's push notification token"""
     try:
         # Update user's push token
-        await db.users.update_one(
+        result = await db.users.update_one(
             {"_id": current_user["_id"]},
             {
                 "$set": {
                     "push_token": request.push_token,
-                    "push_token_updated_at": datetime.utcnow(),
-                    "updated_at": datetime.utcnow()
+                    "push_token_updated_at": datetime.utcnow().isoformat(),
+                    "updated_at": datetime.utcnow().isoformat()
                 }
             }
         )
         
+        logger.info(f"Push token registered for user {current_user['_id']}: {result.modified_count} documents updated")
+        
         return {
             "success": True,
-            "message": "Push token registered successfully"
+            "message": "Push token registered successfully",
+            "modified_count": result.modified_count
         }
         
     except Exception as e:
-        print(f"Error registering push token: {e}")
+        logger.error(f"Error registering push token: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to register push token")
 
 
