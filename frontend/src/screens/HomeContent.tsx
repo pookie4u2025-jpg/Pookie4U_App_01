@@ -376,7 +376,7 @@ export default function HomeContent() {
                 <Text style={styles.completeButtonText}>Complete</Text>
               </TouchableOpacity>
             )}
-          </View>
+          </Animated.View>
         ))}
         
         {dailyTasks.length === 0 && (
