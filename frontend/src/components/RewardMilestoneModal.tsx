@@ -54,7 +54,6 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
         if (data.new_coupons && data.new_coupons.length > 0) {
           setNewCoupons(data.new_coupons);
         } else {
-          // No new coupons, fetch recent ones
           fetchRecentCoupons();
         }
       }
@@ -79,7 +78,6 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
 
       if (response.ok) {
         const data = await response.json();
-        // Show last 3 coupons
         const recent = data.rewards.slice(0, 3).map((r: any) => ({
           coupon_code: r.coupon_code,
           milestone: r.milestone_number
@@ -97,6 +95,9 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
   };
 
   const handleClose = () => {
+    onRedeemSuccess(currentPoints);
+    onClose();
+  };
 
   return (
     <>
@@ -108,7 +109,6 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            {/* Celebration Header */}
             <View style={styles.header}>
               <View style={styles.trophy}>
                 <Ionicons name="trophy" size={60} color="#FFD700" />
@@ -165,7 +165,6 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
               </View>
             </ScrollView>
 
-            {/* Close Button */}
             <TouchableOpacity
               style={styles.closeButton}
               onPress={handleClose}
@@ -176,7 +175,6 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
         </View>
       </Modal>
 
-      {/* Confetti Animation */}
       <ConfettiCannon
         ref={confettiRef}
         count={200}
@@ -194,7 +192,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20
+    padding: 20,
   },
   modalContainer: {
     backgroundColor: '#fff',
@@ -202,51 +200,51 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 500,
     maxHeight: '90%',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   header: {
     alignItems: 'center',
     padding: 24,
-    backgroundColor: '#FFF8DC'
+    backgroundColor: '#FFF8DC',
   },
   trophy: {
-    marginBottom: 16
+    marginBottom: 16,
   },
   congratsText: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
     textAlign: 'center',
-    marginBottom: 8
+    marginBottom: 8,
   },
   milestoneText: {
     fontSize: 18,
     color: '#666',
     textAlign: 'center',
-    marginBottom: 8
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     color: '#FF1493',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   content: {
-    padding: 20
+    padding: 20,
   },
   loadingContainer: {
     padding: 40,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   loadingText: {
     fontSize: 16,
     color: '#666',
-    marginTop: 10
+    marginTop: 10,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 16
+    marginBottom: 16,
   },
   couponCard: {
     backgroundColor: '#FFF8DC',
@@ -254,18 +252,18 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 2,
-    borderColor: '#FFD700'
+    borderColor: '#FFD700',
   },
   couponHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12
+    marginBottom: 12,
   },
   couponMilestone: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FF1493',
-    marginLeft: 8
+    marginLeft: 8,
   },
   couponCodeContainer: {
     flexDirection: 'row',
@@ -273,28 +271,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 12,
     borderRadius: 8,
-    marginBottom: 8
+    marginBottom: 8,
   },
   couponCode: {
     flex: 1,
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-    fontFamily: 'monospace'
+    fontFamily: 'monospace',
   },
   copyButton: {
-    padding: 8
+    padding: 8,
   },
   couponNote: {
     fontSize: 12,
     color: '#666',
-    fontStyle: 'italic'
+    fontStyle: 'italic',
   },
   noCouponsText: {
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
-    padding: 40
+    padding: 40,
   },
   infoBox: {
     flexDirection: 'row',
@@ -302,24 +300,24 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginTop: 16,
-    gap: 12
+    gap: 12,
   },
   infoText: {
     flex: 1,
     fontSize: 14,
     color: '#1976D2',
-    lineHeight: 20
+    lineHeight: 20,
   },
   closeButton: {
     backgroundColor: '#FF1493',
     margin: 20,
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   closeButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });
