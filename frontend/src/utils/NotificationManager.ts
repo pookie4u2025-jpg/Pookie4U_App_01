@@ -16,8 +16,11 @@ export enum NotificationCategory {
   STREAK_ENDING = 'streak_ending',
   DAILY_LOVE_MESSAGE = 'daily_love_message',
   NEW_TASKS = 'new_tasks',
+  DAILY_TASK_REMINDER = 'daily_task_reminder',
+  WEEKLY_TASK_REMINDER = 'weekly_task_reminder',
   GIFT_IDEAS = 'gift_ideas',
   UPCOMING_EVENTS_10_DAYS = 'upcoming_events_10_days',
+  UPCOMING_EVENTS_7_DAYS = 'upcoming_events_7_days',
   UPCOMING_EVENTS_3_DAYS = 'upcoming_events_3_days',
   UPCOMING_EVENTS_1_DAY = 'upcoming_events_1_day',
   WEEKLY_WINNER = 'weekly_winner',
@@ -29,8 +32,11 @@ export interface NotificationPreferences {
   [NotificationCategory.STREAK_ENDING]: boolean;
   [NotificationCategory.DAILY_LOVE_MESSAGE]: boolean;
   [NotificationCategory.NEW_TASKS]: boolean;
+  [NotificationCategory.DAILY_TASK_REMINDER]: boolean;
+  [NotificationCategory.WEEKLY_TASK_REMINDER]: boolean;
   [NotificationCategory.GIFT_IDEAS]: boolean;
   [NotificationCategory.UPCOMING_EVENTS_10_DAYS]: boolean;
+  [NotificationCategory.UPCOMING_EVENTS_7_DAYS]: boolean;
   [NotificationCategory.UPCOMING_EVENTS_3_DAYS]: boolean;
   [NotificationCategory.UPCOMING_EVENTS_1_DAY]: boolean;
   [NotificationCategory.WEEKLY_WINNER]: boolean;
@@ -43,8 +49,11 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   [NotificationCategory.STREAK_ENDING]: true,
   [NotificationCategory.DAILY_LOVE_MESSAGE]: true,
   [NotificationCategory.NEW_TASKS]: true,
+  [NotificationCategory.DAILY_TASK_REMINDER]: true,
+  [NotificationCategory.WEEKLY_TASK_REMINDER]: true,
   [NotificationCategory.GIFT_IDEAS]: true,
   [NotificationCategory.UPCOMING_EVENTS_10_DAYS]: true,
+  [NotificationCategory.UPCOMING_EVENTS_7_DAYS]: true,
   [NotificationCategory.UPCOMING_EVENTS_3_DAYS]: true,
   [NotificationCategory.UPCOMING_EVENTS_1_DAY]: true,
   [NotificationCategory.WEEKLY_WINNER]: true,
