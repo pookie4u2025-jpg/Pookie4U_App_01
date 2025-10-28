@@ -116,15 +116,6 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
       setCurrentPoints(totalPoints);
     }
   };
-        console.log('Failed to fetch user points, using game store points');
-        setCurrentPoints(totalPoints);
-      }
-    } catch (error) {
-      console.error('Error fetching user points:', error);
-      // Fallback to game store points
-      setCurrentPoints(totalPoints);
-    }
-  };
 
   const fetchReferralCode = async () => {
     try {
