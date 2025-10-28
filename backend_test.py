@@ -13,9 +13,17 @@ from typing import Dict, Any, Optional
 
 # Configuration
 BACKEND_URL = "https://couple-rewards.preview.emergentagent.com/api"
-TEST_USER_EMAIL = "sarah.johnson@example.com"
+import random
+import string
+
+# Generate unique test user for each run
+def generate_unique_email():
+    random_suffix = ''.join(random.choices(string.digits, k=8))
+    return f"test.events.{random_suffix}@example.com"
+
+TEST_USER_EMAIL = generate_unique_email()
 TEST_USER_PASSWORD = "SecurePass123!"
-TEST_USER_NAME = "Sarah Johnson"
+TEST_USER_NAME = "Test Events User"
 
 class EventCRUDTester:
     def __init__(self):
