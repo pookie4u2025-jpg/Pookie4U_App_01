@@ -24,17 +24,38 @@ const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 export default function SubscriptionScreen() {
   const router = useRouter();
   const { user, token } = useAuthStore();
-  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'sixmonth'>('trial');
+  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'sixmonth'>('monthly');
   const [loading, setLoading] = useState(false);
   const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false);
+  const [subscriptionData, setSubscriptionData] = useState<any>(null);
+  const [loadingStatus, setLoadingStatus] = useState(true);
 
-  const handleSelectPlan = (plan: 'trial' | 'monthly' | 'sixmonth') => {
-    // Don't allow selecting trial if already used
-    if (plan === 'trial' && trialAlreadyUsed) {
-      Alert.alert('Trial Already Used', 'You have already used your free trial. Please select a paid plan.');
-      return;
+  // Fetch subscription status on mount
+  React.useEffect(() => {
+    fetchSubscriptionStatus();
+  }, []);
+
+  const fetchSubscriptionStatus = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/subscription/status`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSubscriptionData(data.subscription);
+        setTrialAlreadyUsed(data.subscription.trial_already_used || false);
+      }
+    } catch (error) {
+      console.error('Error fetching subscription status:', error);
+    } finally {
+      setLoadingStatus(false);
     }
-    
+  };
+
+  const handleSelectPlan = (plan: 'monthly' | 'sixmonth') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedPlan(plan);
   };
