@@ -155,6 +155,62 @@ class SubscriptionService:
         return None
     
     @staticmethod
+    def auto_renew_subscription(user_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """
+        Auto-renew subscription (Netflix-style automatic renewal)
+        Called when subscription is about to expire or has expired
+        """
+        subscription_type = user_data.get("subscription_type")
+        subscription_status = user_data.get("subscription_status")
+        subscription_end_date = user_data.get("subscription_end_date")
+        auto_renewal_enabled = user_data.get("auto_renewal_enabled", True)  # Default: enabled
+        razorpay_subscription_id = user_data.get("razorpay_subscription_id")
+        
+        # Only auto-renew paid subscriptions (not trial)
+        if subscription_type in ["monthly", "half_yearly"] and auto_renewal_enabled:
+            if isinstance(subscription_end_date, str):
+                subscription_end_date = datetime.fromisoformat(subscription_end_date.replace('Z', '+00:00'))
+            
+            now = datetime.utcnow()
+            
+            # Check if subscription has expired or about to expire (within 1 day)
+            if subscription_end_date and (now >= subscription_end_date or (subscription_end_date - now).days <= 1):
+                # Calculate new end date
+                if subscription_type == "monthly":
+                    new_end_date = subscription_end_date + timedelta(days=30)
+                elif subscription_type == "half_yearly":
+                    new_end_date = subscription_end_date + timedelta(days=180)
+                else:
+                    return None
+                
+                return {
+                    "subscription_status": "active",
+                    "subscription_start_date": subscription_end_date,  # Start from previous end
+                    "subscription_end_date": new_end_date,
+                    "last_renewal_date": now,
+                    "renewal_count": user_data.get("renewal_count", 0) + 1,
+                    "updated_at": now
+                }
+        
+        return None
+    
+    @staticmethod
+    def get_renewal_date_display(subscription_end_date) -> str:
+        """Get formatted renewal date for display"""
+        if isinstance(subscription_end_date, str):
+            subscription_end_date = datetime.fromisoformat(subscription_end_date.replace('Z', '+00:00'))
+        
+        return subscription_end_date.strftime('%d %b %Y')
+    
+    @staticmethod
+    def toggle_auto_renewal(current_status: bool) -> Dict[str, Any]:
+        """Toggle auto-renewal on/off"""
+        return {
+            "auto_renewal_enabled": not current_status,
+            "updated_at": datetime.utcnow()
+        }
+    
+    @staticmethod
     def get_display_text(subscription_info: SubscriptionInfo) -> str:
         """Get display text for subscription"""
         if subscription_info.subscription_status == "active":
