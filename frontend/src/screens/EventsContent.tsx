@@ -632,6 +632,7 @@ export default function EventsContent() {
 
       {renderEventDetails()}
       {renderAddEventModal()}
+      {renderEditEventModal()}
     </View>
   );
 }
