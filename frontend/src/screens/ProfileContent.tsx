@@ -699,6 +699,25 @@ export default function ProfileContent() {
           {/* Referral/Invite & Earn Card */}
           <ReferralCard theme={theme} />
 
+          {/* View Reward History Button */}
+          <TouchableOpacity
+            style={[styles.rewardHistoryButton, { backgroundColor: theme.primary + '20', borderColor: theme.primary }]}
+            onPress={() => router.push('/reward-history')}
+          >
+            <View style={styles.rewardHistoryContent}>
+              <Ionicons name="gift" size={24} color={theme.primary} />
+              <View style={styles.rewardHistoryText}>
+                <Text style={[styles.rewardHistoryTitle, { color: theme.primary }]}>
+                  View Reward History
+                </Text>
+                <Text style={[styles.rewardHistorySubtitle, { color: theme.textSecondary }]}>
+                  See all your redeemed coupons
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={24} color={theme.primary} />
+            </View>
+          </TouchableOpacity>
+
           {/* Account Actions */}
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: theme.text }]}>Account 👤</Text>
