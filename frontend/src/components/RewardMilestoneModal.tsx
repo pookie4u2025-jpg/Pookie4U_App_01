@@ -187,111 +187,6 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
     </>
   );
 };
-                    Get cash transferred to your UPI ID
-                  </Text>
-                  <Text style={styles.rewardNote}>
-                    ⚠️ Requires admin approval (24-48 hours)
-                  </Text>
-                </View>
-                {selectedReward === 'upi_transfer' && (
-                  <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
-                )}
-              </TouchableOpacity>
-
-              {selectedReward === 'upi_transfer' && (
-                <View style={styles.upiInputContainer}>
-                  <Text style={styles.inputLabel}>Enter UPI ID *</Text>
-                  <TextInput
-                    style={styles.textInput}
-                    placeholder="yourname@upi"
-                    placeholderTextColor="#999"
-                    value={upiId}
-                    onChangeText={setUpiId}
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                  />
-                </View>
-              )}
-
-              <TouchableOpacity
-                style={[
-                  styles.rewardOption,
-                  selectedReward === 'gift_coupon' && styles.selectedOption
-                ]}
-                onPress={() => handleRewardSelect('gift_coupon')}
-              >
-                <View style={styles.rewardIconContainer}>
-                  <Ionicons name="gift" size={32} color="#FF1493" />
-                </View>
-                <View style={styles.rewardInfo}>
-                  <Text style={styles.rewardTitle}>Get a Gift Coupon</Text>
-                  <Text style={styles.rewardDescription}>
-                    Instant coupon code for gifts & shopping
-                  </Text>
-                  <Text style={styles.rewardNote}>
-                    ✅ Instant approval - no waiting!
-                  </Text>
-                </View>
-                {selectedReward === 'gift_coupon' && (
-                  <Ionicons name="checkmark-circle" size={24} color="#FF1493" />
-                )}
-              </TouchableOpacity>
-
-              {/* Info Box */}
-              <View style={styles.infoBox}>
-                <Ionicons name="information-circle" size={20} color="#2196F3" />
-                <Text style={styles.infoText}>
-                  After redemption, 1000 points will be deducted and you'll keep the remainder. You can earn more points and redeem again!
-                </Text>
-              </View>
-            </ScrollView>
-
-            {/* Action Buttons */}
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={resetAndClose}
-              >
-                <Text style={styles.cancelButtonText}>Maybe Later</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.redeemButton,
-                  (!selectedReward || loading) && styles.redeemButtonDisabled
-                ]}
-                onPress={handleRedeem}
-                disabled={!selectedReward || loading}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <>
-                    <Ionicons name="gift" size={20} color="#fff" />
-                    <Text style={styles.redeemButtonText}>Redeem Now</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-
-      {/* Confetti Animation */}
-      {showConfetti && (
-        <ConfettiCannon
-          ref={confettiRef}
-          count={200}
-          origin={{ x: -10, y: 0 }}
-          autoStart={true}
-          fadeOut={true}
-          explosionSpeed={350}
-          fallSpeed={3000}
-        />
-      )}
-    </>
-  );
-};
 
 const styles = StyleSheet.create({
   modalOverlay: {
@@ -338,16 +233,96 @@ const styles = StyleSheet.create({
   content: {
     padding: 20
   },
-  rewardOption: {
+  loadingContainer: {
+    padding: 40,
+    alignItems: 'center'
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 10
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16
+  },
+  couponCard: {
+    backgroundColor: '#FFF8DC',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 2,
+    borderColor: '#FFD700'
+  },
+  couponHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#E0E0E0',
-    marginBottom: 16,
-    backgroundColor: '#F9F9F9'
+    marginBottom: 12
   },
+  couponMilestone: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FF1493',
+    marginLeft: 8
+  },
+  couponCodeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8
+  },
+  couponCode: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    fontFamily: 'monospace'
+  },
+  copyButton: {
+    padding: 8
+  },
+  couponNote: {
+    fontSize: 12,
+    color: '#666',
+    fontStyle: 'italic'
+  },
+  noCouponsText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    padding: 40
+  },
+  infoBox: {
+    flexDirection: 'row',
+    backgroundColor: '#E3F2FD',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 16,
+    gap: 12
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#1976D2',
+    lineHeight: 20
+  },
+  closeButton: {
+    backgroundColor: '#FF1493',
+    margin: 20,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center'
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
+});
   selectedOption: {
     borderColor: '#FF1493',
     backgroundColor: '#FFE4F1'
