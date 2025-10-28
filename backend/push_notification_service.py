@@ -193,6 +193,58 @@ class PushNotificationService:
             category="new_tasks"
         )
     
+    def send_daily_task_reminder(
+        self,
+        push_token: str,
+        incomplete_count: int = 3,
+        time_of_day: str = "evening"
+    ) -> bool:
+        """Send reminder to complete daily tasks"""
+        
+        time_emojis = {
+            "morning": "☀️",
+            "afternoon": "🌤️",
+            "evening": "🌆",
+            "night": "🌙"
+        }
+        emoji = time_emojis.get(time_of_day, "⏰")
+        
+        return self.send_push_notification(
+            push_token=push_token,
+            title=f"{emoji} Daily Tasks Reminder",
+            body=f"You have {incomplete_count} incomplete task{'s' if incomplete_count > 1 else ''} today. Keep your streak alive!",
+            data={
+                "type": "daily_task_reminder",
+                "incomplete_count": incomplete_count,
+                "time_of_day": time_of_day
+            },
+            category="task_reminder",
+            priority="default"
+        )
+    
+    def send_weekly_task_reminder(
+        self,
+        push_token: str,
+        incomplete_count: int,
+        days_remaining: int
+    ) -> bool:
+        """Send reminder to complete weekly tasks"""
+        
+        urgency = "🚨" if days_remaining <= 1 else "📋"
+        
+        return self.send_push_notification(
+            push_token=push_token,
+            title=f"{urgency} Weekly Tasks Reminder",
+            body=f"{incomplete_count} weekly task{'s' if incomplete_count > 1 else ''} remaining! {days_remaining} day{'s' if days_remaining > 1 else ''} left this week.",
+            data={
+                "type": "weekly_task_reminder",
+                "incomplete_count": incomplete_count,
+                "days_remaining": days_remaining
+            },
+            category="task_reminder",
+            priority="high" if days_remaining <= 1 else "default"
+        )
+    
     def send_streak_warning(
         self,
         push_token: str,
