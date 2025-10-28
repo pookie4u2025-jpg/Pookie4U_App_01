@@ -235,11 +235,16 @@ class Pookie4uTester:
             return False
             
         tasks = response.json()
-        if not tasks or len(tasks) == 0:
+        if not tasks or not isinstance(tasks, list) or len(tasks) == 0:
             await self.log_result("Complete Task", False, "No tasks available to complete")
             return False
             
-        task_id = tasks[0].get("id")
+        first_task = tasks[0]
+        if not isinstance(first_task, dict):
+            await self.log_result("Complete Task", False, "Invalid task format")
+            return False
+            
+        task_id = first_task.get("id")
         if not task_id:
             await self.log_result("Complete Task", False, "No task ID found in daily tasks")
             return False
