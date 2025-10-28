@@ -414,6 +414,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFD700',
     borderRadius: 4
   },
+  milestoneInfo: {
+    fontSize: 12,
+    marginTop: 8,
+    textAlign: 'center'
+  },
   redeemBanner: {
     flexDirection: 'row',
     alignItems: 'center',
