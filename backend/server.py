@@ -3958,24 +3958,13 @@ async def submit_feedback(
 
 @api_router.get("/feedback/my")
 async def get_my_feedback(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    current_user: dict = Depends(get_current_user)
 ):
     """Get user's feedback history"""
     try:
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
         # Get user's feedback
         feedback_list = await db.feedback.find(
-            {"user_id": str(user["_id"])}
+            {"user_id": str(current_user["_id"])}
         ).sort("created_at", -1).to_list(length=50)
         
         # Convert ObjectId to string
@@ -3991,6 +3980,47 @@ async def get_my_feedback(
         raise
     except Exception as e:
         logger.error(f"Error fetching feedback: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch feedback: {str(e)}")
+
+@api_router.get("/feedback/all")
+async def get_all_feedback(
+    status: Optional[str] = None,
+    type: Optional[str] = None,
+    limit: int = 100
+):
+    """
+    ADMIN ENDPOINT: Get all feedback submissions
+    
+    Query params:
+    - status: pending, reviewed, resolved (optional)
+    - type: bug, feature, general (optional)
+    - limit: max number of results (default 100)
+    
+    Access this at: https://your-domain.com/api/feedback/all
+    """
+    try:
+        # Build query filter
+        query = {}
+        if status:
+            query["status"] = status
+        if type:
+            query["type"] = type
+        
+        # Get feedback with filters
+        feedback_list = await db.feedback.find(query).sort("created_at", -1).to_list(length=limit)
+        
+        # Convert ObjectId to string
+        for item in feedback_list:
+            item["_id"] = str(item["_id"])
+        
+        return {
+            "success": True,
+            "total": len(feedback_list),
+            "feedback": feedback_list
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching all feedback: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to fetch feedback: {str(e)}")
 
 # ==================== REFERRAL SYSTEM ====================
