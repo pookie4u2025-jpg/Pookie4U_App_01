@@ -13,14 +13,14 @@ import { Ionicons } from '@expo/vector-icons';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { useAuthStore } from '../stores/useAuthStore';
 
-interface RewardMilestoneModalProps {
+interface MilestoneRewardModalProps {
   visible: boolean;
   onClose: () => void;
   currentPoints: number;
   onRedeemSuccess: (remainingPoints: number) => void;
 }
 
-export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
+export const MilestoneRewardModal: React.FC<MilestoneRewardModalProps> = ({
   visible,
   onClose,
   currentPoints,
