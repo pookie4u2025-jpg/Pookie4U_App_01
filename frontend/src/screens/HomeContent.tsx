@@ -9,11 +9,13 @@ import {
   RefreshControl,
   Dimensions,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useTaskStore } from '../stores/useTaskStore';
 import { useGameStore } from '../stores/useGameStore';
 import { useTheme } from '../contexts/ThemeContext';
+import { useFadeInAnimation, useCardAnimation } from '../utils/animations';
 
 const { width } = Dimensions.get('window');
 
