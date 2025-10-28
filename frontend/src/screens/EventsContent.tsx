@@ -602,7 +602,7 @@ export default function EventsContent() {
                 onPress={() => handleEventPress(event)}
               >
                 <View style={styles.eventIcon}>
-                  <Ionicons name={getEventIcon(event.type)} size={24} color={theme.primary} />
+                  <Ionicons name={getEventIcon(event.type, event.category)} size={24} color={theme.primary} />
                 </View>
                 <View style={styles.eventContent}>
                   <Text style={[styles.eventName, { color: theme.text }]}>{event.name}</Text>
