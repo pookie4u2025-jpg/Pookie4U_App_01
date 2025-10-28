@@ -383,7 +383,7 @@ class BackendTester:
         
         response = self.make_request("POST", "/subscription/verify-payment", payment_data, auth_required=True)
         
-        if not response:
+        if response is None:
             self.log_result("3.2 Verify Payment", False, "Network error verifying payment")
             return False
             
