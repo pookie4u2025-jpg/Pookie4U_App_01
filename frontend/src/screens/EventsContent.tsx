@@ -396,7 +396,7 @@ export default function EventsContent() {
             {/* Event Info */}
             <View style={[styles.eventInfoCard, { backgroundColor: theme.surface }]}>
               <View style={styles.eventInfoHeader}>
-                <Ionicons name={getEventIcon(selectedEvent.type)} size={24} color={theme.primary} />
+                <Ionicons name={getEventIcon(selectedEvent.type, selectedEvent.category)} size={24} color={theme.primary} />
                 <View style={styles.eventInfoText}>
                   <Text style={[styles.eventDate, { color: theme.text }]}>
                     {formatDate(selectedEvent.date)}
