@@ -1,27 +1,23 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Pookie4u App
-Tests all backend endpoints and features as requested in the review.
+Backend Testing Script for Pookie4u App - Critical Bug Fixes Testing
+Testing 4 critical bug fixes as requested:
+1. Authentication Login Fix
+2. Task Completion 
+3. Subscription Payment Endpoints
+4. Push Notification Registration
 """
 
-import asyncio
-import httpx
+import requests
 import json
-import os
-import sys
 import time
-import uuid
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
+import random
+import string
+from datetime import datetime
 
-# Backend URL from environment
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://couple-referrals.preview.emergentagent.com')
-API_BASE = f"{BACKEND_URL}/api"
-
-# Test user credentials
-TEST_USER_EMAIL = "sarah.johnson@example.com"
-TEST_USER_PASSWORD = "SecurePass123!"
-TEST_USER_NAME = "Sarah Johnson"
+# Configuration
+BASE_URL = "https://couple-referrals.preview.emergentagent.com/api"
+HEADERS = {"Content-Type": "application/json"}
 
 class Pookie4uTester:
     def __init__(self):
