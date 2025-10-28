@@ -2499,6 +2499,89 @@ async def get_winners():
     
     return {"winners": sample_winners}
 
+
+@api_router.get("/leaderboard")
+async def get_leaderboard(
+    timeframe: str = "all_time",
+    limit: int = 20
+):
+    """
+    Get top users by points - Leaderboard
+    
+    Query params:
+    - timeframe: 'weekly' or 'all_time' (default: all_time)
+    - limit: number of users to return (default: 20, max: 50)
+    """
+    try:
+        # Validate limit
+        if limit > 50:
+            limit = 50
+        
+        # Build query based on timeframe
+        if timeframe == "weekly":
+            # Get users who earned points in last 7 days
+            week_ago = datetime.utcnow() - timedelta(days=7)
+            query = {
+                "points": {"$gt": 0},
+                "updated_at": {"$gte": week_ago.isoformat()}
+            }
+        else:
+            # All time leaderboard
+            query = {"points": {"$gt": 0}}
+        
+        # Get top users sorted by points
+        top_users = await db.users.find(
+            query,
+            {
+                "_id": 1,
+                "name": 1,
+                "email": 1,
+                "points": 1,
+                "profile_image": 1,
+                "city": 1,
+                "partner_profile.name": 1,
+                "tasks_completed": 1,
+                "current_streak": 1,
+                "created_at": 1
+            }
+        ).sort("points", -1).limit(limit).to_list(length=limit)
+        
+        # Format leaderboard data
+        leaderboard = []
+        for idx, user in enumerate(top_users, start=1):
+            partner_name = user.get("partner_profile", {}).get("name", "")
+            
+            # Create display name (user & partner)
+            if partner_name:
+                display_name = f"{user.get('name', 'Anonymous')} & {partner_name}"
+            else:
+                display_name = user.get('name', 'Anonymous')
+            
+            leaderboard.append({
+                "rank": idx,
+                "user_id": str(user["_id"]),
+                "display_name": display_name,
+                "points": user.get("points", 0),
+                "profile_image": user.get("profile_image"),
+                "city": user.get("city", "Unknown"),
+                "tasks_completed": user.get("tasks_completed", 0),
+                "current_streak": user.get("current_streak", 0),
+                "member_since": user.get("created_at", "")
+            })
+        
+        return {
+            "success": True,
+            "timeframe": timeframe,
+            "total_users": len(leaderboard),
+            "leaderboard": leaderboard,
+            "generated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching leaderboard: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch leaderboard: {str(e)}")
+
+
 # AI-Powered Task Generation Endpoints
 
 @api_router.get("/tasks/daily")
