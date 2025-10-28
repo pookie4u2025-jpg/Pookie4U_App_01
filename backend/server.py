@@ -3713,6 +3713,7 @@ async def get_subscription_status(current_user: dict = Depends(get_current_user)
                 "is_active": subscription_info.is_active,
                 "days_remaining": subscription_info.days_remaining,
                 "can_start_trial": subscription_info.can_start_trial,
+                "trial_already_used": not subscription_info.can_start_trial,  # Explicit flag
                 "start_date": subscription_info.subscription_start_date.isoformat() if subscription_info.subscription_start_date else None,
                 "end_date": subscription_info.subscription_end_date.isoformat() if subscription_info.subscription_end_date else None,
                 "renewal_date": renewal_date,
