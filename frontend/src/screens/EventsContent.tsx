@@ -346,7 +346,8 @@ export default function EventsContent() {
     setShowEventDetails(true);
   };
 
-  const getEventIcon = (type: string) => {
+  const getEventIcon = (type: string | undefined, category: string | undefined) => {
+    if (category === 'custom') return 'calendar-sharp';
     switch (type) {
       case 'holiday': return 'calendar';
       case 'personal': return 'heart';
