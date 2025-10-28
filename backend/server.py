@@ -1763,13 +1763,18 @@ async def register(user: UserCreate):
 async def login(user: UserLogin):
     # Find user by email
     db_user = await db.users.find_one({"email": user.email})
-    if not db_user or not verify_password(user.password, db_user["password"]):
+    if not db_user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Create access token
+    # Verify password
+    if not verify_password(user.password, db_user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Create access token with string user_id
+    user_id = str(db_user["_id"])
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": db_user["_id"]}, expires_delta=access_token_expires
+        data={"sub": user_id}, expires_delta=access_token_expires
     )
     
     return {"access_token": access_token, "token_type": "bearer"}
