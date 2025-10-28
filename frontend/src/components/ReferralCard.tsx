@@ -13,7 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { useAuthStore } from '../stores/useAuthStore';
-import { RewardMilestoneModal } from './RewardMilestoneModal.tsx';
+import { MilestoneRewardModal } from './MilestoneRewardModal';
 import { useGameStore } from '../stores/useGameStore';
 
 interface ReferralData {
