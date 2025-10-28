@@ -1155,4 +1155,27 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
+  rewardHistoryButton: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 2,
+  },
+  rewardHistoryContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  rewardHistoryText: {
+    flex: 1,
+  },
+  rewardHistoryTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  rewardHistorySubtitle: {
+    fontSize: 12,
+  },
 });
