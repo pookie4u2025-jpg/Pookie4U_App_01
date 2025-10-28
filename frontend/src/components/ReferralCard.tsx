@@ -39,7 +39,7 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
   useEffect(() => {
     if (token && user) {
       fetchReferralCode();
-      fetchUserPoints();
+      checkMilestones();
     } else {
       // No valid auth, show default data
       setReferralData({
@@ -52,9 +52,48 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
     }
   }, [token, user]);
 
+  const checkMilestones = async () => {
+    try {
+      // Check for new milestone rewards
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/rewards/check-milestone`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        // Points keep accumulating - no reset
+        const totalUserPoints = data.current_points || 0;
+        setCurrentPoints(totalUserPoints);
+        
+        // Show modal if user has new coupons
+        if (data.has_new_rewards && data.new_coupons && data.new_coupons.length > 0) {
+          // Show confetti for new milestone
+          setShowConfetti(true);
+          setTimeout(() => setShowMilestoneModal(true), 500);
+        }
+      } else if (response.status === 401) {
+        console.log('Auth token expired or invalid');
+        // Fallback to profile endpoint
+        fetchUserPoints();
+      } else {
+        console.log('Failed to check milestones, using profile points');
+        fetchUserPoints();
+      }
+    } catch (error) {
+      console.error('Error checking milestones:', error);
+      // Fallback to profile endpoint
+      fetchUserPoints();
+    }
+  };
+
   const fetchUserPoints = async () => {
     try {
-      // Fetch user profile to get total_points which includes task completion points
+      // Fallback: Fetch user profile to get total_points
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/user/profile`,
         {
@@ -66,18 +105,17 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
 
       if (response.ok) {
         const data = await response.json();
-        // total_points includes both task and referral points
         const totalUserPoints = data.total_points || 0;
         setCurrentPoints(totalUserPoints);
-        
-        // Check if eligible for milestone (1000 points)
-        if (totalUserPoints >= 1000) {
-          setTimeout(() => setShowMilestoneModal(true), 1000);
-        }
-      } else if (response.status === 401) {
-        console.log('Auth token expired or invalid');
-        setCurrentPoints(totalPoints);
       } else {
+        console.log('Failed to fetch user points, using game store points');
+        setCurrentPoints(totalPoints);
+      }
+    } catch (error) {
+      console.error('Error fetching user points:', error);
+      setCurrentPoints(totalPoints);
+    }
+  };
         console.log('Failed to fetch user points, using game store points');
         setCurrentPoints(totalPoints);
       }
