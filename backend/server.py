@@ -2431,8 +2431,9 @@ async def update_profile_image(image_data: ProfileImageUpdate, current_user: dic
 
 @api_router.get("/winners")
 async def get_winners():
-    """Get previous winners list"""
+    """Get previous winners list - Weekly cash prizes only"""
     # Sample winners data - in production this would come from database
+    # Monthly trip winners removed until customer base grows
     sample_winners = [
         {
             "id": "1",
@@ -2458,17 +2459,6 @@ async def get_winners():
         },
         {
             "id": "3",
-            "user_name": "Kavya & Vikram",
-            "prize_amount": None,
-            "prize_type": "monthly_trip",
-            "week_number": None,
-            "month": "October 2024",
-            "tasks_completed": 93,
-            "awarded_date": "2024-10-31T00:00:00",
-            "description": "Won couple trip to Goa for completing all October tasks"
-        },
-        {
-            "id": "4",
             "user_name": "Anjali & Karthik",
             "prize_amount": 1000,
             "prize_type": "weekly_cash",
@@ -2479,15 +2469,26 @@ async def get_winners():
             "description": "Maximum weekly prize for exceptional performance"
         },
         {
+            "id": "4",
+            "user_name": "Riya & Aditya",
+            "prize_amount": 800,
+            "prize_type": "weekly_cash",
+            "week_number": 44,
+            "month": None,
+            "tasks_completed": 21,
+            "awarded_date": "2024-10-30T00:00:00",
+            "description": "Perfect attendance and task completion"
+        },
+        {
             "id": "5",
-            "user_name": "Meera & Siddharth",
-            "prize_amount": None,
-            "prize_type": "monthly_trip",
-            "week_number": None,
-            "month": "September 2024",
-            "tasks_completed": 90,
-            "awarded_date": "2024-09-30T00:00:00",
-            "description": "Couple trip to Udaipur for September achievements"
+            "user_name": "Ishita & Rohan",
+            "prize_amount": 600,
+            "prize_type": "weekly_cash",
+            "week_number": 43,
+            "month": None,
+            "tasks_completed": 21,
+            "awarded_date": "2024-10-23T00:00:00",
+            "description": "Completed all daily tasks for Week 43"
         }
     ]
     
