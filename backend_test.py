@@ -16,7 +16,7 @@ import string
 from datetime import datetime
 
 # Configuration
-BASE_URL = "https://couple-referrals.preview.emergentagent.com/api"
+BASE_URL = "https://couple-rewards.preview.emergentagent.com/api"
 HEADERS = {"Content-Type": "application/json"}
 
 class BackendTester:
