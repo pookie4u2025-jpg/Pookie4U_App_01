@@ -54,6 +54,8 @@ export default function EventsContent() {
   const [eventTips, setEventTips] = useState<EventTip[]>([]);
   const [taskSuggestions, setTaskSuggestions] = useState<TaskSuggestion[]>([]);
   const [newEvent, setNewEvent] = useState({ name: '', date: '' });
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editEvent, setEditEvent] = useState({ id: '', name: '', date: '' });
 
   useEffect(() => {
     if (token) {
