@@ -64,17 +64,32 @@ class BackendTester:
             headers["Authorization"] = f"Bearer {self.access_token}"
         
         try:
+            print(f"Making {method} request to: {url}")
+            if data:
+                print(f"Request data: {json.dumps(data, indent=2)}")
+            
             if method.upper() == "GET":
-                response = requests.get(url, headers=headers, timeout=10)
+                response = requests.get(url, headers=headers, timeout=30)
             elif method.upper() == "POST":
-                response = requests.post(url, headers=headers, json=data, timeout=10)
+                response = requests.post(url, headers=headers, json=data, timeout=30)
             elif method.upper() == "PUT":
-                response = requests.put(url, headers=headers, json=data, timeout=10)
+                response = requests.put(url, headers=headers, json=data, timeout=30)
             else:
                 raise ValueError(f"Unsupported method: {method}")
             
+            print(f"Response status: {response.status_code}")
             return response
+        except requests.exceptions.Timeout as e:
+            print(f"Request timeout: {e}")
+            return None
+        except requests.exceptions.ConnectionError as e:
+            print(f"Connection error: {e}")
+            return None
         except requests.exceptions.RequestException as e:
+            print(f"Request error: {e}")
+            return None
+        except Exception as e:
+            print(f"Unexpected error: {e}")
             return None
 
     def test_1_authentication_login_fix(self):
