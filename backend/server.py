@@ -4188,18 +4188,80 @@ class RewardRedemption(BaseModel):
 async def check_reward_milestone(
     current_user: dict = Depends(get_current_user)
 ):
-    """Check if user has reached 1000 points milestone"""
+    """Check if user has reached 1000 points milestone and auto-generate coupons"""
     try:
-        points = current_user.get("points", 0)
-        eligible = points >= 1000
-        cycles_completed = current_user.get("reward_cycles_completed", 0)
+        current_points = current_user.get("points", 0)
+        milestones_claimed = current_user.get("milestones_claimed", 0)
+        
+        # Calculate how many milestones user has reached
+        milestones_reached = current_points // 1000
+        
+        # Check if there are unclaimed milestones
+        unclaimed_milestones = milestones_reached - milestones_claimed
+        
+        # Auto-generate coupons for unclaimed milestones
+        new_coupons = []
+        if unclaimed_milestones > 0:
+            for i in range(unclaimed_milestones):
+                milestone_number = milestones_claimed + i + 1
+                coupon_code = f"POOKIE-{secrets.token_hex(4).upper()}"
+                
+                # Create reward record
+                reward_doc = {
+                    "user_id": str(current_user["_id"]),
+                    "user_email": current_user["email"],
+                    "user_name": current_user.get("name", "User"),
+                    "reward_type": "gift_coupon",
+                    "coupon_code": coupon_code,
+                    "milestone_number": milestone_number,
+                    "points_at_redemption": current_points,
+                    "status": "approved",
+                    "created_at": datetime.utcnow().isoformat(),
+                    "approved_at": datetime.utcnow().isoformat(),
+                    "approved_by": "system_auto"
+                }
+                
+                await db.rewards.insert_one(reward_doc)
+                new_coupons.append({
+                    "coupon_code": coupon_code,
+                    "milestone": milestone_number
+                })
+            
+            # Update user's milestones_claimed count
+            await db.users.update_one(
+                {"_id": current_user["_id"]},
+                {
+                    "$set": {
+                        "milestones_claimed": milestones_reached,
+                        "last_reward_at": datetime.utcnow().isoformat()
+                    }
+                }
+            )
+            
+            # Send push notification for new coupons
+            if current_user.get("push_token") and new_coupons:
+                try:
+                    push_notification_service.send_reward_approved_notification(
+                        push_token=current_user["push_token"],
+                        reward_type="gift_coupon",
+                        coupon_code=new_coupons[0]["coupon_code"]
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to send reward notification: {str(e)}")
+        
+        # Calculate next milestone
+        next_milestone = (milestones_reached + 1) * 1000
+        points_to_next = next_milestone - current_points
         
         return {
             "success": True,
-            "eligible": eligible,
-            "current_points": points,
-            "points_to_milestone": max(0, 1000 - points),
-            "cycles_completed": cycles_completed
+            "current_points": current_points,
+            "milestones_reached": milestones_reached,
+            "milestones_claimed": milestones_reached,  # Now always synced
+            "new_coupons": new_coupons,
+            "next_milestone": next_milestone,
+            "points_to_next_milestone": points_to_next,
+            "has_new_rewards": len(new_coupons) > 0
         }
         
     except HTTPException:
