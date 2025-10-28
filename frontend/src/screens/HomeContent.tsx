@@ -320,17 +320,17 @@ export default function HomeContent() {
 
       {/* Stats Cards */}
       <View style={styles.statsContainer}>
-        <Animated.View style={[styles.statCard, { backgroundColor: theme.surface }, useCardAnimation(0)]}>
+        <Animated.View entering={FadeInDown.delay(0).duration(400)} style={[styles.statCard, { backgroundColor: theme.surface }]}>
           <Ionicons name="star" size={24} color="#FFD700" />
           <Text style={[styles.statNumber, { color: theme.text }]}>{totalPoints}</Text>
           <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Total Points</Text>
         </Animated.View>
-        <Animated.View style={[styles.statCard, { backgroundColor: theme.surface }, useCardAnimation(1)]}>
+        <Animated.View entering={FadeInDown.delay(100).duration(400)} style={[styles.statCard, { backgroundColor: theme.surface }]}>
           <Ionicons name="trophy" size={24} color={theme.primary} />
           <Text style={[styles.statNumber, { color: theme.text }]}>Level {currentLevel}</Text>
           <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Current Level</Text>
         </Animated.View>
-        <Animated.View style={[styles.statCard, { backgroundColor: theme.surface }, useCardAnimation(2)]}>
+        <Animated.View entering={FadeInDown.delay(200).duration(400)} style={[styles.statCard, { backgroundColor: theme.surface }]}>
           <Ionicons name="flash" size={24} color="#FF4500" />
           <Text style={[styles.statNumber, { color: theme.text }]}>{currentStreak}</Text>
           <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Day Streak</Text>
@@ -338,7 +338,7 @@ export default function HomeContent() {
       </View>
 
       {/* Progress Bar */}
-      <Animated.View style={[styles.progressContainer, { backgroundColor: theme.surface }, useFadeInAnimation(300)]}>
+      <Animated.View entering={FadeIn.delay(300).duration(400)} style={[styles.progressContainer, { backgroundColor: theme.surface }]}>
         <View style={styles.progressHeader}>
           <Text style={[styles.progressTitle, { color: theme.text }]}>Level {currentLevel} Progress</Text>
           <Text style={[styles.progressSubtitle, { color: theme.textSecondary }]}>{experienceForNext} points to next level</Text>
@@ -356,7 +356,11 @@ export default function HomeContent() {
         </Text>
         
         {dailyTasks.map((task, index) => (
-          <Animated.View key={task.id} style={[styles.taskCard, { backgroundColor: theme.surface }, useCardAnimation(index + 3)]}>
+          <Animated.View 
+            key={task.id} 
+            entering={FadeInDown.delay(400 + (index * 100)).duration(400)}
+            style={[styles.taskCard, { backgroundColor: theme.surface }]}
+          >
             <View style={styles.taskContent}>
               <Text style={[styles.taskTitle, { color: theme.text }]}>{task.title}</Text>
               <Text style={[styles.taskCategory, { color: theme.primary }]}>{task.category}</Text>
