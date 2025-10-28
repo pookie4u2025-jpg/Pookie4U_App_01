@@ -3669,20 +3669,41 @@ class StartSubscriptionRequest(BaseModel):
 
 @app.get("/api/subscription/status", tags=["Subscriptions"])
 async def get_subscription_status(current_user: dict = Depends(get_current_user)):
-    """Get user's subscription status"""
+    """Get user's subscription status with auto-renewal info"""
     try:
-        # Check and expire if needed
-        expiry_update = subscription_service.check_and_expire_subscriptions(current_user)
-        if expiry_update:
+        # Check for auto-renewal first
+        renewal_update = subscription_service.auto_renew_subscription(current_user)
+        if renewal_update:
             await db.users.update_one(
                 {"_id": current_user["_id"]},
-                {"$set": expiry_update}
+                {"$set": renewal_update}
             )
-            # Refresh user data
+            # Refresh user data after renewal
             current_user = await db.users.find_one({"_id": current_user["_id"]})
+            logger.info(f"Auto-renewed subscription for user {current_user['_id']}")
+        
+        # Check and expire if needed (only if not renewed)
+        if not renewal_update:
+            expiry_update = subscription_service.check_and_expire_subscriptions(current_user)
+            if expiry_update:
+                await db.users.update_one(
+                    {"_id": current_user["_id"]},
+                    {"$set": expiry_update}
+                )
+                # Refresh user data
+                current_user = await db.users.find_one({"_id": current_user["_id"]})
         
         # Get subscription info
         subscription_info = subscription_service.get_subscription_info(current_user)
+        
+        # Get renewal info
+        auto_renewal_enabled = current_user.get("auto_renewal_enabled", True)
+        renewal_date = None
+        renewal_date_display = None
+        
+        if subscription_info.subscription_end_date and subscription_info.is_active:
+            renewal_date = subscription_info.subscription_end_date.isoformat()
+            renewal_date_display = subscription_service.get_renewal_date_display(subscription_info.subscription_end_date)
         
         return {
             "success": True,
@@ -3694,6 +3715,10 @@ async def get_subscription_status(current_user: dict = Depends(get_current_user)
                 "can_start_trial": subscription_info.can_start_trial,
                 "start_date": subscription_info.subscription_start_date.isoformat() if subscription_info.subscription_start_date else None,
                 "end_date": subscription_info.subscription_end_date.isoformat() if subscription_info.subscription_end_date else None,
+                "renewal_date": renewal_date,
+                "renewal_date_display": renewal_date_display,
+                "auto_renewal_enabled": auto_renewal_enabled,
+                "renewal_count": current_user.get("renewal_count", 0),
                 "display_text": subscription_service.get_display_text(subscription_info)
             }
         }
