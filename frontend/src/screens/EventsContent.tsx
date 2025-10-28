@@ -246,6 +246,102 @@ export default function EventsContent() {
     }
   };
 
+  const deleteEvent = async (eventId: string) => {
+    Alert.alert(
+      'Delete Event',
+      'Are you sure you want to delete this event?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/events/custom/${eventId}`, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                },
+              });
+
+              if (response.ok) {
+                Alert.alert('Success', 'Event deleted successfully!');
+                setShowEventDetails(false);
+                await fetchEvents();
+              } else {
+                const error = await response.json();
+                Alert.alert('Error', error.detail || 'Failed to delete event');
+              }
+            } catch (error) {
+              Alert.alert('Error', 'Something went wrong');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const openEditModal = (event: Event) => {
+    // Convert ISO date to DD/MM/YYYY format
+    const dateObj = new Date(event.date);
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const year = dateObj.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+    
+    setEditEvent({
+      id: event.id,
+      name: event.name,
+      date: formattedDate,
+    });
+    setShowEditModal(true);
+    setShowEventDetails(false);
+  };
+
+  const updateEvent = async () => {
+    if (!editEvent.name || !editEvent.date) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (!isValidDateFormat(editEvent.date)) {
+      Alert.alert('Error', 'Please use DD/MM/YYYY format for the date');
+      return;
+    }
+
+    const parsedDate = parseDate(editEvent.date);
+    if (!parsedDate) {
+      Alert.alert('Error', 'Invalid date format. Please use DD/MM/YYYY');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/events/custom/${editEvent.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: editEvent.name,
+          date: parsedDate.toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        setShowEditModal(false);
+        setEditEvent({ id: '', name: '', date: '' });
+        Alert.alert('Success', 'Event updated successfully!');
+        await fetchEvents();
+      } else {
+        const error = await response.json();
+        Alert.alert('Error', error.detail || 'Failed to update event');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong');
+    }
+  };
+
   const handleEventPress = (event: Event) => {
     setSelectedEvent(event);
     setShowEventDetails(true);
