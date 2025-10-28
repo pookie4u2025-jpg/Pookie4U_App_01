@@ -345,7 +345,6 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
       </View>
       )}
 
-      {/* Confetti Animation */}
       {showConfetti && (
         <ConfettiCannon
           ref={confettiRef}
