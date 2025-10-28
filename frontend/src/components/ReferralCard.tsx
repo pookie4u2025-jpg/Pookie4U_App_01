@@ -190,74 +190,100 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
 
   if (loading) {
     return (
-      <View style={[styles.card, { backgroundColor: theme.surface }]}>
+      <TouchableOpacity 
+        style={[styles.compactCard, { backgroundColor: theme.surface }]}
+        disabled
+      >
         <ActivityIndicator size="small" color={theme.primary} />
-      </View>
+      </TouchableOpacity>
     );
   }
 
   return (
     <>
-      <View style={[styles.card, { backgroundColor: theme.surface }]}>
-        <View style={styles.header}>
-          <View style={styles.titleContainer}>
-            <Ionicons name="gift" size={24} color="#FFD700" />
-            <Text style={[styles.title, { color: theme.text }]}>
-              Invite & Earn
-            </Text>
+      {/* Compact Button - Always Visible */}
+      {!isExpanded && (
+        <TouchableOpacity 
+          style={[styles.compactCard, { backgroundColor: theme.surface, borderColor: theme.primary }]}
+          onPress={() => setIsExpanded(true)}
+        >
+          <View style={styles.compactContent}>
+            <View style={styles.compactLeft}>
+              <Ionicons name="gift" size={28} color="#FFD700" />
+              <View style={styles.compactTextContainer}>
+                <Text style={[styles.compactTitle, { color: theme.text }]}>
+                  Invite & Earn
+                </Text>
+                <Text style={[styles.compactSubtitle, { color: theme.textSecondary }]}>
+                  {currentPoints} points • {Math.floor(currentPoints / 1000)} coupons
+                </Text>
+              </View>
+            </View>
+            <Ionicons name="chevron-forward" size={24} color={theme.primary} />
           </View>
-          <View style={[styles.badge, { backgroundColor: theme.primary + '20' }]}>
-            <Text style={[styles.badgeText, { color: theme.primary }]}>
-              50 pts each
-            </Text>
-          </View>
-        </View>
+        </TouchableOpacity>
+      )}
 
-        <Text style={[styles.description, { color: theme.textSecondary }]}>
-          Invite friends and you both earn 50 points!
-        </Text>
+      {/* Expanded Card - Shows on Click */}
+      {isExpanded && (
+        <View style={[styles.card, { backgroundColor: theme.surface }]}>
+          <View style={styles.header}>
+            <View style={styles.titleContainer}>
+              <Ionicons name="gift" size={24} color="#FFD700" />
+              <Text style={[styles.title, { color: theme.text }]}>
+                Invite & Earn
+              </Text>
+            </View>
+            <TouchableOpacity onPress={() => setIsExpanded(false)}>
+              <Ionicons name="chevron-up" size={24} color={theme.primary} />
+            </TouchableOpacity>
+          </View>
 
-        {/* Current Points Progress */}
-        <View style={[styles.progressContainer, { backgroundColor: theme.background }]}>
-          <View style={styles.progressHeader}>
-            <Text style={[styles.progressLabel, { color: theme.textSecondary }]}>
-              Your Points (Next Milestone)
-            </Text>
-            <Text style={[styles.progressPoints, { color: '#FFD700' }]}>
-              {currentPoints} / {Math.ceil((currentPoints / 1000) + 1) * 1000}
-            </Text>
-          </View>
-          <View style={styles.progressBarContainer}>
-            <View 
-              style={[
-                styles.progressBar, 
-                { width: `${((currentPoints % 1000) / 1000) * 100}%` }
-              ]} 
-            />
-          </View>
-          <Text style={[styles.milestoneInfo, { color: theme.textSecondary }]}>
-            {Math.floor(currentPoints / 1000)} coupon{Math.floor(currentPoints / 1000) !== 1 ? 's' : ''} earned • {1000 - (currentPoints % 1000)} points to next
+          <Text style={[styles.description, { color: theme.textSecondary }]}>
+            Invite friends and you both earn 50 points!
           </Text>
-        </View>
 
-        {/* Referral Code Display */}
-        <View style={[styles.codeContainer, { backgroundColor: theme.background }]}>
-          <View>
-            <Text style={[styles.codeLabel, { color: theme.textSecondary }]}>
-              Your Referral Code
-            </Text>
-            <Text style={[styles.code, { color: theme.primary }]}>
-              {referralData?.code === 'AUTH_ERROR' 
-                ? 'Login Required' 
-                : referralData?.code === 'ERROR' 
-                ? 'Error' 
-                : referralData?.code || 'Loading...'}
+          {/* Current Points Progress */}
+          <View style={[styles.progressContainer, { backgroundColor: theme.background }]}>
+            <View style={styles.progressHeader}>
+              <Text style={[styles.progressLabel, { color: theme.textSecondary }]}>
+                Your Points (Next Milestone)
+              </Text>
+              <Text style={[styles.progressPoints, { color: '#FFD700' }]}>
+                {currentPoints} / {Math.ceil((currentPoints / 1000) + 1) * 1000}
+              </Text>
+            </View>
+            <View style={styles.progressBarContainer}>
+              <View 
+                style={[
+                  styles.progressBar, 
+                  { width: `${((currentPoints % 1000) / 1000) * 100}%` }
+                ]} 
+              />
+            </View>
+            <Text style={[styles.milestoneInfo, { color: theme.textSecondary }]}>
+              {Math.floor(currentPoints / 1000)} coupon{Math.floor(currentPoints / 1000) !== 1 ? 's' : ''} earned • {1000 - (currentPoints % 1000)} points to next
             </Text>
           </View>
-          <TouchableOpacity
-            style={[styles.copyButton, { backgroundColor: theme.primary }]}
-            onPress={handleCopyCode}
-          >
+
+          {/* Referral Code Display */}
+          <View style={[styles.codeContainer, { backgroundColor: theme.background }]}>
+            <View>
+              <Text style={[styles.codeLabel, { color: theme.textSecondary }]}>
+                Your Referral Code
+              </Text>
+              <Text style={[styles.code, { color: theme.primary }]}>
+                {referralData?.code === 'AUTH_ERROR' 
+                  ? 'Login Required' 
+                  : referralData?.code === 'ERROR' 
+                  ? 'Error' 
+                  : referralData?.code || 'Loading...'}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.copyButton, { backgroundColor: theme.primary }]}
+              onPress={handleCopyCode}
+            >
             <Ionicons name="copy" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
