@@ -216,7 +216,15 @@ class BackendTester:
             
         if response.status_code == 200:
             try:
-                tasks_data = response.json()
+                tasks_response = response.json()
+                # Handle both direct list and nested format
+                if isinstance(tasks_response, dict) and 'tasks' in tasks_response:
+                    tasks_data = tasks_response['tasks']
+                elif isinstance(tasks_response, list):
+                    tasks_data = tasks_response
+                else:
+                    tasks_data = []
+                    
                 if isinstance(tasks_data, list) and len(tasks_data) > 0:
                     task_to_complete = tasks_data[0]
                     task_id = task_to_complete.get("id")
