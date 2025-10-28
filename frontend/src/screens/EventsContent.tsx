@@ -20,10 +20,12 @@ interface Event {
   id: string;
   name: string;
   date: string;
-  type: 'holiday' | 'personal';
+  type?: 'holiday' | 'personal';
+  category?: string;
   description?: string;
   recurring?: boolean;
   created_by?: string;
+  prefilled?: boolean;
 }
 
 interface EventTip {
