@@ -1,14 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
   Modal,
   TouchableOpacity,
-  TextInput,
   StyleSheet,
   Alert,
-  ActivityIndicator,
-  ScrollView
+  ScrollView,
+  Clipboard
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ConfettiCannon from 'react-native-confetti-cannon';
@@ -21,33 +20,86 @@ interface RewardMilestoneModalProps {
   onRedeemSuccess: (remainingPoints: number) => void;
 }
 
-type RewardType = 'upi_transfer' | 'gift_coupon';
-
 export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
   visible,
   onClose,
   currentPoints,
   onRedeemSuccess
 }) => {
-  const [selectedReward, setSelectedReward] = useState<RewardType | null>(null);
-  const [upiId, setUpiId] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [newCoupons, setNewCoupons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const confettiRef = useRef<any>(null);
   const { token } = useAuthStore();
 
-  const handleRewardSelect = (type: RewardType) => {
-    setSelectedReward(type);
+  useEffect(() => {
+    if (visible) {
+      fetchNewCoupons();
+    }
+  }, [visible]);
+
+  const fetchNewCoupons = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/rewards/check-milestone`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.new_coupons && data.new_coupons.length > 0) {
+          setNewCoupons(data.new_coupons);
+        } else {
+          // No new coupons, fetch recent ones
+          fetchRecentCoupons();
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching coupons:', error);
+      Alert.alert('Error', 'Failed to load coupons');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRedeem = async () => {
-    if (!selectedReward) {
-      Alert.alert('Error', 'Please select a reward option');
-      return;
-    }
+  const fetchRecentCoupons = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/rewards/history`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
 
-    if (selectedReward === 'upi_transfer' && !upiId.trim()) {
-      Alert.alert('Error', 'Please enter your UPI ID');
+      if (response.ok) {
+        const data = await response.json();
+        // Show last 3 coupons
+        const recent = data.rewards.slice(0, 3).map((r: any) => ({
+          coupon_code: r.coupon_code,
+          milestone: r.milestone_number
+        }));
+        setNewCoupons(recent);
+      }
+    } catch (error) {
+      console.error('Error fetching reward history:', error);
+    }
+  };
+
+  const handleCopyCoupon = async (couponCode: string) => {
+    await Clipboard.setString(couponCode);
+    Alert.alert('Copied!', 'Coupon code copied to clipboard 📋');
+  };
+
+  const handleClose = () => {
+    onRedeemSuccess(currentPoints);
+    onClose();
+  };
       return;
     }
 
