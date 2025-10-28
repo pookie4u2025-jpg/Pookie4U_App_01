@@ -305,58 +305,7 @@ export default function ProfileContent() {
             <View style={styles.userTagContainer}>
               <Text style={[styles.userTag, { backgroundColor: theme.primary }]}>{getUserTag()}</Text>
             </View>
-            <TouchableOpacity 
-              style={[styles.relationshipModeButton, { backgroundColor: theme.primary + '20' }]}
-              onPress={() => setShowModeSelector(!showModeSelector)}
-            >
-              <Text style={[styles.relationshipMode, { color: theme.primary }]}>
-                {user?.relationship_mode?.replace('_', ' ')} Mode
-              </Text>
-              <Ionicons name="chevron-down" size={16} color={theme.primary} />
-            </TouchableOpacity>
-            
-            {/* Relationship Mode Selector */}
-            {showModeSelector && (
-              <TouchableOpacity 
-                style={styles.selectorOverlay} 
-                activeOpacity={1} 
-                onPress={handleDismissSelector}
-              >
-                <View style={[styles.modeSelector, { backgroundColor: theme.surface }]}>
-                  <View style={styles.selectorHeader}>
-                    <Text style={[styles.selectorTitle, { color: theme.text }]}>Choose Relationship Mode</Text>
-                    <TouchableOpacity onPress={handleDismissSelector} style={styles.dismissButton}>
-                      <Ionicons name="close" size={20} color={theme.textSecondary} />
-                    </TouchableOpacity>
-                  </View>
-                  {RELATIONSHIP_MODES.map((mode) => (
-                    <TouchableOpacity
-                      key={mode.value}
-                      style={[
-                        styles.modeOption,
-                        { borderBottomColor: theme.border },
-                        user?.relationship_mode === mode.value && { backgroundColor: theme.primary + '20' }
-                      ]}
-                      onPress={() => handleModeChange(mode.value)}
-                    >
-                      <View style={styles.modeOptionContent}>
-                        <Text style={[
-                          styles.modeLabel,
-                          { color: theme.text },
-                          user?.relationship_mode === mode.value && { color: theme.primary }
-                        ]}>
-                          {mode.label}
-                        </Text>
-                        <Text style={[styles.modeDescription, { color: theme.textSecondary }]}>{mode.description}</Text>
-                      </View>
-                      {user?.relationship_mode === mode.value && (
-                        <Ionicons name="checkmark-circle" size={20} color={theme.primary} />
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </TouchableOpacity>
-            )}
+ 
           </View>
 
           {/* Subscription Status Card */}
