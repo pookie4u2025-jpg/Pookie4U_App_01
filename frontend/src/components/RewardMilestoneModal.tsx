@@ -97,67 +97,6 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
   };
 
   const handleClose = () => {
-    onRedeemSuccess(currentPoints);
-    onClose();
-  };
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/api/rewards/redeem`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            reward_type: selectedReward,
-            upi_id: selectedReward === 'upi_transfer' ? upiId.trim() : undefined,
-            amount: 100
-          })
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Trigger confetti
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 3000);
-
-        // Show success message
-        Alert.alert(
-          '🎉 Congratulations!',
-          data.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                onRedeemSuccess(data.remaining_points);
-                resetAndClose();
-              }
-            }
-          ]
-        );
-      } else {
-        throw new Error(data.detail || 'Failed to redeem reward');
-      }
-    } catch (error: any) {
-      console.error('Redemption error:', error);
-      Alert.alert('Error', error.message || 'Failed to redeem reward');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resetAndClose = () => {
-    setSelectedReward(null);
-    setUpiId('');
-    onClose();
-  };
 
   return (
     <>
@@ -165,7 +104,7 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
         visible={visible}
         animationType="slide"
         transparent={true}
-        onRequestClose={resetAndClose}
+        onRequestClose={handleClose}
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
@@ -174,30 +113,80 @@ export const RewardMilestoneModal: React.FC<RewardMilestoneModalProps> = ({
               <View style={styles.trophy}>
                 <Ionicons name="trophy" size={60} color="#FFD700" />
               </View>
-              <Text style={styles.congratsText}>🎉 Congratulations! 🎉</Text>
+              <Text style={styles.congratsText}>🎉 Milestone Reached! 🎉</Text>
               <Text style={styles.milestoneText}>
-                You reached {currentPoints} points!
+                {Math.floor(currentPoints / 1000)} Gift Coupon{Math.floor(currentPoints / 1000) !== 1 ? 's' : ''} Earned!
               </Text>
               <Text style={styles.subtitle}>
-                Choose your prize 🎁
+                Your Total Points: {currentPoints} 💎
               </Text>
             </View>
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-              {/* Reward Options */}
-              <TouchableOpacity
-                style={[
-                  styles.rewardOption,
-                  selectedReward === 'upi_transfer' && styles.selectedOption
-                ]}
-                onPress={() => handleRewardSelect('upi_transfer')}
-              >
-                <View style={styles.rewardIconContainer}>
-                  <Ionicons name="cash" size={32} color="#4CAF50" />
+              {loading ? (
+                <View style={styles.loadingContainer}>
+                  <Text style={styles.loadingText}>Loading your rewards...</Text>
                 </View>
-                <View style={styles.rewardInfo}>
-                  <Text style={styles.rewardTitle}>Redeem ₹100 via UPI</Text>
-                  <Text style={styles.rewardDescription}>
+              ) : newCoupons.length > 0 ? (
+                <>
+                  <Text style={styles.sectionTitle}>Your Gift Coupons:</Text>
+                  {newCoupons.map((coupon, index) => (
+                    <View key={index} style={styles.couponCard}>
+                      <View style={styles.couponHeader}>
+                        <Ionicons name="gift" size={24} color="#FF1493" />
+                        <Text style={styles.couponMilestone}>
+                          Milestone #{coupon.milestone}
+                        </Text>
+                      </View>
+                      <View style={styles.couponCodeContainer}>
+                        <Text style={styles.couponCode}>{coupon.coupon_code}</Text>
+                        <TouchableOpacity
+                          style={styles.copyButton}
+                          onPress={() => handleCopyCoupon(coupon.coupon_code)}
+                        >
+                          <Ionicons name="copy" size={20} color="#FF1493" />
+                        </TouchableOpacity>
+                      </View>
+                      <Text style={styles.couponNote}>
+                        Use this code for special gifts! 🎁
+                      </Text>
+                    </View>
+                  ))}
+                </>
+              ) : (
+                <Text style={styles.noCouponsText}>No coupons available yet</Text>
+              )}
+
+              <View style={styles.infoBox}>
+                <Ionicons name="information-circle" size={24} color="#2196F3" />
+                <Text style={styles.infoText}>
+                  Keep earning points! Every 1000 points = 1 new gift coupon automatically 🎉
+                </Text>
+              </View>
+            </ScrollView>
+
+            {/* Close Button */}
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={handleClose}
+            >
+              <Text style={styles.closeButtonText}>Got it!</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Confetti Animation */}
+      <ConfettiCannon
+        ref={confettiRef}
+        count={200}
+        origin={{ x: -10, y: 0 }}
+        autoStart={visible}
+        fadeOut={true}
+      />
+    </>
+  );
+};
                     Get cash transferred to your UPI ID
                   </Text>
                   <Text style={styles.rewardNote}>
