@@ -1,23 +1,21 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for Pookie4u App - Critical Bug Fixes Testing
-Testing 4 critical bug fixes as requested:
-1. Authentication Login Fix
-2. Task Completion 
-3. Subscription Payment Endpoints
-4. Push Notification Registration
+Comprehensive Backend Testing for Event CRUD APIs
+Testing Event CRUD Frontend Integration with Backend APIs
 """
 
-import requests
+import asyncio
+import httpx
 import json
-import time
-import random
-import string
-from datetime import datetime
+import os
+from datetime import datetime, timedelta
+from typing import Dict, Any, Optional
 
 # Configuration
-BASE_URL = "https://couple-rewards.preview.emergentagent.com/api"
-HEADERS = {"Content-Type": "application/json"}
+BACKEND_URL = "https://couple-rewards.preview.emergentagent.com/api"
+TEST_USER_EMAIL = "sarah.johnson@example.com"
+TEST_USER_PASSWORD = "SecurePass123!"
+TEST_USER_NAME = "Sarah Johnson"
 
 class BackendTester:
     def __init__(self):
