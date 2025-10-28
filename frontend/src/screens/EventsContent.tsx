@@ -372,8 +372,8 @@ export default function EventsContent() {
   const renderEventDetails = () => {
     if (!selectedEvent) return null;
 
-    const relevantTips = getRelevantTips(selectedEvent.type);
-    const relevantTasks = getRelevantTasks(selectedEvent.type);
+    const relevantTips = selectedEvent.type ? getRelevantTips(selectedEvent.type) : [];
+    const relevantTasks = selectedEvent.type ? getRelevantTasks(selectedEvent.type) : [];
 
     return (
       <Modal
