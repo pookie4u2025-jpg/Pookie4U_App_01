@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Pookie4u Referral & Reward System
-Testing Agent - Referral & Reward System Backend Endpoints
+Comprehensive Backend Testing for Pookie4u App
+Tests all backend endpoints and features as requested in the review.
 """
 
 import asyncio
@@ -9,12 +9,19 @@ import httpx
 import json
 import os
 import sys
-from datetime import datetime
+import time
+import uuid
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 
 # Backend URL from environment
 BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'https://couple-referrals.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
+
+# Test user credentials
+TEST_USER_EMAIL = "sarah.johnson@example.com"
+TEST_USER_PASSWORD = "SecurePass123!"
+TEST_USER_NAME = "Sarah Johnson"
 
 class ReferralRewardTester:
     def __init__(self):
