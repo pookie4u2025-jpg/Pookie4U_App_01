@@ -387,6 +387,13 @@ class BackendTester:
             self.log_result("3.2 Verify Payment", False, "Network error verifying payment")
             return False
             
+        print(f"Verify payment response status: {response.status_code}")
+        try:
+            response_text = response.text
+            print(f"Verify payment response text: {response_text}")
+        except:
+            pass
+            
         # For verify-payment, we expect it to handle gracefully (may fail validation but endpoint should exist)
         if response.status_code in [200, 400, 422]:  # Accept these as valid responses
             try:
