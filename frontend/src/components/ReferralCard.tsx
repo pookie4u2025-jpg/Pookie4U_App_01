@@ -32,6 +32,7 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [currentPoints, setCurrentPoints] = useState(0);
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const confettiRef = useRef<any>(null);
   const { token, user } = useAuthStore();
   const { totalPoints } = useGameStore(); // Get task points from game store
