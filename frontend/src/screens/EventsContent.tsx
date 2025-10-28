@@ -440,6 +440,27 @@ export default function EventsContent() {
                 ))}
               </View>
             )}
+
+            {/* Edit and Delete buttons for custom events */}
+            {selectedEvent.type === 'personal' && selectedEvent.id && selectedEvent.id.startsWith('custom_') && (
+              <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  style={[styles.editButton, { backgroundColor: theme.primary }]}
+                  onPress={() => openEditModal(selectedEvent)}
+                >
+                  <Ionicons name="create-outline" size={20} color="#fff" />
+                  <Text style={styles.actionButtonText}>Edit Event</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.deleteButton, { backgroundColor: theme.error || '#ff3b30' }]}
+                  onPress={() => deleteEvent(selectedEvent.id)}
+                >
+                  <Ionicons name="trash-outline" size={20} color="#fff" />
+                  <Text style={styles.actionButtonText}>Delete Event</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </ScrollView>
         </View>
       </Modal>
