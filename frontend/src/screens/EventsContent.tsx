@@ -518,6 +518,57 @@ export default function EventsContent() {
     </Modal>
   );
 
+  const renderEditEventModal = () => (
+    <Modal
+      visible={showEditModal}
+      animationType="slide"
+      presentationStyle="pageSheet"
+    >
+      <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+        <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+          <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Event</Text>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setShowEditModal(false)}
+          >
+            <Ionicons name="close" size={24} color={theme.text} />
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.modalContent}>
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: theme.text }]}>Event Name</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
+              placeholder="e.g., Anniversary, Birthday"
+              placeholderTextColor={theme.textSecondary}
+              value={editEvent.name}
+              onChangeText={(text) => setEditEvent({ ...editEvent, name: text })}
+            />
+          </View>
+          
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: theme.text }]}>Date (DD/MM/YYYY)</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
+              placeholder="e.g., 14/02/2025"
+              placeholderTextColor={theme.textSecondary}
+              value={editEvent.date}
+              onChangeText={(text) => setEditEvent({ ...editEvent, date: text })}
+            />
+          </View>
+          
+          <TouchableOpacity
+            style={[styles.saveButton, { backgroundColor: theme.primary }]}
+            onPress={updateEvent}
+          >
+            <Text style={styles.saveButtonText}>Update Event</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView
