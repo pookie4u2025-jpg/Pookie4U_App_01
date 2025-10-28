@@ -371,6 +371,43 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
 };
 
 const styles = StyleSheet.create({
+  compactCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    margin: 16,
+    marginTop: 0,
+    borderRadius: 12,
+    borderWidth: 2,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  compactContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flex: 1,
+  },
+  compactLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  compactTextContainer: {
+    flex: 1,
+  },
+  compactTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  compactSubtitle: {
+    fontSize: 12,
+  },
   card: {
     borderRadius: 16,
     padding: 20,
