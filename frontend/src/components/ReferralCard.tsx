@@ -220,31 +220,23 @@ export const ReferralCard: React.FC<ReferralCardProps> = ({ theme }) => {
         <View style={[styles.progressContainer, { backgroundColor: theme.background }]}>
           <View style={styles.progressHeader}>
             <Text style={[styles.progressLabel, { color: theme.textSecondary }]}>
-              Your Points
+              Your Points (Next Milestone)
             </Text>
             <Text style={[styles.progressPoints, { color: '#FFD700' }]}>
-              {currentPoints} / 1000
+              {currentPoints} / {Math.ceil((currentPoints / 1000) + 1) * 1000}
             </Text>
           </View>
           <View style={styles.progressBarContainer}>
             <View 
               style={[
                 styles.progressBar, 
-                { width: `${Math.min((currentPoints / 1000) * 100, 100)}%` }
+                { width: `${((currentPoints % 1000) / 1000) * 100}%` }
               ]} 
             />
           </View>
-          {currentPoints >= 1000 && (
-            <TouchableOpacity 
-              style={styles.redeemBanner}
-              onPress={() => setShowMilestoneModal(true)}
-            >
-              <Ionicons name="trophy" size={20} color="#FFD700" />
-              <Text style={styles.redeemBannerText}>
-                🎉 You can redeem a reward! Tap here
-              </Text>
-            </TouchableOpacity>
-          )}
+          <Text style={[styles.milestoneInfo, { color: theme.textSecondary }]}>
+            {Math.floor(currentPoints / 1000)} coupon{Math.floor(currentPoints / 1000) !== 1 ? 's' : ''} earned • {1000 - (currentPoints % 1000)} points to next
+          </Text>
         </View>
 
         {/* Referral Code Display */}
