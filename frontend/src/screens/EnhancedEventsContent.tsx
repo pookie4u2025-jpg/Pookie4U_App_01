@@ -1428,6 +1428,7 @@ export default function EnhancedEventsContent() {
             </TouchableOpacity>
           </ScrollView>
         </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Date Plan Result Modal */}
