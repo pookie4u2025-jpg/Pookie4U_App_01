@@ -1158,8 +1158,9 @@ export default function EnhancedEventsContent() {
           )}
         </SafeAreaView>
       </Modal>
-
-      {/* AI Date Planner Modal */}
+    </View>
+  );
+}
       <Modal
         visible={showDatePlannerModal}
         animationType="slide"
