@@ -1343,9 +1343,11 @@ const styles = StyleSheet.create({
         </SafeAreaView>
         </KeyboardAvoidingView>
       </Modal>
+    </View>
+  );
+}
 
-      {/* Date Plan Result Modal */}
-      {datePlan && (
+const styles = StyleSheet.create({
         <Modal
           visible={showDatePlanResult}
           animationType="slide"
