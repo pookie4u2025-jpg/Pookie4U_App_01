@@ -183,29 +183,34 @@ Example: 2,5,1"""
         """
         
         mode_context = RELATIONSHIP_CONTEXTS.get(relationship_mode, "in a relationship")
-        pref_text = f"Preferences: {preferences}." if preferences else ""
-        location_text = f"Location: {location}." if location else ""
+        pref_text = f"{preferences}" if preferences else "a romantic date"
+        location_text = f" in {location}" if location else ""
         
-        # Efficient prompt
-        prompt = f"""Create a date plan for couple {mode_context}.
-Budget: {budget}. {pref_text} {location_text}
+        # Enhanced intelligent prompt
+        prompt = f"""You are a date planning expert. Create a personalized date plan for a couple {mode_context}.
+
+USER'S REQUEST: {pref_text}
+
+CONSTRAINTS:
+- Budget: {budget}{location_text}
+- IMPORTANT: Carefully read what the user wants. If they describe going out (e.g., "eating food", "watching movie", "restaurant"), suggest a real in-person date with specific places. If they describe online activities (e.g., "video call", "online game"), suggest virtual date activities.
 
 Provide in this exact format:
 Title: [creative 3-4 word title]
-Time: [best time]
-Duration: [hours]
-Activity: [main activity description, 2-3 sentences]
-Why: [why it's romantic, 1 sentence]
-Tips: [2 quick tips]
-Budget: [estimated cost]"""
+Time: [best time of day]
+Duration: [estimated hours]
+Activity: [detailed description of what to do, include specific places if physical date, or specific platforms/tools if virtual]
+Why: [why this date is romantic and meaningful, 1-2 sentences]
+Tips: [3 practical tips separated by periods]
+Budget: [realistic cost estimate]"""
 
         try:
             response = await asyncio.to_thread(
                 self.llm.run_chat,
                 [UserMessage(content=prompt)],
                 model="gpt-3.5-turbo",
-                temperature=0.9,  # More creative
-                max_tokens=250
+                temperature=0.8,  # Balanced creativity
+                max_tokens=300  # Increased for better responses
             )
             
             result = response.choices[0].message.content.strip()
@@ -222,23 +227,46 @@ Budget: [estimated cost]"""
             }
             
             lines = result.split('\n')
+            current_section = None
+            
             for line in lines:
                 line = line.strip()
                 if line.startswith('Title:'):
                     date_plan['title'] = line.replace('Title:', '').strip()
+                    current_section = 'title'
                 elif line.startswith('Time:'):
                     date_plan['time'] = line.replace('Time:', '').strip()
+                    current_section = 'time'
                 elif line.startswith('Duration:'):
                     date_plan['duration'] = line.replace('Duration:', '').strip()
+                    current_section = 'duration'
                 elif line.startswith('Activity:'):
                     date_plan['activity'] = line.replace('Activity:', '').strip()
+                    current_section = 'activity'
                 elif line.startswith('Why:'):
                     date_plan['why_romantic'] = line.replace('Why:', '').strip()
+                    current_section = 'why'
                 elif line.startswith('Tips:'):
                     tips_text = line.replace('Tips:', '').strip()
-                    date_plan['tips'] = [t.strip() for t in tips_text.split('.') if t.strip()]
+                    # Split by period and filter
+                    tips = [t.strip() for t in tips_text.split('.') if t.strip() and len(t.strip()) > 5]
+                    if not tips and tips_text:
+                        tips = [tips_text]
+                    date_plan['tips'] = tips[:3]  # Max 3 tips
+                    current_section = 'tips'
                 elif line.startswith('Budget:'):
                     date_plan['estimated_cost'] = line.replace('Budget:', '').strip()
+                    current_section = 'budget'
+                elif line and current_section == 'activity':
+                    # Multiline activity description
+                    date_plan['activity'] += ' ' + line
+                elif line and current_section == 'why':
+                    # Multiline why_romantic
+                    date_plan['why_romantic'] += ' ' + line
+            
+            # Ensure we have tips
+            if not date_plan['tips']:
+                date_plan['tips'] = ["Plan ahead", "Enjoy the moment", "Take photos"]
             
             return date_plan
             
@@ -251,7 +279,7 @@ Budget: [estimated cost]"""
                     "duration": "2-3 hours",
                     "activity": "Cook a special meal together, set up candles, play favorite music, and watch a romantic movie on the couch with homemade snacks.",
                     "why_romantic": "Creating special moments in your everyday space strengthens intimacy and shows effort.",
-                    "tips": ["Turn off phones for distraction-free time", "Dress up a bit to make it special"],
+                    "tips": ["Turn off phones for distraction-free time", "Dress up a bit to make it special", "Prepare favorite snacks"],
                     "estimated_cost": budget
                 },
                 "DAILY_IRL": {
@@ -260,7 +288,7 @@ Budget: [estimated cost]"""
                     "duration": "1-2 hours",
                     "activity": "Take a relaxed walk in a nearby park or scenic spot during sunset. Stop by a favorite café or ice cream place for treats while chatting about dreams and memories.",
                     "why_romantic": "Simple moments together create lasting memories and deepen connection.",
-                    "tips": ["Hold hands throughout", "Take a photo at sunset together"],
+                    "tips": ["Hold hands throughout", "Take a photo at sunset together", "Share meaningful conversation"],
                     "estimated_cost": budget
                 },
                 "LONG_DISTANCE": {
@@ -269,7 +297,7 @@ Budget: [estimated cost]"""
                     "duration": "2-3 hours",
                     "activity": "Schedule a video call and watch the same movie simultaneously using a streaming service. Prepare matching snacks beforehand and chat during breaks.",
                     "why_romantic": "Sharing experiences despite distance maintains closeness and creates shared memories.",
-                    "tips": ["Count down to press play together", "Share reactions throughout the movie"],
+                    "tips": ["Count down to press play together", "Share reactions throughout the movie", "Plan next virtual date"],
                     "estimated_cost": budget
                 }
             }
