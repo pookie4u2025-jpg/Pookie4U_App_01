@@ -632,6 +632,192 @@ export default function EventsContent() {
     </Modal>
   );
 
+  // AI Date Planner Modal
+  const renderDatePlannerModal = () => (
+    <Modal
+      visible={showDatePlannerModal}
+      animationType="slide"
+      presentationStyle="pageSheet"
+    >
+      <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+        <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+          <Text style={[styles.modalTitle, { color: theme.text }]}>🎯 AI Date Planner</Text>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => {
+              setShowDatePlannerModal(false);
+              resetDatePlanForm();
+            }}
+          >
+            <Ionicons name="close" size={24} color={theme.text} />
+          </TouchableOpacity>
+        </View>
+        
+        <ScrollView style={styles.modalContent}>
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: theme.text }]}>Budget</Text>
+            <View style={styles.budgetContainer}>
+              {['Under ₹1000', 'Under ₹1500', 'Under ₹3000', '₹5000+'].map((budget) => (
+                <TouchableOpacity
+                  key={budget}
+                  style={[
+                    styles.budgetChip,
+                    { 
+                      backgroundColor: datePlanForm.budget === budget ? theme.primary : theme.surface,
+                      borderColor: theme.border
+                    }
+                  ]}
+                  onPress={() => setDatePlanForm({ ...datePlanForm, budget })}
+                >
+                  <Text style={[
+                    styles.budgetChipText,
+                    { color: datePlanForm.budget === budget ? '#fff' : theme.text }
+                  ]}>
+                    {budget}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: theme.text }]}>Occasion (Optional)</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
+              placeholder="e.g., Birthday, Anniversary, First Date"
+              placeholderTextColor={theme.textSecondary}
+              value={datePlanForm.occasion}
+              onChangeText={(text) => setDatePlanForm({ ...datePlanForm, occasion: text })}
+            />
+          </View>
+          
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: theme.text }]}>Preferences *</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border, height: 80 }]}
+              placeholder="e.g., loves music and nature, enjoys Italian food"
+              placeholderTextColor={theme.textSecondary}
+              value={datePlanForm.preferences}
+              onChangeText={(text) => setDatePlanForm({ ...datePlanForm, preferences: text })}
+              multiline
+            />
+          </View>
+          
+          <View style={styles.inputGroup}>
+            <Text style={[styles.inputLabel, { color: theme.text }]}>Location (Optional)</Text>
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
+              placeholder="e.g., Mumbai, Delhi"
+              placeholderTextColor={theme.textSecondary}
+              value={datePlanForm.location}
+              onChangeText={(text) => setDatePlanForm({ ...datePlanForm, location: text })}
+            />
+          </View>
+          
+          <TouchableOpacity
+            style={[styles.saveButton, { backgroundColor: theme.primary }]}
+            onPress={generateDatePlan}
+            disabled={generatingPlan}
+          >
+            {generatingPlan ? (
+              <Text style={styles.saveButtonText}>Generating... 🤖</Text>
+            ) : (
+              <Text style={styles.saveButtonText}>Generate Date Plan ✨</Text>
+            )}
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+
+  // AI Date Plan Result Modal
+  const renderDatePlanResult = () => {
+    if (!datePlan) return null;
+    
+    return (
+      <Modal
+        visible={showDatePlanResult}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+          <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>Your Perfect Date 💑</Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => {
+                setShowDatePlanResult(false);
+                resetDatePlanForm();
+              }}
+            >
+              <Ionicons name="close" size={24} color={theme.text} />
+            </TouchableOpacity>
+          </View>
+          
+          <ScrollView style={styles.modalContent}>
+            {/* Date Plan Title */}
+            <View style={[styles.datePlanCard, { backgroundColor: theme.surface }]}>
+              <Text style={[styles.datePlanTitle, { color: theme.primary }]}>
+                {datePlan.title}
+              </Text>
+              
+              <View style={styles.datePlanMeta}>
+                <View style={styles.metaItem}>
+                  <Ionicons name="time-outline" size={20} color={theme.text} />
+                  <Text style={[styles.metaText, { color: theme.text }]}>{datePlan.time}</Text>
+                </View>
+                <View style={styles.metaItem}>
+                  <Ionicons name="hourglass-outline" size={20} color={theme.text} />
+                  <Text style={[styles.metaText, { color: theme.text }]}>{datePlan.duration}</Text>
+                </View>
+              </View>
+
+              <View style={styles.datePlanSection}>
+                <Text style={[styles.sectionLabel, { color: theme.text }]}>📍 Activity</Text>
+                <Text style={[styles.datePlanText, { color: theme.text }]}>{datePlan.activity}</Text>
+              </View>
+
+              <View style={styles.datePlanSection}>
+                <Text style={[styles.sectionLabel, { color: theme.text }]}>💕 Why It's Romantic</Text>
+                <Text style={[styles.datePlanText, { color: theme.text }]}>{datePlan.why_romantic}</Text>
+              </View>
+
+              {datePlan.tips && datePlan.tips.length > 0 && (
+                <View style={styles.datePlanSection}>
+                  <Text style={[styles.sectionLabel, { color: theme.text }]}>✨ Tips</Text>
+                  {datePlan.tips.map((tip: string, index: number) => (
+                    <View key={index} style={styles.tipItem}>
+                      <Text style={[styles.tipBullet, { color: theme.primary }]}>•</Text>
+                      <Text style={[styles.tipItemText, { color: theme.text }]}>{tip}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              <View style={[styles.costBadge, { backgroundColor: theme.primary + '20' }]}>
+                <Ionicons name="wallet-outline" size={20} color={theme.primary} />
+                <Text style={[styles.costText, { color: theme.primary }]}>
+                  {datePlan.estimated_cost || datePlanForm.budget}
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.actionButton, { backgroundColor: theme.primary }]}
+              onPress={() => {
+                setShowDatePlanResult(false);
+                setShowDatePlannerModal(true);
+              }}
+            >
+              <Ionicons name="refresh" size={20} color="#fff" />
+              <Text style={styles.actionButtonText}>Generate Another Plan</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView
