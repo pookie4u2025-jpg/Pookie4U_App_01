@@ -892,6 +892,8 @@ export default function EventsContent() {
       {renderEventDetails()}
       {renderAddEventModal()}
       {renderEditEventModal()}
+      {renderDatePlannerModal()}
+      {renderDatePlanResult()}
     </View>
   );
 }
