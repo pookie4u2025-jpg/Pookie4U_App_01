@@ -1236,6 +1236,221 @@ export default function EnhancedEventsContent() {
           )}
         </SafeAreaView>
       </Modal>
+
+      {/* AI Date Planner Modal */}
+      <Modal
+        visible={showDatePlannerModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => {
+          setShowDatePlannerModal(false);
+          resetDatePlanForm();
+        }}
+      >
+        <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+          <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+            <Text style={[styles.modalHeaderTitle, { color: theme.text }]}>🎯 AI Date Planner</Text>
+            <TouchableOpacity
+              style={styles.modalCloseButton}
+              onPress={() => {
+                setShowDatePlannerModal(false);
+                resetDatePlanForm();
+              }}
+            >
+              <Ionicons name="close" size={24} color={theme.text} />
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.modalScrollContent}>
+            {/* Budget Selection */}
+            <View style={styles.formGroup}>
+              <Text style={[styles.formLabel, { color: theme.text }]}>Budget</Text>
+              <View style={styles.budgetChipsContainer}>
+                {['Under ₹1000', 'Under ₹1500', 'Under ₹3000', '₹5000+'].map((budget) => (
+                  <TouchableOpacity
+                    key={budget}
+                    style={[
+                      styles.budgetChip,
+                      { 
+                        backgroundColor: datePlanForm.budget === budget ? theme.primary : theme.surface,
+                        borderColor: datePlanForm.budget === budget ? theme.primary : theme.border,
+                      }
+                    ]}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setDatePlanForm({ ...datePlanForm, budget });
+                    }}
+                  >
+                    <Text style={[
+                      styles.budgetChipText,
+                      { color: datePlanForm.budget === budget ? '#fff' : theme.text }
+                    ]}>
+                      {budget}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Occasion (Optional) */}
+            <View style={styles.formGroup}>
+              <Text style={[styles.formLabel, { color: theme.text }]}>
+                Occasion <Text style={{ color: theme.textSecondary }}>(Optional)</Text>
+              </Text>
+              <TextInput
+                style={[styles.textInput, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
+                placeholder="e.g., Birthday, Anniversary, First Date"
+                placeholderTextColor={theme.textSecondary}
+                value={datePlanForm.occasion}
+                onChangeText={(text) => setDatePlanForm({ ...datePlanForm, occasion: text })}
+              />
+            </View>
+
+            {/* Preferences (Required) */}
+            <View style={styles.formGroup}>
+              <Text style={[styles.formLabel, { color: theme.text }]}>
+                Preferences <Text style={{ color: theme.error }}>*</Text>
+              </Text>
+              <TextInput
+                style={[styles.textInputMultiline, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
+                placeholder="e.g., loves music and nature, enjoys Italian food, outdoor activities"
+                placeholderTextColor={theme.textSecondary}
+                value={datePlanForm.preferences}
+                onChangeText={(text) => setDatePlanForm({ ...datePlanForm, preferences: text })}
+                multiline
+                numberOfLines={4}
+              />
+            </View>
+
+            {/* Location (Optional) */}
+            <View style={styles.formGroup}>
+              <Text style={[styles.formLabel, { color: theme.text }]}>
+                Location <Text style={{ color: theme.textSecondary }}>(Optional)</Text>
+              </Text>
+              <TextInput
+                style={[styles.textInput, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
+                placeholder="e.g., Mumbai, Delhi, Bangalore"
+                placeholderTextColor={theme.textSecondary}
+                value={datePlanForm.location}
+                onChangeText={(text) => setDatePlanForm({ ...datePlanForm, location: text })}
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.generateButton, { backgroundColor: theme.primary, opacity: generatingPlan ? 0.7 : 1 }]}
+              onPress={generateDatePlan}
+              disabled={generatingPlan}
+            >
+              {generatingPlan ? (
+                <>
+                  <ActivityIndicator color="#fff" style={{ marginRight: 8 }} />
+                  <Text style={styles.generateButtonText}>Generating... 🤖</Text>
+                </>
+              ) : (
+                <>
+                  <Ionicons name="sparkles" size={20} color="#fff" style={{ marginRight: 8 }} />
+                  <Text style={styles.generateButtonText}>Generate Date Plan ✨</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Date Plan Result Modal */}
+      {datePlan && (
+        <Modal
+          visible={showDatePlanResult}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => {
+            setShowDatePlanResult(false);
+            resetDatePlanForm();
+          }}
+        >
+          <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+            <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+              <Text style={[styles.modalHeaderTitle, { color: theme.text }]}>Your Perfect Date 💑</Text>
+              <TouchableOpacity
+                style={styles.modalCloseButton}
+                onPress={() => {
+                  setShowDatePlanResult(false);
+                  resetDatePlanForm();
+                }}
+              >
+                <Ionicons name="close" size={24} color={theme.text} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.modalScrollContent}>
+              <View style={[styles.datePlanCard, { backgroundColor: theme.surface }]}>
+                {/* Title */}
+                <Text style={[styles.datePlanTitle, { color: theme.primary }]}>
+                  {datePlan.title}
+                </Text>
+
+                {/* Meta Info */}
+                <View style={styles.datePlanMeta}>
+                  <View style={styles.metaItem}>
+                    <Ionicons name="time-outline" size={20} color={theme.text} />
+                    <Text style={[styles.metaText, { color: theme.text }]}>{datePlan.time}</Text>
+                  </View>
+                  <View style={styles.metaItem}>
+                    <Ionicons name="hourglass-outline" size={20} color={theme.text} />
+                    <Text style={[styles.metaText, { color: theme.text }]}>{datePlan.duration}</Text>
+                  </View>
+                </View>
+
+                {/* Activity */}
+                <View style={styles.datePlanSection}>
+                  <Text style={[styles.sectionLabel, { color: theme.text }]}>📍 Activity</Text>
+                  <Text style={[styles.datePlanText, { color: theme.text }]}>{datePlan.activity}</Text>
+                </View>
+
+                {/* Why Romantic */}
+                <View style={styles.datePlanSection}>
+                  <Text style={[styles.sectionLabel, { color: theme.text }]}>💕 Why It's Romantic</Text>
+                  <Text style={[styles.datePlanText, { color: theme.text }]}>{datePlan.why_romantic}</Text>
+                </View>
+
+                {/* Tips */}
+                {datePlan.tips && datePlan.tips.length > 0 && (
+                  <View style={styles.datePlanSection}>
+                    <Text style={[styles.sectionLabel, { color: theme.text }]}>✨ Tips</Text>
+                    {datePlan.tips.map((tip: string, index: number) => (
+                      <View key={index} style={styles.tipItem}>
+                        <Text style={[styles.tipBullet, { color: theme.primary }]}>•</Text>
+                        <Text style={[styles.tipItemText, { color: theme.text }]}>{tip}</Text>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
+                {/* Cost */}
+                <View style={[styles.costBadge, { backgroundColor: theme.primary + '20' }]}>
+                  <Ionicons name="wallet-outline" size={20} color={theme.primary} />
+                  <Text style={[styles.costText, { color: theme.primary }]}>
+                    {datePlan.estimated_cost || datePlanForm.budget}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Generate Another Plan Button */}
+              <TouchableOpacity
+                style={[styles.actionButton, { backgroundColor: theme.primary }]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  setShowDatePlanResult(false);
+                  setShowDatePlannerModal(true);
+                }}
+              >
+                <Ionicons name="refresh" size={20} color="#fff" />
+                <Text style={styles.actionButtonText}>Generate Another Plan</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </SafeAreaView>
+        </Modal>
+      )}
     </View>
   );
 }
