@@ -205,6 +205,7 @@ Tips: [3 practical tips separated by periods]
 Budget: [realistic cost estimate]"""
 
         try:
+            print(f"🎯 Generating date plan with prompt: {prompt[:200]}...")  # Debug
             response = await asyncio.to_thread(
                 self.llm.run_chat,
                 [UserMessage(content=prompt)],
@@ -214,7 +215,7 @@ Budget: [realistic cost estimate]"""
             )
             
             result = response.choices[0].message.content.strip()
-            print(f"✅ AI Response received: {result[:100]}...")  # Debug log
+            print(f"✅ AI Response received: {result[:200]}...")  # Debug log
             
             # Parse response
             date_plan = {
