@@ -273,6 +273,7 @@ Budget: [realistic cost estimate]"""
             return date_plan
             
         except Exception as e:
+            print(f"❌ AI Date Plan Error: {str(e)}")  # Debug error
             # Fallback date plan
             fallback_plans = {
                 "SAME_HOME": {
