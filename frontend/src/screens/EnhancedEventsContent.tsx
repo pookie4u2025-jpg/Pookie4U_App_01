@@ -1161,7 +1161,8 @@ export default function EnhancedEventsContent() {
     </View>
   );
 }
-      <Modal
+
+const styles = StyleSheet.create({
         visible={showDatePlannerModal}
         animationType="slide"
         presentationStyle="pageSheet"
