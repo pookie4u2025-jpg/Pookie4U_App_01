@@ -1301,31 +1301,84 @@ export default function EnhancedEventsContent() {
               </View>
             </View>
 
-            {/* Occasion (Optional) */}
+            {/* Date Type Selection */}
             <View style={styles.formGroup}>
-              <Text style={[styles.formLabel, { color: theme.text }]}>
-                Occasion <Text style={{ color: theme.textSecondary }}>(Optional)</Text>
-              </Text>
-              <TextInput
-                style={[styles.textInput, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
-                placeholder="e.g., Birthday, Anniversary, First Date"
-                placeholderTextColor={theme.textSecondary}
-                value={datePlanForm.occasion}
-                onChangeText={(text) => setDatePlanForm({ ...datePlanForm, occasion: text })}
-              />
+              <Text style={[styles.formLabel, { color: theme.text }]}>Date Type</Text>
+              <View style={styles.budgetChipsContainer}>
+                {['Virtual Date', 'Real Meeting'].map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    style={[
+                      styles.budgetChip,
+                      { 
+                        backgroundColor: datePlanForm.dateType === type ? theme.primary : theme.surface,
+                        borderColor: datePlanForm.dateType === type ? theme.primary : theme.border,
+                        flex: 1,
+                      }
+                    ]}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setDatePlanForm({ ...datePlanForm, dateType: type });
+                    }}
+                  >
+                    <Ionicons 
+                      name={type === 'Virtual Date' ? 'videocam' : 'people'} 
+                      size={18} 
+                      color={datePlanForm.dateType === type ? '#fff' : theme.text} 
+                      style={{ marginRight: 6 }}
+                    />
+                    <Text style={[
+                      styles.budgetChipText,
+                      { color: datePlanForm.dateType === type ? '#fff' : theme.text }
+                    ]}>
+                      {type}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
 
-            {/* Preferences (Required) */}
+            {/* Duration Selection */}
+            <View style={styles.formGroup}>
+              <Text style={[styles.formLabel, { color: theme.text }]}>How much time together?</Text>
+              <View style={styles.budgetChipsContainer}>
+                {['1 hour', '2-3 hours', '4-6 hours', 'Full day'].map((duration) => (
+                  <TouchableOpacity
+                    key={duration}
+                    style={[
+                      styles.budgetChip,
+                      { 
+                        backgroundColor: datePlanForm.duration === duration ? theme.primary : theme.surface,
+                        borderColor: datePlanForm.duration === duration ? theme.primary : theme.border,
+                      }
+                    ]}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setDatePlanForm({ ...datePlanForm, duration });
+                    }}
+                  >
+                    <Text style={[
+                      styles.budgetChipText,
+                      { color: datePlanForm.duration === duration ? '#fff' : theme.text }
+                    ]}>
+                      {duration}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* Description (Required) */}
             <View style={styles.formGroup}>
               <Text style={[styles.formLabel, { color: theme.text }]}>
-                Preferences <Text style={{ color: theme.error }}>*</Text>
+                What kind of date do you want? <Text style={{ color: theme.error }}>*</Text>
               </Text>
               <TextInput
                 style={[styles.textInputMultiline, { backgroundColor: theme.surface, color: theme.text, borderColor: theme.border }]}
-                placeholder="e.g., loves music and nature, enjoys Italian food, outdoor activities"
+                placeholder="e.g., romantic dinner, outdoor adventure, cozy movie night, fun gaming session"
                 placeholderTextColor={theme.textSecondary}
-                value={datePlanForm.preferences}
-                onChangeText={(text) => setDatePlanForm({ ...datePlanForm, preferences: text })}
+                value={datePlanForm.description}
+                onChangeText={(text) => setDatePlanForm({ ...datePlanForm, description: text })}
                 multiline
                 numberOfLines={4}
               />
