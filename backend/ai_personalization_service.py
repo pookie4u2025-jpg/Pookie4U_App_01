@@ -209,7 +209,6 @@ Budget: [realistic cost estimate]"""
             response = await asyncio.to_thread(
                 self.llm.run_chat,
                 [UserMessage(content=prompt)],
-                model="gpt-3.5-turbo",
                 temperature=0.8,  # Balanced creativity
                 max_tokens=300  # Increased for better responses
             )
