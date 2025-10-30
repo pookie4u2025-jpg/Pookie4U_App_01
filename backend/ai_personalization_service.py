@@ -214,6 +214,7 @@ Budget: [realistic cost estimate]"""
             )
             
             result = response.choices[0].message.content.strip()
+            print(f"✅ AI Response received: {result[:100]}...")  # Debug log
             
             # Parse response
             date_plan = {
