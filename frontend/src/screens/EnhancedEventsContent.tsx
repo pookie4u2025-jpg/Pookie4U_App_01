@@ -632,20 +632,6 @@ export default function EnhancedEventsContent() {
           </View>
         </View>
 
-        {/* AI Date Planner Button */}
-        <TouchableOpacity
-          style={[styles.datePlannerButton, { backgroundColor: theme.primary }]}
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            setShowDatePlannerModal(true);
-          }}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="sparkles" size={22} color="#fff" />
-          <Text style={styles.datePlannerButtonText}>AI Date Planner</Text>
-          <Ionicons name="arrow-forward" size={20} color="#fff" />
-        </TouchableOpacity>
-
         {/* Pre-filled Events Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
