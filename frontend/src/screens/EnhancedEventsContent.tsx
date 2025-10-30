@@ -476,8 +476,8 @@ export default function EnhancedEventsContent() {
 
   // AI Date Planner function
   const generateDatePlan = async () => {
-    if (!datePlanForm.preferences.trim()) {
-      Alert.alert('Error', 'Please enter your preferences (e.g., "outdoor activity, music")');
+    if (!datePlanForm.description.trim()) {
+      Alert.alert('Error', 'Please describe what kind of date you want');
       return;
     }
 
@@ -485,6 +485,15 @@ export default function EnhancedEventsContent() {
     
     try {
       const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://couple-rewards.preview.emergentagent.com';
+      
+      // Build comprehensive preferences string
+      const comprehensivePreferences = `
+        Date Type: ${datePlanForm.dateType}
+        Available Time: ${datePlanForm.duration}
+        Description: ${datePlanForm.description}
+        ${datePlanForm.location ? `Location: ${datePlanForm.location}` : ''}
+      `.trim();
+      
       const response = await fetch(`${apiUrl}/api/ai/plan-date`, {
         method: 'POST',
         headers: {
@@ -493,9 +502,7 @@ export default function EnhancedEventsContent() {
         },
         body: JSON.stringify({
           budget: datePlanForm.budget,
-          preferences: datePlanForm.occasion 
-            ? `${datePlanForm.occasion}: ${datePlanForm.preferences}`
-            : datePlanForm.preferences,
+          preferences: comprehensivePreferences,
           location: datePlanForm.location || undefined,
         }),
       });
@@ -521,8 +528,9 @@ export default function EnhancedEventsContent() {
   const resetDatePlanForm = () => {
     setDatePlanForm({
       budget: 'Under ₹1500',
-      occasion: '',
-      preferences: '',
+      dateType: 'Real Meeting',
+      duration: '2-3 hours',
+      description: '',
       location: ''
     });
     setDatePlan(null);
