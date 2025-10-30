@@ -839,6 +839,16 @@ export default function EventsContent() {
             <Ionicons name="add" size={20} color="#fff" />
             <Text style={styles.addButtonText}>Add Event</Text>
           </TouchableOpacity>
+          
+          {/* AI Date Planner Button */}
+          <TouchableOpacity
+            style={[styles.datePlannerButton, { backgroundColor: theme.primary + '15', borderColor: theme.primary }]}
+            onPress={() => setShowDatePlannerModal(true)}
+          >
+            <Ionicons name="sparkles" size={20} color={theme.primary} />
+            <Text style={[styles.datePlannerButtonText, { color: theme.primary }]}>AI Date Planner</Text>
+            <Ionicons name="arrow-forward" size={18} color={theme.primary} />
+          </TouchableOpacity>
         </View>
 
         {/* Events List */}
