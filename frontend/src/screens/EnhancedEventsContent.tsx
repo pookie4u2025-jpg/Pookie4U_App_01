@@ -488,12 +488,16 @@ export default function EnhancedEventsContent() {
     try {
       const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://couple-rewards.preview.emergentagent.com';
       
-      // Build comprehensive preferences string
+      // Build intelligent preferences string that prioritizes description
       const comprehensivePreferences = `
-        Date Type: ${datePlanForm.dateType}
-        Available Time: ${datePlanForm.duration}
-        Description: ${datePlanForm.description}
-        ${datePlanForm.location ? `Location: ${datePlanForm.location}` : ''}
+        User wants: ${datePlanForm.description}
+        
+        Additional context:
+        - They selected "${datePlanForm.dateType}" type
+        - Available time: ${datePlanForm.duration}
+        ${datePlanForm.location ? `- Location: ${datePlanForm.location}` : ''}
+        
+        IMPORTANT: Focus primarily on what the user described they want. If their description contradicts the date type selection (e.g., they describe going out but selected "Virtual Date"), prioritize their description over the selection.
       `.trim();
       
       const response = await fetch(`${apiUrl}/api/ai/plan-date`, {
