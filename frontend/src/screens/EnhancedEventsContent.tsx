@@ -110,8 +110,9 @@ export default function EnhancedEventsContent() {
   const [showDatePlannerModal, setShowDatePlannerModal] = useState(false);
   const [datePlanForm, setDatePlanForm] = useState({
     budget: 'Under ₹1500',
-    occasion: '',
-    preferences: '',
+    dateType: 'Real Meeting', // 'Virtual Date' or 'Real Meeting'
+    duration: '2-3 hours',
+    description: '',
     location: ''
   });
   const [generatingPlan, setGeneratingPlan] = useState(false);
