@@ -45,11 +45,12 @@ class AIPersonalizationService:
             raise ValueError("EMERGENT_LLM_KEY not found in environment variables")
         
         # Initialize LLM chat with GPT-3.5 Turbo for cost optimization
+        # Note: Don't use .with_model() as it may create issues. Pass model in run_chat instead.
         self.llm = LlmChat(
             api_key=self.api_key,
             session_id="personalization",
             system_message="You are a relationship assistant helping create personalized romantic content."
-        ).with_model("openai", "gpt-3.5-turbo")
+        )
     
     async def generate_personalized_message(
         self,
