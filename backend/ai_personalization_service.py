@@ -207,8 +207,10 @@ Budget: [realistic cost estimate]"""
 
         try:
             print(f"🎯 Generating date plan with prompt: {prompt[:200]}...")  # Debug
-            response = self.llm.chat(
-                messages=[UserMessage(content=prompt)],
+            response = await asyncio.to_thread(
+                self.llm.run_chat,
+                [UserMessage(content=prompt)],
+                model="gpt-3.5-turbo",
                 temperature=0.8,
                 max_tokens=300
             )
