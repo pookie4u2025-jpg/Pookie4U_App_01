@@ -1256,21 +1256,30 @@ export default function EnhancedEventsContent() {
           resetDatePlanForm();
         }}
       >
-        <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.background }]}>
-          <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
-            <Text style={[styles.modalHeaderTitle, { color: theme.text }]}>🎯 AI Date Planner</Text>
-            <TouchableOpacity
-              style={styles.modalCloseButton}
-              onPress={() => {
-                setShowDatePlannerModal(false);
-                resetDatePlanForm();
-              }}
-            >
-              <Ionicons name="close" size={24} color={theme.text} />
-            </TouchableOpacity>
-          </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
+          <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.background }]}>
+            <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
+              <Text style={[styles.modalHeaderTitle, { color: theme.text }]}>🎯 AI Date Planner</Text>
+              <TouchableOpacity
+                style={styles.modalCloseButton}
+                onPress={() => {
+                  setShowDatePlannerModal(false);
+                  resetDatePlanForm();
+                }}
+              >
+                <Ionicons name="close" size={24} color={theme.text} />
+              </TouchableOpacity>
+            </View>
 
-          <ScrollView style={styles.modalScrollContent}>
+            <ScrollView 
+              style={styles.modalScrollContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
             {/* Budget Selection */}
             <View style={styles.formGroup}>
               <Text style={[styles.formLabel, { color: theme.text }]}>Budget</Text>
