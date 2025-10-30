@@ -353,6 +353,57 @@ export default function EventsContent() {
     }
   };
 
+  // AI Date Planner function
+  const generateDatePlan = async () => {
+    if (!datePlanForm.preferences.trim()) {
+      Alert.alert('Error', 'Please enter your preferences (e.g., "outdoor activity, music")');
+      return;
+    }
+
+    setGeneratingPlan(true);
+    
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/api/ai/plan-date`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          budget: datePlanForm.budget,
+          preferences: datePlanForm.occasion 
+            ? `${datePlanForm.occasion}: ${datePlanForm.preferences}`
+            : datePlanForm.preferences,
+          location: datePlanForm.location || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDatePlan(data.date_plan);
+        setShowDatePlannerModal(false);
+        setShowDatePlanResult(true);
+      } else {
+        const error = await response.json();
+        Alert.alert('Error', error.detail || 'Failed to generate date plan');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to connect to AI service');
+    } finally {
+      setGeneratingPlan(false);
+    }
+  };
+
+  const resetDatePlanForm = () => {
+    setDatePlanForm({
+      budget: 'Under ₹1500',
+      occasion: '',
+      preferences: '',
+      location: ''
+    });
+    setDatePlan(null);
+  };
+
   const handleEventPress = (event: Event) => {
     setSelectedEvent(event);
     setShowEventDetails(true);
