@@ -108,19 +108,6 @@ export default function EnhancedEventsContent() {
   const [newEventCategory, setNewEventCategory] = useState('personal');
   const [newEventDescription, setNewEventDescription] = useState('');
 
-  // AI Date Planner states
-  const [showDatePlannerModal, setShowDatePlannerModal] = useState(false);
-  const [datePlanForm, setDatePlanForm] = useState({
-    budget: 'Under ₹1500',
-    dateType: 'Real Meeting', // 'Virtual Date' or 'Real Meeting'
-    duration: '2-3 hours',
-    description: '',
-    location: ''
-  });
-  const [generatingPlan, setGeneratingPlan] = useState(false);
-  const [datePlan, setDatePlan] = useState<any>(null);
-  const [showDatePlanResult, setShowDatePlanResult] = useState(false);
-
   // Debug authentication state
   useEffect(() => {
     console.log('🔐 Auth Debug - isAuthenticated:', isAuthenticated);
