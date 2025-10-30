@@ -1163,7 +1163,7 @@ export default function EnhancedEventsContent() {
 }
 
 const styles = StyleSheet.create({
-        visible={showDatePlannerModal}
+  container: {
         animationType="slide"
         presentationStyle="pageSheet"
         onRequestClose={() => {
