@@ -1164,37 +1164,13 @@ export default function EnhancedEventsContent() {
 
 const styles = StyleSheet.create({
   container: {
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => {
-          setShowDatePlannerModal(false);
-          resetDatePlanForm();
-        }}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1 }}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-        >
-          <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.background }]}>
-            <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderBottomColor: theme.border }]}>
-              <Text style={[styles.modalHeaderTitle, { color: theme.text }]}>🎯 AI Date Planner</Text>
-              <TouchableOpacity
-                style={styles.modalCloseButton}
-                onPress={() => {
-                  setShowDatePlannerModal(false);
-                  resetDatePlanForm();
-                }}
-              >
-                <Ionicons name="close" size={24} color={theme.text} />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView 
-              style={styles.modalScrollContent}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-            >
+    flex: 1,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  
+  // Header Styles
             {/* Budget Selection */}
             <View style={styles.formGroup}>
               <Text style={[styles.formLabel, { color: theme.text }]}>Budget</Text>
