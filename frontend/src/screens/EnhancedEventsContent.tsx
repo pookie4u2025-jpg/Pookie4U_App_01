@@ -460,20 +460,8 @@ export default function EnhancedEventsContent() {
       });
 
       if (response.ok) {
-        const result = await response.json();
-        // Update event in local state
-        setCalendarData(prev => ({
-          ...prev,
-          events: prev.events.map(e => 
-            e.id === eventId ? { ...e, ...result.event } : e
-          )
-        }));
-        setShowEditModal(false);
-        setEditingEvent(null);
+        await loadEvents(); // Reload events
         Alert.alert('Success', 'Event updated successfully!');
-        
-        // Reload events to get fresh data
-        loadEvents(false);
       } else {
         const errorText = await response.text();
         console.error('Update event error:', response.status, errorText);
@@ -483,6 +471,60 @@ export default function EnhancedEventsContent() {
       console.error('Update event error:', error);
       Alert.alert('Network Error', 'Failed to connect to the server. Please check your internet connection.');
     }
+  };
+
+  // AI Date Planner function
+  const generateDatePlan = async () => {
+    if (!datePlanForm.preferences.trim()) {
+      Alert.alert('Error', 'Please enter your preferences (e.g., "outdoor activity, music")');
+      return;
+    }
+
+    setGeneratingPlan(true);
+    
+    try {
+      const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://couple-rewards.preview.emergentagent.com';
+      const response = await fetch(`${apiUrl}/api/ai/plan-date`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          budget: datePlanForm.budget,
+          preferences: datePlanForm.occasion 
+            ? `${datePlanForm.occasion}: ${datePlanForm.preferences}`
+            : datePlanForm.preferences,
+          location: datePlanForm.location || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDatePlan(data.date_plan);
+        setShowDatePlannerModal(false);
+        setShowDatePlanResult(true);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else {
+        const error = await response.json();
+        Alert.alert('Error', error.detail || 'Failed to generate date plan');
+      }
+    } catch (error) {
+      console.error('Generate date plan error:', error);
+      Alert.alert('Error', 'Failed to connect to AI service');
+    } finally {
+      setGeneratingPlan(false);
+    }
+  };
+
+  const resetDatePlanForm = () => {
+    setDatePlanForm({
+      budget: 'Under ₹1500',
+      occasion: '',
+      preferences: '',
+      location: ''
+    });
+    setDatePlan(null);
   };
 
   const handleAddSuggestion = (suggestion: string) => {
