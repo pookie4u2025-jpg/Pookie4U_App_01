@@ -58,6 +58,18 @@ export default function EventsContent() {
   const [newEvent, setNewEvent] = useState({ name: '', date: '' });
   const [showEditModal, setShowEditModal] = useState(false);
   const [editEvent, setEditEvent] = useState({ id: '', name: '', date: '' });
+  
+  // AI Date Planner states
+  const [showDatePlannerModal, setShowDatePlannerModal] = useState(false);
+  const [datePlanForm, setDatePlanForm] = useState({
+    budget: 'Under ₹1500',
+    occasion: '',
+    preferences: '',
+    location: ''
+  });
+  const [generatingPlan, setGeneratingPlan] = useState(false);
+  const [datePlan, setDatePlan] = useState<any>(null);
+  const [showDatePlanResult, setShowDatePlanResult] = useState(false);
 
   useEffect(() => {
     if (token) {
