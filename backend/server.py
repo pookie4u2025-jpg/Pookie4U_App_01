@@ -62,9 +62,9 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 30
 
-# OAuth configuration
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
+# OAuth configuration - Removed Google OAuth (using Emergent OAuth instead)
+# Apple OAuth configuration (for future implementation)
+
 
 # SMS configuration (Twilio or similar)
 SMS_PROVIDER_API_KEY = os.environ.get("SMS_PROVIDER_API_KEY", "")
