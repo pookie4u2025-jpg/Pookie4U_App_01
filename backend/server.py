@@ -2845,9 +2845,41 @@ async def complete_task(task_data: TaskComplete, current_user: dict = Depends(ge
     new_level = (new_total_points // 100) + 1
     new_tasks_completed = current_user.get("tasks_completed", 0) + 1
     
-    # Update streak (simplified logic)
-    current_streak = current_user.get("current_streak", 0) + 1
-    longest_streak = max(current_user.get("longest_streak", 0), current_streak)
+    # Proper streak calculation - only updates once per day
+    today = datetime.utcnow().date()
+    last_streak_update = current_user.get("last_streak_update")
+    current_streak = current_user.get("current_streak", 0)
+    longest_streak = current_user.get("longest_streak", 0)
+    
+    # Check if we need to update streak
+    if last_streak_update:
+        # Convert to date if it's a datetime
+        if isinstance(last_streak_update, datetime):
+            last_update_date = last_streak_update.date()
+        else:
+            # Parse ISO string to date
+            last_update_date = datetime.fromisoformat(str(last_streak_update)).date()
+        
+        days_diff = (today - last_update_date).days
+        
+        if days_diff == 0:
+            # Same day - don't change streak
+            pass
+        elif days_diff == 1:
+            # Yesterday - increment streak (consecutive day)
+            current_streak += 1
+            longest_streak = max(longest_streak, current_streak)
+        else:
+            # Gap of 2+ days - reset streak to 1
+            current_streak = 1
+    else:
+        # First time tracking streak - set to 1
+        current_streak = 1
+    
+    # Store last_streak_update as datetime for consistency
+    last_streak_update = datetime.utcnow()
+    
+    longest_streak = max(longest_streak, current_streak)
     
     # Update badges (simplified)
     badges = current_user.get("badges", [])
