@@ -489,7 +489,7 @@ export default function AuthScreen() {
             </View>
           )}
 
-          {/* Removed mobile login - keeping only Email + Google OAuth */}
+          {/* Removed mobile login - keeping only Email + Emergent OAuth */}
 
           {/* Sign In Method Selection */}
           {registrationMethod !== 'email' && (
