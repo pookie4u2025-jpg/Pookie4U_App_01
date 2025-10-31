@@ -638,15 +638,7 @@ export default function AuthScreen() {
             )}
           </TouchableOpacity>
 
-          {/* Continue with Google */}
-          <TouchableOpacity
-            style={styles.cleanGoogleButton}
-            onPress={handleGoogleSignIn}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="logo-google" size={20} color="#4285F4" />
-            <Text style={styles.cleanGoogleButtonText}>Continue with Google</Text>
-          </TouchableOpacity>
+          {/* Google OAuth removed */}
 
           {/* Sign In Link */}
           <View style={styles.cleanSignUpLink}>
