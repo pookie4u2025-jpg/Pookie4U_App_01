@@ -389,6 +389,16 @@ export default function AuthScreen() {
             <Text style={styles.cleanGoogleButtonText}>Continue with Google</Text>
           </TouchableOpacity>
 
+          {/* Continue with Emergent OAuth */}
+          <TouchableOpacity
+            style={styles.cleanEmergentButton}
+            onPress={handleEmergentSignIn}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="shield-checkmark" size={20} color="#FF1493" />
+            <Text style={styles.cleanEmergentButtonText}>Continue with Emergent</Text>
+          </TouchableOpacity>
+
           {/* Sign Up Link */}
           <View style={styles.cleanSignUpLink}>
             <Text style={styles.cleanLinkText}>Don't have an account? </Text>
