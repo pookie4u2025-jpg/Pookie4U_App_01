@@ -2315,7 +2315,7 @@ async def logout(request: Request):
     return {"success": True, "message": "Logged out successfully"}
 
 @api_router.post("/auth/link-account")
-async def link_account(request: LinkAccountRequest, current_user: dict = Depends(get_current_user)):
+async def link_account(request: LinkAccountRequest, current_user: dict = Depends(get_current_user())):
     """Link an additional authentication method to existing account"""
     try:
         provider = request.provider
@@ -2377,7 +2377,7 @@ async def link_account(request: LinkAccountRequest, current_user: dict = Depends
         raise HTTPException(status_code=500, detail="Account linking failed")
 
 @api_router.post("/auth/unlink-account")
-async def unlink_account(request: UnlinkAccountRequest, current_user: dict = Depends(get_current_user)):
+async def unlink_account(request: UnlinkAccountRequest, current_user: dict = Depends(get_current_user())):
     """Unlink an authentication method from account"""
     try:
         provider = request.provider
@@ -2457,7 +2457,7 @@ async def refresh_token(request: RefreshTokenRequest):
         raise HTTPException(status_code=500, detail="Token refresh failed")
 
 @api_router.get("/user/profile", response_model=UserProfile)
-async def get_profile(current_user: dict = Depends(get_current_user)):
+async def get_profile(current_user: dict = Depends(get_current_user())):
     # Convert partner profile data to handle datetime fields
     partner_data = current_user.get("partner_profile", {})
     
@@ -2518,7 +2518,7 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
     )
 
 @api_router.put("/user/profile")
-async def update_user_profile(profile_update: dict, current_user: dict = Depends(get_current_user)):
+async def update_user_profile(profile_update: dict, current_user: dict = Depends(get_current_user())):
     # Validate allowed fields
     allowed_fields = {"name", "email"}
     update_data = {k: v for k, v in profile_update.items() if k in allowed_fields}
@@ -2538,7 +2538,7 @@ async def update_user_profile(profile_update: dict, current_user: dict = Depends
     return {"message": "Profile updated successfully"}
 
 @api_router.put("/user/partner-profile")
-async def update_partner_profile(partner: PartnerProfile, current_user: dict = Depends(get_current_user)):
+async def update_partner_profile(partner: PartnerProfile, current_user: dict = Depends(get_current_user())):
     # Update partner profile
     await db.users.update_one(
         {"_id": current_user["_id"]},
@@ -2616,7 +2616,7 @@ async def update_partner_profile(partner: PartnerProfile, current_user: dict = D
     return {"message": "Partner profile updated successfully", "auto_events_created": len(auto_events) if 'auto_events' in locals() else 0}
 
 @api_router.put("/user/relationship-mode")
-async def update_relationship_mode(mode: RelationshipMode, current_user: dict = Depends(get_current_user)):
+async def update_relationship_mode(mode: RelationshipMode, current_user: dict = Depends(get_current_user())):
     """Update relationship mode and regenerate AI tasks for the new mode"""
     new_mode = mode.mode
     current_mode = current_user.get("relationship_mode", "SAME_HOME")
@@ -2734,7 +2734,7 @@ async def update_relationship_mode(mode: RelationshipMode, current_user: dict = 
     }
 
 @api_router.put("/user/profile-image")
-async def update_profile_image(image_data: ProfileImageUpdate, current_user: dict = Depends(get_current_user)):
+async def update_profile_image(image_data: ProfileImageUpdate, current_user: dict = Depends(get_current_user())):
     await db.users.update_one(
         {"_id": current_user["_id"]},
         {"$set": {
@@ -2897,7 +2897,7 @@ async def get_leaderboard(
 @api_router.get("/tasks/daily")
 async def get_daily_tasks(
     regenerate: bool = False,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Get daily AI-generated tasks for current user's relationship mode"""
     today = datetime.utcnow().date()
@@ -2986,7 +2986,7 @@ async def get_daily_tasks(
 @api_router.get("/tasks/weekly")
 async def get_weekly_tasks(
     regenerate: bool = False,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Get weekly AI-generated tasks for current user's relationship mode"""
     today = datetime.utcnow()
@@ -3073,7 +3073,7 @@ async def get_weekly_tasks(
     }
 
 @api_router.post("/tasks/complete")
-async def complete_task(task_data: TaskComplete, current_user: dict = Depends(get_current_user)):
+async def complete_task(task_data: TaskComplete, current_user: dict = Depends(get_current_user())):
     """Complete a task (both AI-generated and custom tasks)"""
     task_id = task_data.task_id
     user_id = current_user["_id"]
@@ -3237,7 +3237,7 @@ async def complete_task(task_data: TaskComplete, current_user: dict = Depends(ge
 @api_router.post("/tasks/generate")
 async def generate_tasks_manually(
     request: TaskGenerationRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Manually generate AI tasks for testing and immediate refresh"""
     try:
@@ -3451,7 +3451,7 @@ async def get_daily_messages(relationship_mode: str):
 @api_router.post("/ai/generate-message")
 async def generate_personalized_message(
     category: str,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """
     Generate AI-powered personalized message
@@ -3489,7 +3489,7 @@ async def generate_personalized_message(
 async def get_smart_gift_recommendations(
     occasion: str = "general",
     budget: str = "Under ₹1000",
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """
     Get AI-enhanced gift recommendations based on partner profile
@@ -3541,7 +3541,7 @@ async def create_ai_date_plan(
     budget: str = "Under ₹1000",
     preferences: Optional[str] = None,
     location: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """
     Generate AI-powered date plan
@@ -3582,7 +3582,7 @@ class RegisterPushTokenRequest(BaseModel):
 @api_router.post("/notifications/register")
 async def register_push_token(
     request: RegisterPushTokenRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Register or update user's push notification token"""
     try:
@@ -3612,7 +3612,7 @@ async def register_push_token(
 
 
 @api_router.post("/notifications/test")
-async def send_test_notification(current_user: dict = Depends(get_current_user)):
+async def send_test_notification(current_user: dict = Depends(get_current_user())):
     """Send a test push notification to current user"""
     try:
         push_token = current_user.get("push_token")
@@ -3647,7 +3647,7 @@ async def send_test_notification(current_user: dict = Depends(get_current_user))
 
 
 @api_router.get("/notifications/preferences")
-async def get_notification_preferences(current_user: dict = Depends(get_current_user)):
+async def get_notification_preferences(current_user: dict = Depends(get_current_user())):
     """Get user's notification preferences"""
     preferences = current_user.get("notification_preferences", {})
     
@@ -3677,7 +3677,7 @@ async def get_notification_preferences(current_user: dict = Depends(get_current_
 @api_router.put("/notifications/preferences")
 async def update_notification_preferences(
     preferences: Dict[str, bool],
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Update user's notification preferences"""
     try:
@@ -3706,7 +3706,7 @@ async def get_events(
     request: Request,
     limit: Optional[int] = None,
     offset: Optional[int] = 0,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Get comprehensive merged calendar with Indian + International events, auto-generated personal events, and enhanced features"""
     try:
@@ -3740,7 +3740,7 @@ async def get_events(
         }
 
 @api_router.get("/events/{event_id}/details")
-async def get_event_details(event_id: str, current_user: dict = Depends(get_current_user)):
+async def get_event_details(event_id: str, current_user: dict = Depends(get_current_user())):
     """Get detailed information for a specific event including tips, tasks, and reminders"""
     try:
         # Get all events first
@@ -3762,7 +3762,7 @@ async def get_event_details(event_id: str, current_user: dict = Depends(get_curr
         raise HTTPException(status_code=500, detail="Unable to fetch event details")
 
 @api_router.post("/events/custom")
-async def create_custom_event(event_data: CustomEvent, current_user: dict = Depends(get_current_user)):
+async def create_custom_event(event_data: CustomEvent, current_user: dict = Depends(get_current_user())):
     """Create a custom user event with default reminders (max 20 per user)"""
     # Check if user already has 20 custom events
     user_id = str(current_user["_id"])
@@ -3821,7 +3821,7 @@ async def create_custom_event(event_data: CustomEvent, current_user: dict = Depe
 async def update_custom_event(
     event_id: str,
     update_data: EventUpdateRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Update a custom event (only owner can edit)"""
     user_id = str(current_user["_id"])
@@ -3883,7 +3883,7 @@ async def update_custom_event(
     return {"message": "Event updated successfully", "event": updated_event}
 
 @api_router.delete("/events/custom/{event_id}")
-async def delete_custom_event(event_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_custom_event(event_id: str, current_user: dict = Depends(get_current_user())):
     """Delete a custom event or personal event (birthday/anniversary)"""
     user_id = str(current_user["_id"])
     
@@ -3945,7 +3945,7 @@ async def delete_custom_event(event_id: str, current_user: dict = Depends(get_cu
 async def update_event_reminder(
     event_id: str, 
     reminder_days: int,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Update reminder days for a specific event"""
     try:
@@ -4015,7 +4015,7 @@ class StartSubscriptionRequest(BaseModel):
 # =======================
 
 @app.get("/api/subscription/status", tags=["Subscriptions"])
-async def get_subscription_status(current_user: dict = Depends(get_current_user)):
+async def get_subscription_status(current_user: dict = Depends(get_current_user())):
     """Get user's subscription status with auto-renewal info"""
     try:
         # Check for auto-renewal first
@@ -4076,7 +4076,7 @@ async def get_subscription_status(current_user: dict = Depends(get_current_user)
 
 
 @app.post("/api/subscription/start-trial", tags=["Subscriptions"])
-async def start_free_trial(current_user: dict = Depends(get_current_user)):
+async def start_free_trial(current_user: dict = Depends(get_current_user())):
     """Start 14-day free trial"""
     try:
         # Check if user can start trial
@@ -4117,7 +4117,7 @@ async def start_free_trial(current_user: dict = Depends(get_current_user)):
 @app.post("/api/subscription/start-mockup", tags=["Subscriptions"])
 async def start_mockup_subscription(
     request: StartSubscriptionRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Start subscription (MOCKUP - no payment required)"""
     try:
@@ -4168,7 +4168,7 @@ async def start_mockup_subscription(
 @app.post("/api/subscription/create-order", tags=["Subscriptions"])
 async def create_subscription_order(
     request: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Create Razorpay order for subscription payment"""
     try:
@@ -4223,7 +4223,7 @@ async def create_subscription_order(
 @app.post("/api/subscription/verify-payment", tags=["Subscriptions"])
 async def verify_subscription_payment(
     request: dict,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Verify Razorpay subscription payment"""
     try:
@@ -4282,7 +4282,7 @@ async def verify_subscription_payment(
 @app.post("/api/subscriptions/create", tags=["Subscriptions"])
 async def create_subscription(
     request: CreateSubscriptionRequest,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Create a new Razorpay subscription"""
     try:
@@ -4501,7 +4501,7 @@ class FeedbackSubmission(BaseModel):
 @api_router.post("/feedback")
 async def submit_feedback(
     feedback: FeedbackSubmission,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Submit user feedback, bug reports, or feature requests"""
     try:
@@ -4536,7 +4536,7 @@ async def submit_feedback(
 
 @api_router.get("/feedback/my")
 async def get_my_feedback(
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Get user's feedback history"""
     try:
@@ -4608,7 +4608,7 @@ class ReferralCode(BaseModel):
 
 @api_router.get("/referral/my-code")
 async def get_my_referral_code(
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Get or generate user's referral code"""
     try:
@@ -4647,7 +4647,7 @@ async def get_my_referral_code(
 @api_router.post("/referral/apply")
 async def apply_referral_code(
     referral_data: ReferralCode,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Apply referral code (for new users during registration)"""
     try:
@@ -4781,7 +4781,7 @@ class RewardRedemption(BaseModel):
 
 @api_router.get("/rewards/check-milestone")
 async def check_reward_milestone(
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Check if user has reached 1000 points milestone and auto-generate coupons"""
     try:
@@ -4868,7 +4868,7 @@ async def check_reward_milestone(
 @api_router.post("/rewards/redeem")
 async def redeem_reward(
     redemption: RewardRedemption,
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Redeem reward when user reaches 1000 points"""
     try:
@@ -4968,7 +4968,7 @@ async def redeem_reward(
 
 @api_router.get("/rewards/history")
 async def get_reward_history(
-    current_user: dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user())
 ):
     """Get user's reward redemption history"""
     try:
