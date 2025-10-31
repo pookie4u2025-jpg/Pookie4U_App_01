@@ -41,28 +41,7 @@ export default function AuthScreen() {
   const router = useRouter();
   const { signIn: emergentSignIn } = useEmergentOAuth();
 
-  // Initialize Google OAuth when component mounts
-  useEffect(() => {
-    // Get credentials from environment variables
-    const googleClientId = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || '';
-    const googleClientSecret = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_SECRET || '';
-    
-    console.log('🔍 Google OAuth Configuration Check:');
-    console.log('  - Client ID present:', !!googleClientId);
-    console.log('  - Client ID length:', googleClientId.length);
-    console.log('  - Client Secret present:', !!googleClientSecret);
-    
-    if (googleClientId && googleClientId.length > 0) {
-      initializeGoogleOAuth({
-        clientId: googleClientId,
-        clientSecret: googleClientSecret,
-      });
-      console.log('✅ Google OAuth initialized successfully');
-      console.log('  - isConfigured should now be:', true);
-    } else {
-      console.log('❌ Google OAuth NOT initialized - missing credentials');
-    }
-  }, [initializeGoogleOAuth]);
+  // Google OAuth removed - using only Emergent OAuth
 
   // Navigate between screens with haptic feedback
   const navigateToScreen = useCallback((screen: 'welcome' | 'login' | 'register' | 'signup-options', method?: 'email' | 'mobile') => {
