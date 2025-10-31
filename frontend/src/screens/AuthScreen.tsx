@@ -107,7 +107,7 @@ export default function AuthScreen() {
     }
   }, [name, email, password, confirmPassword, register, router]);
 
-  // All mobile/OTP functions removed - Email + Google OAuth only
+  // All mobile/OTP functions removed - Email + Emergent OAuth only
 
   // Google OAuth handler removed - using only Emergent OAuth
 
