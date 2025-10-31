@@ -2096,6 +2096,194 @@ async def apple_oauth_callback(request: OAuthCallbackRequest):
     # For now, return a placeholder response
     raise HTTPException(status_code=501, detail="Apple OAuth not yet implemented")
 
+# ============================================================================
+# EMERGENT OAUTH ENDPOINTS
+# ============================================================================
+
+@api_router.get("/auth/emergent/session-data")
+async def get_emergent_session_data(request: Request):
+    """
+    Process session_id from Emergent OAuth and exchange it for user data
+    Frontend calls this with X-Session-ID header after OAuth redirect
+    """
+    from datetime import timezone
+    
+    # Get session_id from header
+    session_id = request.headers.get("X-Session-ID") or request.headers.get("x-session-id")
+    
+    if not session_id:
+        raise HTTPException(status_code=400, detail="Session ID is required")
+    
+    # Call Emergent's session data endpoint
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
+                headers={"X-Session-ID": session_id}
+            )
+            
+            if response.status_code != 200:
+                raise HTTPException(status_code=400, detail="Invalid session ID")
+            
+            session_data = response.json()
+            
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Session validation timeout")
+    except Exception as e:
+        print(f"Emergent OAuth error: {e}")
+        raise HTTPException(status_code=500, detail="OAuth authentication failed")
+    
+    # Extract user data
+    user_id_from_emergent = session_data.get("id")
+    email = session_data.get("email")
+    name = session_data.get("name", "User")
+    picture = session_data.get("picture")
+    emergent_session_token = session_data.get("session_token")
+    
+    if not email or not emergent_session_token:
+        raise HTTPException(status_code=400, detail="Invalid session data")
+    
+    # Check if user exists with this email
+    existing_user = await db.users.find_one({"email": email})
+    
+    if existing_user:
+        # User exists - link Emergent OAuth if not already linked
+        user_id = str(existing_user["_id"])
+        
+        if "oauth_providers" not in existing_user:
+            existing_user["oauth_providers"] = {}
+        
+        # Update Emergent OAuth provider data
+        if "emergent" not in existing_user["oauth_providers"]:
+            await db.users.update_one(
+                {"_id": existing_user["_id"]},
+                {"$set": {
+                    "oauth_providers.emergent": {
+                        "emergent_id": user_id_from_emergent,
+                        "linked_at": datetime.now(timezone.utc)
+                    },
+                    "updated_at": datetime.now(timezone.utc)
+                }}
+            )
+    else:
+        # Create new user with Emergent OAuth
+        user_id = str(uuid.uuid4())
+        user_doc = {
+            "_id": user_id,
+            "email": email,
+            "name": name,
+            "picture": picture,
+            "oauth_providers": {
+                "emergent": {
+                    "emergent_id": user_id_from_emergent,
+                    "linked_at": datetime.now(timezone.utc)
+                }
+            },
+            "relationship_mode": "SAME_HOME",
+            "partner_profile": {},
+            "total_points": 0,
+            "current_level": 1,
+            "current_streak": 0,
+            "longest_streak": 0,
+            "tasks_completed": 0,
+            "badges": [],
+            "profile_completed": False,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+            "daily_tasks": [],
+            "weekly_task": None,
+            "completed_tasks": [],
+            "last_task_date": None,
+            "custom_events": []
+        }
+        
+        await db.users.insert_one(user_doc)
+    
+    # Store session in database (7 days expiry)
+    session_expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+    
+    session_doc = {
+        "user_id": user_id,
+        "session_token": emergent_session_token,
+        "expires_at": session_expires_at,
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    # Upsert session (replace existing if any)
+    await db.user_sessions.update_one(
+        {"session_token": emergent_session_token},
+        {"$set": session_doc},
+        upsert=True
+    )
+    
+    # Return user data with session token
+    user = await db.users.find_one({"_id": user_id})
+    
+    return {
+        "success": True,
+        "session_token": emergent_session_token,
+        "user": {
+            "id": user_id,
+            "email": email,
+            "name": name,
+            "picture": picture,
+            "relationship_mode": user.get("relationship_mode", "SAME_HOME"),
+            "profile_completed": user.get("profile_completed", False),
+            "total_points": user.get("total_points", 0),
+            "current_streak": user.get("current_streak", 0)
+        }
+    }
+
+@api_router.get("/auth/me")
+async def get_current_user_data(request: Request):
+    """
+    Get current authenticated user data
+    Supports both session_token (Emergent OAuth) and JWT Bearer token
+    """
+    user = await get_current_user_flexible(request)
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    return {
+        "id": str(user["_id"]),
+        "email": user.get("email"),
+        "name": user.get("name", "User"),
+        "picture": user.get("picture"),
+        "relationship_mode": user.get("relationship_mode", "SAME_HOME"),
+        "profile_completed": user.get("profile_completed", False),
+        "total_points": user.get("total_points", 0),
+        "current_level": user.get("current_level", 1),
+        "current_streak": user.get("current_streak", 0),
+        "longest_streak": user.get("longest_streak", 0),
+        "tasks_completed": user.get("tasks_completed", 0)
+    }
+
+@api_router.post("/auth/logout")
+async def logout(request: Request):
+    """
+    Logout user by deleting session from database
+    Works with both session_token and JWT tokens
+    """
+    from datetime import timezone
+    
+    # Try to get session_token
+    session_token = request.cookies.get("session_token")
+    
+    if not session_token:
+        # Try Authorization header
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            if not token.startswith("eyJ"):  # Not a JWT
+                session_token = token
+    
+    if session_token:
+        # Delete session from database
+        await db.user_sessions.delete_one({"session_token": session_token})
+    
+    return {"success": True, "message": "Logged out successfully"}
+
 @api_router.post("/auth/link-account")
 async def link_account(request: LinkAccountRequest, current_user: dict = Depends(get_current_user)):
     """Link an additional authentication method to existing account"""
