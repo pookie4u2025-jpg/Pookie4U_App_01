@@ -2899,6 +2899,7 @@ async def complete_task(task_data: TaskComplete, current_user: dict = Depends(ge
         "current_level": new_level,
         "current_streak": current_streak,
         "longest_streak": longest_streak,
+        "last_streak_update": last_streak_update,
         "tasks_completed": new_tasks_completed,
         "badges": badges,
         "updated_at": datetime.utcnow()
