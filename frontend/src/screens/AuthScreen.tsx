@@ -338,7 +338,7 @@ export default function AuthScreen() {
           <Text style={styles.cleanSubtitle}>Choose how you'd like to sign up</Text>
         </View>
 
-        {/* Sign Up Options - Email + Google Only */}
+        {/* Sign Up Options - Email + Emergent Only */}
         <View style={styles.cleanOptionsContainer}>
           {/* Email Address */}
           <TouchableOpacity
