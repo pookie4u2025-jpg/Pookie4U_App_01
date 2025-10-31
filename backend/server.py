@@ -630,8 +630,8 @@ async def get_current_user_flexible(request: Request):
     return user
 
 async def get_current_user(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
-    request: Request = Depends()
+    request: Request,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ):
     """
     Get current user with support for both JWT and session tokens.
