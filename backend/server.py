@@ -224,29 +224,6 @@ async def send_sms(phone: str, message: str) -> bool:
     return True  # Simulate success for development
 
 # OAuth utility functions
-async def verify_google_token(id_token: str) -> Optional[Dict[str, Any]]:
-    """Verify Google ID token and extract user info"""
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"https://oauth2.googleapis.com/tokeninfo?id_token={id_token}"
-            )
-            
-            if response.status_code == 200:
-                user_info = response.json()
-                if user_info.get("aud") == GOOGLE_CLIENT_ID:
-                    return {
-                        "id": user_info.get("sub"),
-                        "email": user_info.get("email"),
-                        "name": user_info.get("name"),
-                        "picture": user_info.get("picture"),
-                        "email_verified": user_info.get("email_verified", False)
-                    }
-    except Exception as e:
-        print(f"Google token verification error: {e}")
-    
-    return None
-
 async def verify_apple_token(id_token: str) -> Optional[Dict[str, Any]]:
     """Verify Apple ID token and extract user info"""
     # Apple token verification is more complex and requires fetching Apple's public keys
