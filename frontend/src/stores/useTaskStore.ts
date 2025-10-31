@@ -140,10 +140,21 @@ export const useTaskStore = create<TaskState>()(
             };
           });
 
-          return true;
+          // Return the response data including streak
+          return {
+            success: true,
+            data: {
+              points_earned: data.points_earned,
+              total_points: data.total_points,
+              new_level: data.new_level,
+              streak: data.streak,
+              task_category: data.task_category,
+              task_type: data.task_type,
+            }
+          };
         } catch (error) {
           set({ error: error instanceof Error ? error.message : 'Failed to complete task' });
-          return false;
+          return { success: false };
         }
       },
 
