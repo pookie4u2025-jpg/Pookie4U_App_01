@@ -269,14 +269,14 @@ class StreakTestSuite:
             f"Streak consistent: {streak1}={streak2}, Last update consistent: {last_update1 == last_update2}"
         )
         
-        # Verify all required fields are present
-        required_fields = ["current_streak", "last_streak_update", "longest_streak", "tasks_completed"]
+        # Verify all required fields are present (last_streak_update is internal, not exposed in profile)
+        required_fields = ["current_streak", "longest_streak", "tasks_completed"]
         fields_present = all(field in profile1 for field in required_fields)
         
         self.log_test_result(
             "Required Fields Present", 
             fields_present, 
-            f"Fields present: {[field for field in required_fields if field in profile1]}"
+            f"All required fields present: {fields_present}"
         )
         
         return user, profile1
