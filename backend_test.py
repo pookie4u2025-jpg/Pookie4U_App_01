@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 
 # Configuration
-BACKEND_URL = "https://couple-rewards.preview.emergentagent.com/api"
+BACKEND_URL = "https://lovejourney-app.preview.emergentagent.com/api"
 import random
 import string
 
