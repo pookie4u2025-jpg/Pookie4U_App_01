@@ -630,14 +630,37 @@ async def get_current_user_flexible(request: Request):
     return user
 
 async def get_current_user(
-    request: Request,
+    request: Request = Depends(lambda: None),
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ):
     """
     Get current user with support for both JWT and session tokens.
     This is a wrapper around get_current_user_flexible for backward compatibility.
     """
-    return await get_current_user_flexible(request)
+    # Get the actual request from the calling context
+    from fastapi import Request as FastAPIRequest
+    from starlette.requests import Request as StarletteRequest
+    import inspect
+    
+    # Get the actual request from the call stack
+    frame = inspect.currentframe()
+    try:
+        # Look for request in the calling frames
+        while frame:
+            frame = frame.f_back
+            if frame and "request" in frame.f_locals:
+                actual_request = frame.f_locals["request"]
+                if isinstance(actual_request, (FastAPIRequest, StarletteRequest)):
+                    return await get_current_user_flexible(actual_request)
+                    break
+    finally:
+        del frame
+    
+    # Fallback - this should not happen in normal operation
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials - no request context"
+    )
 
 # ============================================================================
 # TASK DATA
