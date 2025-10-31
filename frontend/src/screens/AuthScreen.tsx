@@ -298,7 +298,7 @@ export default function AuthScreen() {
             activeOpacity={0.8}
           >
             <Ionicons name="shield-checkmark" size={20} color="#FF1493" />
-            <Text style={styles.cleanEmergentButtonText}>Continue with Emergent</Text>
+            <Text style={styles.cleanEmergentButtonText}>Continue with Google</Text>
           </TouchableOpacity>
 
           {/* Sign Up Link */}
