@@ -346,6 +346,20 @@ class AuthResponse(BaseModel):
     expires_in: int = ACCESS_TOKEN_EXPIRE_MINUTES * 60
     user: Dict[str, Any]
 
+# Emergent OAuth Models
+class EmergentSessionData(BaseModel):
+    id: str
+    email: str
+    name: str
+    picture: Optional[str] = None
+    session_token: str
+
+class UserSession(BaseModel):
+    user_id: str
+    session_token: str
+    expires_at: datetime
+    created_at: datetime
+
 class EnhancedUserProfile(BaseModel):
     id: str
     phone: Optional[str] = None
