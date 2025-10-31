@@ -638,7 +638,22 @@ export default function AuthScreen() {
             )}
           </TouchableOpacity>
 
-          {/* Google OAuth removed */}
+          {/* Divider */}
+          <View style={styles.cleanDivider}>
+            <View style={styles.cleanDividerLine} />
+            <Text style={styles.cleanDividerText}>or</Text>
+            <View style={styles.cleanDividerLine} />
+          </View>
+
+          {/* Continue with Google (Emergent OAuth) */}
+          <TouchableOpacity
+            style={styles.cleanEmergentButton}
+            onPress={handleEmergentSignIn}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="logo-google" size={20} color="#4285F4" />
+            <Text style={[styles.cleanEmergentButtonText, { color: '#1A1A1A' }]}>Continue with Google</Text>
+          </TouchableOpacity>
 
           {/* Sign In Link */}
           <View style={styles.cleanSignUpLink}>
