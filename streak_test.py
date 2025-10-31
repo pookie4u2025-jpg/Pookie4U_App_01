@@ -28,7 +28,7 @@ class StreakTestSuite:
     async def register_test_user(self, email: str, password: str, name: str) -> Dict[str, Any]:
         """Register a new test user and return auth token"""
         try:
-            response = await self.client.post(f"{API_BASE}/register", json={
+            response = await self.client.post(f"{API_BASE}/auth/register", json={
                 "email": email,
                 "password": password,
                 "name": name
