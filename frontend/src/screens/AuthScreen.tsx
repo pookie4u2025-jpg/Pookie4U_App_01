@@ -199,6 +199,57 @@ export default function AuthScreen() {
     }
   }, [isConfigured, completeOAuthFlow, loginWithOAuth, router]);
 
+  const handleEmergentSignIn = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    
+    console.log('🔐 Emergent Sign-In button clicked');
+
+    try {
+      console.log('🚀 Starting Emergent OAuth flow...');
+      
+      // Start Emergent OAuth flow
+      const emergentResult = await emergentSignIn();
+      
+      if (emergentResult.type === 'success') {
+        console.log('✅ Emergent OAuth flow completed');
+        
+        // Login with session token and user data
+        const success = await loginWithEmergentOAuth(
+          emergentResult.sessionToken!,
+          emergentResult.user
+        );
+        
+        if (success) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          console.log('✅ Emergent Sign-In successful!');
+          
+          // Check if new user needs onboarding
+          if (!emergentResult.user?.profile_completed) {
+            router.push('/subscription');
+          }
+        } else {
+          throw new Error('Failed to authenticate with app after OAuth');
+        }
+      } else if (emergentResult.type === 'dismiss') {
+        console.log('⚠️ User dismissed OAuth flow');
+      } else {
+        throw new Error(emergentResult.error || 'OAuth authentication failed');
+      }
+      
+    } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      console.error('❌ Emergent Sign-In error:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      
+      Alert.alert(
+        'Sign-In Failed',
+        `We couldn't sign you in with Emergent Auth.\n\nError: ${errorMessage}`,
+        [{ text: 'OK', style: 'default' }]
+      );
+    }
+  }, [emergentSignIn, loginWithEmergentOAuth, router]);
+
   const handleAppleSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     
