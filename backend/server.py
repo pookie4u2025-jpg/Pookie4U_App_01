@@ -560,16 +560,24 @@ async def get_current_user_flexible(request: Request):
         user = await get_user_from_session_token(session_token)
         if user:
             return user
+        # If session token is invalid/expired, continue to try JWT
     
     # Fall back to JWT authentication
     auth_header = request.headers.get("authorization", "")
     if not auth_header.startswith("Bearer "):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authenticated"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
         )
     
     token = auth_header.split(" ")[1]
+    
+    # If we already tried this token as a session token, it's definitely invalid
+    if token == session_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials"
+        )
     
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -577,19 +585,19 @@ async def get_current_user_flexible(request: Request):
         if user_id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials"
+                detail="Could not validate credentials"
             )
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials"
+            detail="Could not validate credentials"
         )
     
     user = await db.users.find_one({"_id": user_id})
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found"
+            detail="Could not validate credentials"
         )
     return user
 
