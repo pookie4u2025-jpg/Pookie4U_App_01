@@ -39,7 +39,6 @@ export default function AuthScreen() {
   const { login, register, loading, error, clearError, loginWithEmergentOAuth } = useAuthStore();
   const { theme } = useTheme();
   const router = useRouter();
-  const { completeOAuthFlow, initialize: initializeGoogleOAuth, isConfigured } = useGoogleOAuth();
   const { signIn: emergentSignIn } = useEmergentOAuth();
 
   // Initialize Google OAuth when component mounts
