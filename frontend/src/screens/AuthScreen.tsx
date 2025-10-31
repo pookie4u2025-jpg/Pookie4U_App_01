@@ -36,7 +36,7 @@ export default function AuthScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { login, register, loading, error, clearError, loginWithOAuth, loginWithEmergentOAuth } = useAuthStore();
+  const { login, register, loading, error, clearError, loginWithEmergentOAuth } = useAuthStore();
   const { theme } = useTheme();
   const router = useRouter();
   const { completeOAuthFlow, initialize: initializeGoogleOAuth, isConfigured } = useGoogleOAuth();
