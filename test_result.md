@@ -237,6 +237,18 @@ backend:
     stuck_count: 0
     priority: "high"
     needs_retesting: false
+
+  - task: "Streak Calculation Fix - Daily Streak Tracking"
+    implemented: true
+    working: "NA"
+    file: "server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "Fixed streak calculation logic in update_task_status endpoint. Previous logic incremented streak per task completed instead of tracking daily consecutive completions. NEW LOGIC: Check if user completed tasks on previous day, increment streak only once per day, reset streak if there's a gap in daily completions, update last_streak_update field in user profile. Changes implemented in server.py update_task_status function."
   
   - task: "Messages System Frontend Complete"
     implemented: true
