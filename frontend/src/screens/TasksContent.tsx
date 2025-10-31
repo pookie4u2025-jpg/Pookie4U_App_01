@@ -96,14 +96,19 @@ export default function TasksContent() {
   const handleCompleteTask = async (taskId: string, points: number) => {
     if (!token) return;
     
-    const success = await completeTaskAPI(taskId, token);
-    if (success) {
+    const result = await completeTaskAPI(taskId, token);
+    if (result.success && result.data) {
       // Update game progress (points, streak, badges)
       await updateGameProgress(points);
       
+      // Update auth store with new streak
+      if (result.data.streak !== undefined) {
+        updateProfile({ current_streak: result.data.streak });
+      }
+      
       Alert.alert(
         'Task Completed! 🎉',
-        `You earned ${points} points! Great job on strengthening your relationship!`,
+        `You earned ${points} points! Great job on strengthening your relationship!${result.data.streak > 0 ? `\n\n🔥 Current Streak: ${result.data.streak} days!` : ''}`,
         [{ text: 'Amazing!', style: 'default' }]
       );
     }
