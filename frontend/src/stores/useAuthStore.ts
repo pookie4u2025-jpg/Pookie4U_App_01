@@ -57,6 +57,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string, name: string) => Promise<boolean>;
   loginWithOAuth: (oauthData: any) => Promise<boolean>;
+  loginWithEmergentOAuth: (sessionToken: string, userData: any) => Promise<boolean>;
   logout: () => void;
   updateProfile: (profile: Partial<User>) => void;
   updateUserProfile: (profile: { name?: string; email?: string }) => Promise<boolean>;
