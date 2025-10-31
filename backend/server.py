@@ -554,28 +554,39 @@ async def get_current_user_flexible(request: Request):
     """
     from datetime import timezone
     
+    print(f"🔐 get_current_user_flexible called")
+    print(f"📋 Headers: {dict(request.headers)}")
+    print(f"🍪 Cookies: {request.cookies}")
+    
     # Try session_token from cookie first
     session_token = request.cookies.get("session_token")
+    print(f"🍪 Session token from cookie: {session_token[:20] if session_token else 'None'}...")
     
     # If not in cookie, try Authorization header as fallback
     if not session_token:
         auth_header = request.headers.get("authorization", "")
+        print(f"🔑 Authorization header: {auth_header[:50] if auth_header else 'None'}...")
         if auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
             # Check if it's a session_token (not JWT format)
             if not token.startswith("eyJ"):  # JWT tokens start with "eyJ"
                 session_token = token
+                print(f"✅ Found session token in Authorization header")
     
     # If we have a session_token, validate it
     if session_token:
+        print(f"🔍 Validating session token...")
         user = await get_user_from_session_token(session_token)
         if user:
+            print(f"✅ Session token validated successfully")
             return user
+        print(f"⚠️ Session token invalid, trying JWT...")
         # If session token is invalid/expired, continue to try JWT
     
     # Fall back to JWT authentication
     auth_header = request.headers.get("authorization", "")
     if not auth_header.startswith("Bearer "):
+        print(f"❌ No valid Bearer token found")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
@@ -585,20 +596,24 @@ async def get_current_user_flexible(request: Request):
     
     # If we already tried this token as a session token, it's definitely invalid
     if token == session_token:
+        print(f"❌ Token already tried as session token")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
         )
     
+    print(f"🔑 Trying JWT validation...")
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: str = payload.get("sub")
         if user_id is None:
+            print(f"❌ JWT payload missing 'sub'")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Could not validate credentials"
             )
-    except JWTError:
+    except JWTError as e:
+        print(f"❌ JWT decode error: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
@@ -606,10 +621,12 @@ async def get_current_user_flexible(request: Request):
     
     user = await db.users.find_one({"_id": user_id})
     if user is None:
+        print(f"❌ User not found for user_id: {user_id}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
         )
+    print(f"✅ JWT validated successfully")
     return user
 
 async def get_current_user(
