@@ -23,6 +23,7 @@ import { useRouter } from 'expo-router';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { useGoogleOAuth } from '../services/GoogleOAuthService';
+import { useEmergentOAuth } from '../services/EmergentOAuthService';
 
 const { width, height } = Dimensions.get('window');
 
