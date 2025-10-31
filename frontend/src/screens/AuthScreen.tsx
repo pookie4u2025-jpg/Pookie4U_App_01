@@ -37,10 +37,11 @@ export default function AuthScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { login, register, loading, error, clearError, loginWithOAuth } = useAuthStore();
+  const { login, register, loading, error, clearError, loginWithOAuth, loginWithEmergentOAuth } = useAuthStore();
   const { theme } = useTheme();
-  const { completeOAuthFlow, initialize: initializeGoogleOAuth, isConfigured } = useGoogleOAuth();
   const router = useRouter();
+  const { completeOAuthFlow, initialize: initializeGoogleOAuth, isConfigured } = useGoogleOAuth();
+  const { signIn: emergentSignIn } = useEmergentOAuth();
 
   // Initialize Google OAuth when component mounts
   useEffect(() => {
