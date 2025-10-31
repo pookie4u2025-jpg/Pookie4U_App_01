@@ -629,15 +629,18 @@ async def get_current_user_flexible(request: Request):
     print(f"✅ JWT validated successfully")
     return user
 
-async def get_current_user(
-    request: Request,
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
-):
+def get_current_user():
     """
     Get current user with support for both JWT and session tokens.
-    This is a wrapper around get_current_user_flexible for backward compatibility.
+    Returns a dependency function that can access the request.
     """
-    return await get_current_user_flexible(request)
+    async def _get_current_user(
+        request: Request,
+        credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
+    ):
+        return await get_current_user_flexible(request)
+    
+    return _get_current_user
 
 # ============================================================================
 # TASK DATA
