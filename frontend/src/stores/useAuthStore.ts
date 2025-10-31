@@ -241,6 +241,69 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      loginWithEmergentOAuth: async (sessionToken: string, userData: any) => {
+        set({ loading: true, error: null });
+        try {
+          console.log('🔐 Logging in with Emergent OAuth...');
+          
+          if (!sessionToken || !userData) {
+            throw new Error('Invalid Emergent OAuth data');
+          }
+
+          // Store session token and user data
+          const userProfile = {
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+            relationship_mode: userData.relationship_mode || 'SAME_HOME',
+            partner_profile: userData.partner_profile || {},
+            total_points: userData.total_points || 0,
+            current_level: userData.current_level || 1,
+            current_streak: userData.current_streak || 0,
+            longest_streak: userData.longest_streak || 0,
+            tasks_completed: userData.tasks_completed || 0,
+            badges: userData.badges || [],
+            profile_completed: userData.profile_completed || false,
+            profile_image: userData.picture,
+            created_at: userData.created_at || new Date().toISOString(),
+            updated_at: userData.updated_at || new Date().toISOString(),
+          };
+
+          set({
+            user: userProfile,
+            token: sessionToken, // Store session_token as token
+            isAuthenticated: true,
+            loading: false,
+            error: null,
+            initialized: true,
+          });
+
+          console.log('✅ Emergent OAuth login successful');
+
+          // Register for push notifications after successful login
+          try {
+            const pushToken = await notificationManager.registerForPushNotifications(sessionToken);
+            if (pushToken) {
+              console.log('✅ Push notifications registered successfully');
+            }
+          } catch (error) {
+            console.error('Failed to register push notifications:', error);
+            // Don't fail login if push notification registration fails
+          }
+
+          return true;
+        } catch (error) {
+          console.error('❌ Emergent OAuth login error:', error);
+          set({ 
+            loading: false, 
+            error: error instanceof Error ? error.message : 'Emergent OAuth login failed',
+            isAuthenticated: false,
+            token: null
+          });
+          return false;
+        }
+      },
+
       logout: () => {
         console.log('🚪 Logging out user...');
         
