@@ -3673,12 +3673,15 @@ async def update_notification_preferences(
 
 @api_router.get("/events")
 async def get_events(
+    request: Request,
     limit: Optional[int] = None,
-    offset: Optional[int] = 0,
-    current_user: dict = Depends(get_current_user)
+    offset: Optional[int] = 0
 ):
     """Get comprehensive merged calendar with Indian + International events, auto-generated personal events, and enhanced features"""
     try:
+        # Get current user with flexible authentication
+        current_user = await get_current_user_flexible(request)
+        
         # Use enhanced calendar service to get all events
         calendar_data = enhanced_calendar_service.get_merged_calendar_events(current_user)
         
