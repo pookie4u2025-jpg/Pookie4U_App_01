@@ -515,6 +515,84 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+# Emergent OAuth Session Management Functions
+async def get_user_from_session_token(session_token: str):
+    """Get user from Emergent OAuth session token"""
+    from datetime import timezone
+    
+    # Find session in database
+    session = await db.user_sessions.find_one({"session_token": session_token})
+    if not session:
+        return None
+    
+    # Check if session is expired
+    if session["expires_at"] < datetime.now(timezone.utc):
+        # Delete expired session
+        await db.user_sessions.delete_one({"session_token": session_token})
+        return None
+    
+    # Get user from database
+    user = await db.users.find_one({"_id": session["user_id"]})
+    return user
+
+async def get_current_user_flexible(request: Request):
+    """
+    Get current user from either:
+    1. Session token (cookie or header) - Emergent OAuth
+    2. JWT Bearer token - Email/Password or Google OAuth
+    """
+    from datetime import timezone
+    
+    # Try session_token from cookie first
+    session_token = request.cookies.get("session_token")
+    
+    # If not in cookie, try Authorization header as fallback
+    if not session_token:
+        auth_header = request.headers.get("authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+            # Check if it's a session_token (not JWT format)
+            if not token.startswith("eyJ"):  # JWT tokens start with "eyJ"
+                session_token = token
+    
+    # If we have a session_token, validate it
+    if session_token:
+        user = await get_user_from_session_token(session_token)
+        if user:
+            return user
+    
+    # Fall back to JWT authentication
+    auth_header = request.headers.get("authorization", "")
+    if not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authenticated"
+        )
+    
+    token = auth_header.split(" ")[1]
+    
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication credentials"
+            )
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials"
+        )
+    
+    user = await db.users.find_one({"_id": user_id})
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+    return user
+
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
