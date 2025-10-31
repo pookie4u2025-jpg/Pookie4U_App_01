@@ -3083,6 +3083,12 @@ async def complete_task(task_data: TaskComplete, current_user: dict = Depends(ge
     current_streak = current_user.get("current_streak", 0)
     longest_streak = current_user.get("longest_streak", 0)
     
+    print(f"🔥 STREAK DEBUG - User: {current_user.get('email')}")
+    print(f"📅 Today: {today}")
+    print(f"📅 Last streak update: {last_streak_update}")
+    print(f"🔥 Current streak before update: {current_streak}")
+    print(f"🏆 Longest streak: {longest_streak}")
+    
     # Check if we need to update streak
     if last_streak_update:
         # Convert to date if it's a datetime
@@ -3094,24 +3100,34 @@ async def complete_task(task_data: TaskComplete, current_user: dict = Depends(ge
         
         days_diff = (today - last_update_date).days
         
+        print(f"📊 Last update date: {last_update_date}")
+        print(f"📊 Days difference: {days_diff}")
+        
         if days_diff == 0:
             # Same day - don't change streak
+            print(f"✅ Same day - streak stays at {current_streak}")
             pass
         elif days_diff == 1:
             # Yesterday - increment streak (consecutive day)
             current_streak += 1
             longest_streak = max(longest_streak, current_streak)
+            print(f"🔥 Consecutive day! Streak increased to {current_streak}")
         else:
             # Gap of 2+ days - reset streak to 1
             current_streak = 1
+            print(f"💔 Streak broken (gap of {days_diff} days)! Reset to 1")
     else:
         # First time tracking streak - set to 1
         current_streak = 1
+        print(f"🌟 First time tracking streak - set to 1")
     
     # Store last_streak_update as datetime for consistency
     last_streak_update = datetime.utcnow()
     
     longest_streak = max(longest_streak, current_streak)
+    
+    print(f"🔥 Current streak after update: {current_streak}")
+    print(f"🏆 Longest streak after update: {longest_streak}")
     
     # Update badges (simplified)
     badges = current_user.get("badges", [])
