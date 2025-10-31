@@ -510,21 +510,7 @@ export default function AuthScreen() {
                 <Ionicons name="chevron-forward" size={20} color="#999999" />
               </TouchableOpacity>
 
-              {/* Google Account */}
-              <TouchableOpacity
-                style={styles.cleanOption}
-                onPress={handleGoogleSignIn}
-                activeOpacity={0.7}
-              >
-                <View style={styles.cleanOptionIconContainer}>
-                  <Ionicons name="logo-google" size={24} color="#4285F4" />
-                </View>
-                <View style={styles.cleanOptionContent}>
-                  <Text style={styles.cleanOptionTitle}>Google Account</Text>
-                  <Text style={styles.cleanOptionDescription}>Continue with Google</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#999999" />
-              </TouchableOpacity>
+              {/* Google Account removed */}
             </View>
           )}
 
