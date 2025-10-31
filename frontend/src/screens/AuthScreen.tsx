@@ -109,72 +109,7 @@ export default function AuthScreen() {
 
   // All mobile/OTP functions removed - Email + Google OAuth only
 
-  const handleGoogleSignIn = useCallback(async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
-    console.log('🎯 Google Sign-In button clicked');
-    console.log('  - isConfigured:', isConfigured);
-    
-    // Check if Google OAuth is configured
-    if (!isConfigured) {
-      console.log('❌ OAuth not configured - showing alert');
-      Alert.alert(
-        'Google Sign-In Setup Required 🔧',
-        'Google OAuth credentials are not configured. Please contact the developer to enable Google Sign-In.',
-        [{ text: 'OK', style: 'default' }]
-      );
-      return;
-    }
-
-    console.log('✅ OAuth is configured - starting flow');
-
-    try {
-      console.log('🚀 Starting Google OAuth flow...');
-      
-      // Start OAuth flow and get backend response
-      const oauthData = await completeOAuthFlow();
-      
-      console.log('✅ OAuth flow completed, authenticating with app...');
-      console.log('OAuth Data:', JSON.stringify(oauthData, null, 2));
-      
-      // Login with OAuth data
-      const success = await loginWithOAuth(oauthData);
-      
-      if (success) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        console.log('✅ Google Sign-In successful!');
-        
-        if (oauthData.is_new_user) {
-          // Navigate to subscription screen for new users
-          router.push('/subscription');
-        }
-      } else {
-        throw new Error('Failed to authenticate with app after OAuth');
-      }
-      
-    } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      console.error('❌ Google Sign-In error:', error);
-      console.error('Error details:', JSON.stringify(error, null, 2));
-      
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      
-      // More detailed error message
-      let userMessage = `We couldn't sign you in with Google.\n\nError: ${errorMessage}`;
-      
-      if (errorMessage.includes('redirect') || errorMessage.includes('URI')) {
-        userMessage += '\n\nThis might be a configuration issue. Please ensure the redirect URI is properly set up in Google Console.';
-      }
-      
-      Alert.alert(
-        'Sign-In Failed',
-        userMessage,
-        [
-          { text: 'OK', style: 'default' }
-        ]
-      );
-    }
-  }, [isConfigured, completeOAuthFlow, loginWithOAuth, router]);
+  // Google OAuth handler removed - using only Emergent OAuth
 
   const handleEmergentSignIn = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
