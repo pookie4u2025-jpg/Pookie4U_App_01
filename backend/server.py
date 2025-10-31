@@ -520,19 +520,30 @@ async def get_user_from_session_token(session_token: str):
     """Get user from Emergent OAuth session token"""
     from datetime import timezone
     
+    print(f"🔍 Looking for session token: {session_token[:20]}...")
+    
     # Find session in database
     session = await db.user_sessions.find_one({"session_token": session_token})
     if not session:
+        print(f"❌ Session not found in database")
         return None
+    
+    print(f"✅ Session found, user_id: {session['user_id']}")
     
     # Check if session is expired
     if session["expires_at"] < datetime.now(timezone.utc):
+        print(f"❌ Session expired")
         # Delete expired session
         await db.user_sessions.delete_one({"session_token": session_token})
         return None
     
+    print(f"✅ Session valid, fetching user...")
     # Get user from database
     user = await db.users.find_one({"_id": session["user_id"]})
+    if user:
+        print(f"✅ User found: {user.get('email')}")
+    else:
+        print(f"❌ User not found for user_id: {session['user_id']}")
     return user
 
 async def get_current_user_flexible(request: Request):
