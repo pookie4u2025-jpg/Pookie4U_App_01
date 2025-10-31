@@ -630,13 +630,63 @@ async def get_current_user_flexible(request: Request):
     return user
 
 async def get_current_user(
-    request: Request,
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
 ):
     """
     Get current user with support for both JWT and session tokens.
     This is a wrapper around get_current_user_flexible for backward compatibility.
     """
+    # Get request from FastAPI context
+    from fastapi import Request
+    from contextvars import ContextVar
+    from starlette.middleware.base import BaseHTTPMiddleware
+    import inspect
+    
+    # Try to get request from call stack
+    frame = inspect.currentframe()
+    request = None
+    try:
+        while frame:
+            frame = frame.f_back
+            if frame and "request" in frame.f_locals:
+                potential_request = frame.f_locals["request"]
+                if hasattr(potential_request, "headers") and hasattr(potential_request, "cookies"):
+                    request = potential_request
+                    break
+    finally:
+        del frame
+    
+    if request is None:
+        # Fallback to JWT-only authentication
+        if not credentials or not credentials.credentials:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials"
+            )
+        
+        token = credentials.credentials
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_id: str = payload.get("sub")
+            if user_id is None:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Could not validate credentials"
+                )
+        except JWTError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials"
+            )
+        
+        user = await db.users.find_one({"_id": user_id})
+        if user is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials"
+            )
+        return user
+    
     return await get_current_user_flexible(request)
 
 # ============================================================================
