@@ -135,10 +135,8 @@ export default function AuthScreen() {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           console.log('✅ Emergent Sign-In successful!');
           
-          // Check if new user needs onboarding
-          if (!emergentResult.user?.profile_completed) {
-            router.push('/subscription');
-          }
+          // Don't redirect - let index.tsx handle the routing
+          // If profile not completed, it will show OnboardingScreen automatically
         } else {
           throw new Error('Failed to authenticate with app after OAuth');
         }
