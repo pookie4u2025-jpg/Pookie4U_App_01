@@ -141,18 +141,6 @@ export default function SubscriptionOnboardingScreen({ onComplete }: Subscriptio
             </View>
           </TouchableOpacity>
 
-          {/* Skip Button */}
-          <TouchableOpacity
-            style={styles.skipButton}
-            onPress={() => handleSubscriptionChoice('skip')}
-            disabled={loading}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.skipButtonText}>
-              I'll decide later
-            </Text>
-          </TouchableOpacity>
-
           {loading && (
             <View style={styles.loadingOverlay}>
               <ActivityIndicator size="large" color="#FF1493" />
