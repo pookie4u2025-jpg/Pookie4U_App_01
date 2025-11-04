@@ -484,6 +484,15 @@ export default function ComprehensiveSettingsScreen() {
             <Ionicons name="log-out" size={20} color="#fff" />
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
+
+          {/* Delete Account Button */}
+          <TouchableOpacity 
+            style={[styles.deleteAccountButton, { backgroundColor: '#8B0000', borderColor: '#A00000' }]} 
+            onPress={handleDeleteAccount}
+          >
+            <Ionicons name="trash" size={20} color="#fff" />
+            <Text style={styles.deleteAccountText}>Delete Account</Text>
+          </TouchableOpacity>
         </View>
 
         {/* App Version */}
