@@ -14,31 +14,15 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 
 interface SubscriptionOnboardingScreenProps {
-  onComplete: (subscriptionType: 'trial' | 'monthly' | 'half_yearly' | 'skip') => void;
+  onComplete: (subscriptionType: 'trial' | 'monthly' | 'half_yearly') => void;
 }
 
 export default function SubscriptionOnboardingScreen({ onComplete }: SubscriptionOnboardingScreenProps) {
   const [loading, setLoading] = useState(false);
 
-  const handleSubscriptionChoice = async (type: 'trial' | 'monthly' | 'half_yearly' | 'skip') => {
+  const handleSubscriptionChoice = async (type: 'trial' | 'monthly' | 'half_yearly') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     
-    if (type === 'skip') {
-      Alert.alert(
-        'Start Free Trial?',
-        'You can start your 14-day free trial anytime from your profile.',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { 
-            text: 'Continue', 
-            onPress: () => onComplete(type),
-            style: 'default'
-          },
-        ]
-      );
-      return;
-    }
-
     setLoading(true);
     onComplete(type);
     setLoading(false);
