@@ -238,6 +238,39 @@ const useGameStore = create<GameState>((set, get) => ({
     }
   },
 
+  // Sync game data after task completion (use backend response as source of truth)
+  syncTaskCompletion: async (backendData: {
+    total_points: number;
+    new_level: number;
+    current_streak: number;
+    longest_streak: number;
+    tasks_completed: number;
+    badges: string[];
+  }) => {
+    try {
+      console.log('📥 Syncing task completion data from backend');
+      
+      const syncedData = {
+        totalPoints: backendData.total_points,
+        currentLevel: backendData.new_level,
+        currentStreak: backendData.current_streak,
+        longestStreak: backendData.longest_streak,
+        tasksCompleted: backendData.tasks_completed,
+        badges: backendData.badges,
+        lastActiveDate: new Date().toISOString(),
+      };
+      
+      set(syncedData);
+      
+      // Persist to AsyncStorage
+      await get().persistData(syncedData);
+      
+      console.log('✅ Task completion data synced:', syncedData);
+    } catch (error) {
+      console.error('Failed to sync task completion data:', error);
+    }
+  },
+
   // Add experience points with level progression
   addExperience: async (points: number) => {
     const state = get();
