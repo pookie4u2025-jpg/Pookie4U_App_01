@@ -140,14 +140,17 @@ export const useTaskStore = create<TaskState>()(
             };
           });
 
-          // Return the response data including streak
+          // Return the response data including ALL backend values
           return {
             success: true,
             data: {
               points_earned: data.points_earned,
               total_points: data.total_points,
               new_level: data.new_level,
-              streak: data.streak,
+              current_streak: data.current_streak,
+              longest_streak: data.longest_streak,
+              tasks_completed: data.tasks_completed,
+              badges: data.badges,
               task_category: data.task_category,
               task_type: data.task_type,
             }
