@@ -2978,6 +2978,7 @@ async def get_daily_tasks(
 
 @api_router.get("/tasks/weekly")
 async def get_weekly_tasks(
+    request: Request,
     regenerate: bool = False,
     current_user: dict = Depends(get_current_user)
 ):
