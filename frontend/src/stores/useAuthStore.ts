@@ -281,6 +281,19 @@ export const useAuthStore = create<AuthState>()(
 
           console.log('✅ Emergent OAuth login successful');
 
+          // For NEW users (profile not completed), reset game data to ensure clean start
+          if (!userProfile.profile_completed) {
+            console.log('🆕 New user detected - resetting game data to initial values');
+            try {
+              const gameStore = useGameStore.getState();
+              await gameStore.resetGameData();
+              console.log('✅ Game data reset successful for new user');
+            } catch (error) {
+              console.error('⚠️ Failed to reset game data:', error);
+              // Continue anyway - not critical for auth
+            }
+          }
+
           // Register for push notifications after successful login
           try {
             const pushToken = await notificationManager.registerForPushNotifications(sessionToken);
