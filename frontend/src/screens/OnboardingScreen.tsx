@@ -104,7 +104,7 @@ export default function OnboardingScreen() {
         } else {
           // Handle error gracefully
           const errorText = await response.text();
-          console.error('Subscription error:', errorText);
+          console.log('Subscription error:', errorText);
           
           // Check if it's the "trial already used" error
           if (errorText.includes('Free trial already used') || errorText.includes('trial already used')) {
