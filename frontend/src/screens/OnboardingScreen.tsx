@@ -81,46 +81,44 @@ export default function OnboardingScreen() {
     }
   };
   
-  const handleSubscriptionChoice = async (subscriptionType: 'trial' | 'monthly' | 'half_yearly' | 'skip') => {
+  const handleSubscriptionChoice = async (subscriptionType: 'trial' | 'monthly' | 'half_yearly') => {
     try {
-      if (subscriptionType !== 'skip') {
-        // Call mockup subscription API
-        const { token } = useAuthStore.getState();
-        const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+      // Call mockup subscription API
+      const { token } = useAuthStore.getState();
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+      
+      const response = await fetch(`${backendUrl}/api/subscription/start-mockup`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ subscription_type: subscriptionType }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Subscription activated:', data);
+        Alert.alert('Success!', data.message || 'Subscription activated successfully!');
+      } else {
+        // Handle error gracefully
+        const errorText = await response.text();
+        console.log('Subscription error:', errorText);
         
-        const response = await fetch(`${backendUrl}/api/subscription/start-mockup`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ subscription_type: subscriptionType }),
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Subscription activated:', data);
-          Alert.alert('Success!', data.message || 'Subscription activated successfully!');
+        // Check if it's the "trial already used" error
+        if (errorText.includes('Free trial already used') || errorText.includes('trial already used')) {
+          Alert.alert(
+            'Free Trial Already Used',
+            'You have already used your free trial. You can still use the app or choose a paid subscription from your profile later.',
+            [{ text: 'OK', style: 'default' }]
+          );
         } else {
-          // Handle error gracefully
-          const errorText = await response.text();
-          console.log('Subscription error:', errorText);
-          
-          // Check if it's the "trial already used" error
-          if (errorText.includes('Free trial already used') || errorText.includes('trial already used')) {
-            Alert.alert(
-              'Free Trial Already Used',
-              'You have already used your free trial. You can still use the app or choose a paid subscription from your profile later.',
-              [{ text: 'OK', style: 'default' }]
-            );
-          } else {
-            // Show generic error for other cases
-            Alert.alert(
-              'Subscription Error',
-              'Unable to activate subscription right now. You can try again from your profile later.',
-              [{ text: 'OK', style: 'default' }]
-            );
-          }
+          // Show generic error for other cases
+          Alert.alert(
+            'Subscription Error',
+            'Unable to activate subscription right now. You can try again from your profile later.',
+            [{ text: 'OK', style: 'default' }]
+          );
         }
       }
     } catch (error) {
