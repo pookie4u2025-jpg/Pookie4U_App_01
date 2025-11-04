@@ -3239,7 +3239,10 @@ async def complete_task(task_data: TaskComplete, current_user: dict = Depends(ge
         "points_earned": points_earned,
         "total_points": new_total_points,
         "new_level": new_level,
-        "streak": current_streak,
+        "current_streak": current_streak,
+        "longest_streak": longest_streak,
+        "tasks_completed": new_tasks_completed,
+        "badges": badges,
         "task_category": task_category,
         "task_type": task_type
     }
