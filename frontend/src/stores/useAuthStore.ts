@@ -365,6 +365,15 @@ export const useAuthStore = create<AuthState>()(
           initialized: true, // Keep initialized as true after logout
         });
         
+        // Clear game data cache to prevent data mix-up between users
+        try {
+          const gameStore = useGameStore.getState();
+          gameStore.resetGameData();
+          console.log('✅ Game data cleared on logout');
+        } catch (error) {
+          console.error('⚠️ Failed to clear game data on logout:', error);
+        }
+        
         // Clear onboarding state so user can see onboarding again if they're a new user next time
         const { resetOnboarding } = require('./useAppStore').useAppStore.getState();
         resetOnboarding();
