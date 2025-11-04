@@ -2236,6 +2236,76 @@ async def logout(request: Request):
     
     return {"success": True, "message": "Logged out successfully"}
 
+@api_router.delete("/user/account")
+async def delete_user_account(request: Request):
+    """
+    Permanently delete user account and all associated data
+    This action is irreversible
+    """
+    from datetime import timezone
+    
+    # Get current user
+    current_user = await get_current_user_flexible(request)
+    
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated"
+        )
+    
+    user_id = str(current_user["_id"])
+    
+    try:
+        # 1. Delete user's sessions
+        await db.user_sessions.delete_many({"user_id": user_id})
+        
+        # 2. Delete user's tasks
+        await db.tasks.delete_many({"user_id": user_id})
+        
+        # 3. Delete user's custom events
+        # Custom events are stored in user document, so will be deleted with user
+        
+        # 4. Delete user's subscription data (if any)
+        # Subscriptions are stored in user document
+        
+        # 5. Delete user's push notification tokens
+        # Stored in user document
+        
+        # 6. Delete user's feedback
+        await db.feedback.delete_many({"user_id": user_id})
+        
+        # 7. Delete user's referral data (both as referrer and referee)
+        await db.referrals.delete_many({"$or": [
+            {"referrer_id": user_id},
+            {"referee_id": user_id}
+        ]})
+        
+        # 8. Finally, delete the user account
+        result = await db.users.delete_one({"_id": user_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Log deletion for audit purposes
+        print(f"✅ User account deleted: {user_id} at {datetime.now(timezone.utc)}")
+        
+        return {
+            "success": True,
+            "message": "Your account has been permanently deleted. All your data has been removed from our servers."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Error deleting user account {user_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete account. Please try again or contact support."
+        )
+
 @api_router.post("/auth/link-account")
 async def link_account(request: LinkAccountRequest, current_user: dict = Depends(get_current_user)):
     """Link an additional authentication method to existing account"""
