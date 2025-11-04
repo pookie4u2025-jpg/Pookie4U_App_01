@@ -7,7 +7,7 @@ import AuthScreen from '../src/screens/AuthScreen';
 import OnboardingScreen from '../src/screens/OnboardingScreen';
 
 export default function Index() {
-  const { isAuthenticated, initialized, validateSession } = useAuthStore();
+  const { isAuthenticated, initialized, validateSession, user } = useAuthStore();
   const { onboardingCompleted } = useAppStore();
 
   useEffect(() => {
@@ -42,7 +42,11 @@ export default function Index() {
     return <AuthScreen />;
   }
 
-  if (!onboardingCompleted) {
+  // Check backend profile_completed status for returning users
+  // Only show onboarding if user hasn't completed their profile in the backend
+  const needsOnboarding = user && !user.profile_completed;
+  
+  if (needsOnboarding) {
     return <OnboardingScreen />;
   }
 
