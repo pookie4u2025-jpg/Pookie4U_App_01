@@ -37,7 +37,7 @@ interface SettingItem {
 }
 
 export default function ComprehensiveSettingsScreen() {
-  const { user, logout, updateRelationshipMode, updateUserProfile } = useAuthStore();
+  const { user, token, logout, updateRelationshipMode, updateUserProfile } = useAuthStore();
   const { theme, isDark, toggleTheme, setThemeMode, themeMode } = useTheme();
   const router = useRouter();
   
