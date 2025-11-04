@@ -102,15 +102,15 @@ const useGameStore = create<GameState>((set, get) => ({
 
   // Load persisted data from AsyncStorage
   loadPersistedData: async () => {
-    // Always set fallback values first to ensure UI works
+    // Fallback values for when AsyncStorage isn't available (SSR, web)
     const fallbackState = {
-      totalPoints: 35,
+      totalPoints: 0,
       currentLevel: 1,
-      currentStreak: 7, // Test value to verify streak display works
-      longestStreak: 10, // Test value to verify longest streak works
-      tasksCompleted: 5, // Test value to verify tasks completed display works
-      badges: [AVAILABLE_BADGES.FIRST_TASK, AVAILABLE_BADGES.ROMANCE_EXPERT], // Test badges
-      lastActiveDate: new Date().toISOString(),
+      currentStreak: 0,
+      longestStreak: 0,
+      tasksCompleted: 0,
+      badges: [],
+      lastActiveDate: null,
     };
 
     try {
