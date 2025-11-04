@@ -186,6 +186,32 @@ const useGameStore = create<GameState>((set, get) => ({
     }
   },
 
+  // Reset all game data to initial state (for new users or data corruption)
+  resetGameData: async () => {
+    try {
+      const storage = getAsyncStorage();
+      if (storage) {
+        await storage.removeItem(STORAGE_KEY);
+        console.log('✅ Game data cleared from storage');
+      }
+      
+      // Reset state to initial values
+      set({
+        totalPoints: 0,
+        currentLevel: 1,
+        currentStreak: 0,
+        longestStreak: 0,
+        tasksCompleted: 0,
+        badges: [],
+        lastActiveDate: null,
+      });
+      
+      console.log('✅ Game data reset to initial state');
+    } catch (error) {
+      console.error('Failed to reset game data:', error);
+    }
+  },
+
   // Add experience points with level progression
   addExperience: async (points: number) => {
     const state = get();
