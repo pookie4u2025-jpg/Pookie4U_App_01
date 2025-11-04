@@ -236,7 +236,15 @@ export default function ProfileContent() {
       'Are you sure you want to logout?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', style: 'destructive', onPress: logout },
+        { 
+          text: 'Logout', 
+          style: 'destructive', 
+          onPress: () => {
+            logout();
+            // Navigate to root/auth screen after logout
+            router.replace('/');
+          }
+        },
       ]
     );
   };
