@@ -159,6 +159,17 @@ export const useAuthStore = create<AuthState>()(
           // Fetch user profile
           await get().fetchProfile();
           
+          // For NEW users, reset game data to ensure clean start
+          console.log('🆕 New user registered - resetting game data to initial values');
+          try {
+            const gameStore = useGameStore.getState();
+            await gameStore.resetGameData();
+            console.log('✅ Game data reset successful for new user');
+          } catch (error) {
+            console.error('⚠️ Failed to reset game data:', error);
+            // Continue anyway - not critical for auth
+          }
+          
           // Register for push notifications after successful registration
           try {
             const pushToken = await notificationManager.registerForPushNotifications(data.access_token);
