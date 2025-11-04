@@ -292,16 +292,26 @@ export const useAuthStore = create<AuthState>()(
 
           console.log('✅ Emergent OAuth login successful');
 
-          // For NEW users (profile not completed), reset game data to ensure clean start
+          // Handle game data based on user type
+          const gameStore = useGameStore.getState();
+          
           if (!userProfile.profile_completed) {
+            // NEW USER: Reset game data to ensure clean start
             console.log('🆕 New user detected - resetting game data to initial values');
             try {
-              const gameStore = useGameStore.getState();
               await gameStore.resetGameData();
               console.log('✅ Game data reset successful for new user');
             } catch (error) {
               console.error('⚠️ Failed to reset game data:', error);
-              // Continue anyway - not critical for auth
+            }
+          } else {
+            // OLD USER: Sync existing data from backend
+            console.log('👤 Existing user detected - syncing game data from backend');
+            try {
+              await gameStore.syncFromBackend(userData);
+              console.log('✅ Game data synced successfully for existing user');
+            } catch (error) {
+              console.error('⚠️ Failed to sync game data:', error);
             }
           }
 
