@@ -108,6 +108,19 @@ export const useAuthStore = create<AuthState>()(
           // Fetch user profile
           await get().fetchProfile();
           
+          // OLD USER: Sync game data from backend
+          const currentUser = get().user;
+          if (currentUser) {
+            console.log('👤 Existing user logged in - syncing game data from backend');
+            try {
+              const gameStore = useGameStore.getState();
+              await gameStore.syncFromBackend(currentUser);
+              console.log('✅ Game data synced successfully for existing user');
+            } catch (error) {
+              console.error('⚠️ Failed to sync game data:', error);
+            }
+          }
+          
           // Register for push notifications after successful login
           try {
             const pushToken = await notificationManager.registerForPushNotifications(data.access_token);
