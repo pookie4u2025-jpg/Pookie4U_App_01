@@ -148,6 +148,71 @@ export default function ComprehensiveSettingsScreen() {
     );
   };
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      '⚠️ Delete Account',
+      'This action is PERMANENT and IRREVERSIBLE.\n\nAll your data will be permanently deleted:\n• Profile & relationship data\n• Tasks & events\n• Points, badges & streaks\n• Subscription info\n• All messages\n\nAre you absolutely sure?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Delete My Account', 
+          style: 'destructive', 
+          onPress: () => {
+            // Second confirmation
+            Alert.alert(
+              '🚨 Final Confirmation',
+              'This is your last chance to cancel.\n\nOnce deleted, your account CANNOT be recovered.',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Yes, Delete Forever',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+                      const response = await fetch(`${backendUrl}/api/user/account`, {
+                        method: 'DELETE',
+                        headers: {
+                          'Authorization': `Bearer ${token}`,
+                          'Content-Type': 'application/json',
+                        },
+                      });
+
+                      if (response.ok) {
+                        Alert.alert(
+                          '✅ Account Deleted',
+                          'Your account has been permanently deleted. Thank you for using Pookie4u.',
+                          [
+                            {
+                              text: 'OK',
+                              onPress: () => {
+                                logout();
+                                router.replace('/');
+                              }
+                            }
+                          ]
+                        );
+                      } else {
+                        const error = await response.json().catch(() => ({}));
+                        throw new Error(error.detail || 'Failed to delete account');
+                      }
+                    } catch (error) {
+                      Alert.alert(
+                        'Error',
+                        error instanceof Error ? error.message : 'Failed to delete account. Please try again or contact support.',
+                        [{ text: 'OK' }]
+                      );
+                    }
+                  }
+                }
+              ]
+            );
+          }
+        }
+      ]
+    );
+  };
+
   const handleEditAccount = () => {
     setShowEditAccountModal(true);
     setEditName(user?.name || '');
