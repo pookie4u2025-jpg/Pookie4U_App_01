@@ -2888,6 +2888,7 @@ async def get_leaderboard(
 
 @api_router.get("/tasks/daily")
 async def get_daily_tasks(
+    request: Request,
     regenerate: bool = False,
     current_user: dict = Depends(get_current_user)
 ):
