@@ -4171,59 +4171,7 @@ async def start_mockup_subscription(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/subscription/create-order", tags=["Subscriptions"])
-async def create_subscription_order(
-    request: dict,
-    current_user: dict = Depends(get_current_user)
-):
-    """Create Razorpay order for subscription payment"""
-    try:
-        plan_type = request.get("plan_type", "monthly")
-        
-        # Validate plan type
-        if plan_type not in ['monthly', 'sixmonth']:
-            raise HTTPException(status_code=400, detail="Invalid plan type. Must be 'monthly' or 'sixmonth'")
-        
-        # Get customer data
-        customer_data = {
-            'email': current_user.get('email'),
-            'name': current_user.get('name', ''),
-            'phone': current_user.get('phone', '')
-        }
-        
-        # Create subscription using razorpay service
-        result = razorpay_service.create_subscription(plan_type, customer_data)
-        
-        if not result.get('success'):
-            raise HTTPException(status_code=500, detail=result.get('error', 'Failed to create order'))
-        
-        # Save pending subscription info
-        await db.users.update_one(
-            {"_id": current_user["_id"]},
-            {"$set": {
-                "pending_subscription": {
-                    "subscription_id": result['subscription_id'],
-                    "plan_type": plan_type,
-                    "plan_id": result['plan_id'],
-                    "status": "created",
-                    "created_at": datetime.utcnow().isoformat()
-                }
-            }}
-        )
-        
-        return {
-            "success": True,
-            "subscription_id": result['subscription_id'],
-            "plan_id": result['plan_id'],
-            "status": result['status'],
-            "short_url": result.get('short_url')
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error creating subscription order: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+# Razorpay endpoint removed - Prepare for new payment gateway integration
 
 
 @app.post("/api/subscription/verify-payment", tags=["Subscriptions"])
