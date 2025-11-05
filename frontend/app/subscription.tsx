@@ -25,15 +25,18 @@ type PlanType = 'trial' | 'monthly' | 'sixmonth';
 export default function SubscriptionScreen() {
   const router = useRouter();
   const { user, token } = useAuthStore();
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'sixmonth'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('trial');
   const [loading, setLoading] = useState(false);
   const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false);
   const [subscriptionData, setSubscriptionData] = useState<any>(null);
   const [loadingStatus, setLoadingStatus] = useState(true);
+  const [revenueCatPackages, setRevenueCatPackages] = useState<PurchasesPackage[]>([]);
+  const [revenueCatConfigured, setRevenueCatConfigured] = useState(false);
 
-  // Fetch subscription status on mount
+  // Fetch subscription status and RevenueCat offerings on mount
   React.useEffect(() => {
     fetchSubscriptionStatus();
+    fetchRevenueCatOfferings();
   }, []);
 
   const fetchSubscriptionStatus = async () => {
