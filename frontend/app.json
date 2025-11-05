@@ -47,7 +47,11 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {}
-    }
+      "router": {},
+      "eas": {
+        "projectId": "bd5adfc7-3d1d-45f3-b969-d121b9df8c7e"
+      }
+    },
+    "owner": "pookie4u"
   }
 }
