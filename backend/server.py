@@ -4174,62 +4174,7 @@ async def start_mockup_subscription(
 # Razorpay endpoint removed - Prepare for new payment gateway integration
 
 
-@app.post("/api/subscription/verify-payment", tags=["Subscriptions"])
-async def verify_subscription_payment(
-    request: dict,
-    current_user: dict = Depends(get_current_user)
-):
-    """Verify Razorpay subscription payment"""
-    try:
-        subscription_id = request.get("subscription_id")
-        payment_id = request.get("payment_id")
-        signature = request.get("signature")
-        
-        if not subscription_id or not payment_id or not signature:
-            raise HTTPException(status_code=400, detail="Missing required payment parameters")
-        
-        # Verify payment signature
-        is_valid = razorpay_service.verify_payment_signature(
-            subscription_id=subscription_id,
-            payment_id=payment_id,
-            signature=signature
-        )
-        
-        if not is_valid:
-            raise HTTPException(status_code=400, detail="Invalid payment signature")
-        
-        # Get pending subscription
-        pending_sub = current_user.get("pending_subscription", {})
-        plan_type = pending_sub.get("plan_type", "monthly")
-        
-        # Activate subscription
-        subscription_data = subscription_service.create_subscription(
-            plan_type,
-            subscription_id,
-            current_user["_id"]
-        )
-        
-        # Update user with active subscription
-        await db.users.update_one(
-            {"_id": current_user["_id"]},
-            {"$set": subscription_data, "$unset": {"pending_subscription": ""}}
-        )
-        
-        return {
-            "success": True,
-            "message": "Payment verified and subscription activated!",
-            "subscription": {
-                "type": plan_type,
-                "status": "active",
-                "end_date": subscription_data["subscription_end_date"].isoformat()
-            }
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error verifying payment: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+# Razorpay endpoint removed - Prepare for new payment gateway integration
 
 
 
