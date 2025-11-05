@@ -1,0 +1,20 @@
+# EAS Ignore File
+node_modules/
+.expo/
+.expo-shared/
+dist/
+.git/
+.gitignore
+*.log
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.orig
+.metro-cache/
+coverage/
+__tests__/
+android/
+ios/
