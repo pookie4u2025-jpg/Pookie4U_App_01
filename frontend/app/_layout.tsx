@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from '../src/contexts/ThemeContext';
+import { initializeRevenueCat } from '../src/config/revenuecatConfig';
 
 // Import stores to initialize them
 import '../src/stores/useAuthStore';
@@ -11,6 +12,11 @@ import '../src/stores/useAppStore';
 import '../src/stores/useGameStore';
 
 export default function RootLayout() {
+  useEffect(() => {
+    // Initialize RevenueCat when app starts
+    initializeRevenueCat();
+  }, []);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
