@@ -4184,57 +4184,7 @@ async def start_mockup_subscription(
 
 # Razorpay endpoint removed - Using /api/subscription/status instead
 
-@app.post("/api/subscriptions/cancel", tags=["Subscriptions"])
-async def cancel_subscription(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-):
-    """Cancel current subscription"""
-    try:
-        # Get current user
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        # Get user data
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        subscription_data = user.get('subscription', {})
-        subscription_id = subscription_data.get('subscription_id')
-        
-        if not subscription_id:
-            raise HTTPException(status_code=404, detail="No active subscription found")
-        
-        # Cancel subscription
-        result = razorpay_service.cancel_subscription(subscription_id, cancel_at_cycle_end=True)
-        
-        if not result.get('success'):
-            raise HTTPException(status_code=500, detail=result.get('error', 'Failed to cancel subscription'))
-        
-        # Update local status
-        await db.users.update_one(
-            {"email": email},
-            {"$set": {
-                "subscription.status": result['status'],
-                "subscription.cancelled_at": datetime.utcnow().isoformat(),
-            }}
-        )
-        
-        return {
-            "success": True,
-            "message": "Subscription cancelled successfully",
-            "status": result['status']
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error cancelling subscription: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to cancel subscription: {str(e)}")
+# Razorpay endpoint removed - Prepare for new payment gateway integration
 
 # ==================== FEEDBACK SYSTEM ====================
 
