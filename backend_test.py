@@ -1,29 +1,21 @@
 #!/usr/bin/env python3
 """
-Comprehensive Backend Testing for Event CRUD APIs
-Testing Event CRUD Frontend Integration with Backend APIs
+Backend Testing Script for Pookie4u - Razorpay Removal Verification
+Tests subscription endpoints, authentication, and core functionality
 """
 
-import asyncio
-import httpx
+import requests
 import json
-import os
-from datetime import datetime, timedelta
-from typing import Dict, Any, Optional
+import time
+import random
+import string
+from datetime import datetime
 
 # Configuration
 BACKEND_URL = "https://streaky-couples-app.preview.emergentagent.com/api"
-import random
-import string
-
-# Generate unique test user for each run
-def generate_unique_email():
-    random_suffix = ''.join(random.choices(string.digits, k=8))
-    return f"test.events.{random_suffix}@example.com"
-
-TEST_USER_EMAIL = generate_unique_email()
-TEST_USER_PASSWORD = "SecurePass123!"
-TEST_USER_NAME = "Test Events User"
+TEST_USER_EMAIL = f"testuser_{int(time.time())}@example.com"
+TEST_USER_PASSWORD = "TestPassword123!"
+TEST_USER_NAME = "Test User"
 
 class EventCRUDTester:
     def __init__(self):
