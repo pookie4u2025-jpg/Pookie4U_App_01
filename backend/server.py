@@ -4180,52 +4180,7 @@ async def start_mockup_subscription(
 
 # Razorpay endpoint removed - Prepare for new payment gateway integration
 
-@app.post("/api/subscriptions/verify", tags=["Subscriptions"])
-async def verify_payment(
-    request: VerifyPaymentRequest,
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-):
-    """Verify Razorpay payment signature"""
-    try:
-        # Get current user
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        # Verify signature
-        is_valid = razorpay_service.verify_payment_signature(
-            request.payment_id,
-            request.subscription_id,
-            request.signature
-        )
-        
-        if not is_valid:
-            raise HTTPException(status_code=400, detail="Invalid payment signature")
-        
-        # Update subscription status
-        await db.users.update_one(
-            {"email": email},
-            {"$set": {
-                "subscription.status": "active",
-                "subscription.activated_at": datetime.utcnow().isoformat(),
-                "subscription.payment_id": request.payment_id,
-            }}
-        )
-        
-        return {
-            "success": True,
-            "message": "Payment verified successfully",
-            "subscription_status": "active"
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error verifying payment: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to verify payment: {str(e)}")
+# Razorpay endpoint removed - Prepare for new payment gateway integration
 
 @app.get("/api/subscriptions/status", tags=["Subscriptions"])
 async def get_subscription_status(
