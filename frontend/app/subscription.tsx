@@ -18,7 +18,6 @@ import * as WebBrowser from 'expo-web-browser';
 import { useAuthStore } from '../src/stores/useAuthStore';
 
 const { width } = Dimensions.get('window');
-const RAZORPAY_KEY_ID = process.env.EXPO_PUBLIC_RAZORPAY_KEY_ID || '';
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
 export default function SubscriptionScreen() {
