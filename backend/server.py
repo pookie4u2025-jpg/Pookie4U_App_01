@@ -462,8 +462,6 @@ class UserProfile(BaseModel):
     subscription_start_date: Optional[datetime] = None
     subscription_end_date: Optional[datetime] = None
     trial_started: bool = False
-    razorpay_subscription_id: Optional[str] = None
-    razorpay_customer_id: Optional[str] = None
     # Push notification fields
     push_token: Optional[str] = None
     push_token_updated_at: Optional[datetime] = None
