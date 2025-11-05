@@ -2499,9 +2499,7 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
         subscription_status=current_user.get("subscription_status", "inactive"),
         subscription_start_date=current_user.get("subscription_start_date"),
         subscription_end_date=current_user.get("subscription_end_date"),
-        trial_started=current_user.get("trial_started", False),
-        razorpay_subscription_id=current_user.get("razorpay_subscription_id"),
-        razorpay_customer_id=current_user.get("razorpay_customer_id")
+        trial_started=current_user.get("trial_started", False)
     )
 
 @api_router.put("/user/profile")
