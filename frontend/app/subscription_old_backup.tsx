@@ -51,11 +51,6 @@ export default function SubscriptionScreen() {
         const data = await response.json();
         setSubscriptionData(data.subscription);
         setTrialAlreadyUsed(data.subscription.trial_already_used || false);
-        
-        // Auto-select monthly if trial already used
-        if (data.subscription.trial_already_used) {
-          setSelectedPlan('monthly');
-        }
       }
     } catch (error) {
       console.error('Error fetching subscription status:', error);
@@ -64,32 +59,13 @@ export default function SubscriptionScreen() {
     }
   };
 
-  const fetchRevenueCatOfferings = async () => {
-    try {
-      console.log('🔍 Fetching RevenueCat offerings...');
-      const offerings = await Purchases.getOfferings();
-      
-      if (offerings.current && offerings.current.availablePackages.length > 0) {
-        setRevenueCatPackages(offerings.current.availablePackages);
-        setRevenueCatConfigured(true);
-        console.log('✅ RevenueCat packages loaded:', offerings.current.availablePackages.length);
-      } else {
-        console.log('⚠️ No RevenueCat offerings available');
-        setRevenueCatConfigured(false);
-      }
-    } catch (error) {
-      console.log('⚠️ RevenueCat not configured or error:', error);
-      setRevenueCatConfigured(false);
-    }
-  };
-
-  const handleSelectPlan = (plan: PlanType) => {
+  const handleSelectPlan = (plan: 'monthly' | 'sixmonth') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedPlan(plan);
   };
 
   const handleFreeTrial = async () => {
-    console.log('🎁 Starting backend-managed free trial (no payment required)');
+    console.log('🎁 Starting free trial without payment');
     
     if (!user || !token) {
       Alert.alert('Error', 'Please log in to continue');
@@ -116,7 +92,7 @@ export default function SubscriptionScreen() {
         // Check if trial was already used
         if (errorData.detail && errorData.detail.includes('already used')) {
           setTrialAlreadyUsed(true);
-          setSelectedPlan('monthly');
+          setSelectedPlan('sixmonth'); // Auto-select 6-month plan
           Alert.alert(
             'Trial Already Used',
             'You have already used your 14-day free trial. Please select a paid plan to continue enjoying premium features.',
@@ -148,109 +124,42 @@ export default function SubscriptionScreen() {
     } catch (error) {
       console.error('❌ Trial activation error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to activate trial';
-      Alert.alert('Error', errorMessage);
+      
+      // Don't show alert if we already handled the "already used" case
+      if (!errorMessage.includes('already used')) {
+        Alert.alert('Error', errorMessage);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePaidSubscription = async () => {
-    console.log('💳 Initiating Google Play payment for paid subscription');
+  const handleSubscribe = async () => {
+    console.log('🔐 Subscription - Checking auth status:');
+    console.log('  User:', user ? 'Present' : 'Missing');
+    console.log('  Token:', token ? `Present (${token.substring(0, 20)}...)` : 'Missing');
     
     if (!user || !token) {
       Alert.alert('Error', 'Please log in to continue');
       return;
     }
 
-    if (!revenueCatConfigured) {
-      Alert.alert(
-        'Payment Setup Incomplete',
-        'Payment system is still being configured. Please try the free trial for now or contact support.',
-        [{ text: 'OK' }]
-      );
-      return;
-    }
-
-    // Find the selected package
-    const selectedPackage = revenueCatPackages.find(pkg => {
-      if (selectedPlan === 'monthly') {
-        return pkg.identifier.includes('monthly');
-      } else if (selectedPlan === 'sixmonth') {
-        return pkg.identifier.includes('6_month') || pkg.identifier.includes('sixmonth');
-      }
-      return false;
-    });
-
-    if (!selectedPackage) {
-      Alert.alert('Error', 'Selected plan not available');
-      return;
-    }
-
-    setLoading(true);
+    // Payment gateway integration coming soon
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-    try {
-      console.log('🔐 Attempting to purchase package:', selectedPackage.identifier);
-      
-      // Identify user to RevenueCat before purchase
-      if (user.id) {
-        await Purchases.logIn(user.id);
-        console.log('✅ User identified to RevenueCat');
-      }
-
-      // Purchase the package - This opens Google Play payment sheet
-      const { customerInfo } = await Purchases.purchasePackage(selectedPackage);
-      
-      console.log('✅ Purchase successful');
-      
-      // Check if premium access is granted
-      if (typeof customerInfo.entitlements.active['premium_access'] !== 'undefined') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert(
-          '🎉 Subscription Activated!',
-          'Your premium subscription is now active. Enjoy all features!',
-          [
-            {
-              text: 'Get Started',
-              onPress: () => router.push('/(tabs)'),
-            },
-          ]
-        );
-      } else {
-        throw new Error('Purchase completed but premium access not granted');
-      }
-      
-    } catch (error) {
-      setLoading(false);
-      
-      if (error instanceof PurchasesError) {
-        console.error('❌ RevenueCat purchase error:', error.code, error.message);
-        
-        // Handle different error types
-        if (error.code === 'PurchaseCancelledError') {
-          console.log('User cancelled the purchase');
-          // Don't show error alert for cancellations
-          return;
-        } else if (error.code === 'StoreProblemError') {
-          Alert.alert(
-            'Payment Issue',
-            'There was a problem with the Google Play Store. Please try again later.',
-            [{ text: 'OK' }]
-          );
-        } else {
-          Alert.alert(
-            'Purchase Failed',
-            `Unable to complete purchase: ${error.message}`,
-            [{ text: 'OK' }]
-          );
+    Alert.alert(
+      '🚀 Coming Soon',
+      'Payment integration is currently being set up. You can still enjoy the free trial! Premium payment options will be available soon.',
+      [
+        {
+          text: 'Start Free Trial',
+          onPress: () => handleFreeTrial(),
+        },
+        {
+          text: 'OK',
+          style: 'cancel'
         }
-      } else {
-        console.error('❌ Unexpected purchase error:', error);
-        Alert.alert('Error', 'Failed to complete purchase. Please try again.');
-      }
-    } finally {
-      setLoading(false);
-    }
+      ]
+    );
   };
 
   const handleContinue = () => {
@@ -259,37 +168,14 @@ export default function SubscriptionScreen() {
     if (selectedPlan === 'trial') {
       handleFreeTrial();
     } else {
-      handlePaidSubscription();
+      handleSubscribe();
     }
   };
 
   const handleSkip = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push('/(tabs)');
+    router.push('/tabs');
   };
-
-  // Get pricing from RevenueCat packages
-  const getPackagePrice = (planType: 'monthly' | 'sixmonth'): string => {
-    const pkg = revenueCatPackages.find(p => {
-      if (planType === 'monthly') {
-        return p.identifier.includes('monthly');
-      } else {
-        return p.identifier.includes('6_month') || p.identifier.includes('sixmonth');
-      }
-    });
-    return pkg?.product.priceString || (planType === 'monthly' ? '₹79' : '₹450');
-  };
-
-  if (loadingStatus) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FF1493" />
-          <Text style={styles.loadingText}>Loading subscription options...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -309,35 +195,51 @@ export default function SubscriptionScreen() {
         {/* Header with Logo */}
         <View style={styles.header}>
           <Image 
-            source={require('../src/assets/images/logos/p4u-logo-new.png')}
+            source={require('../assets/images/p4u-logo-new.png')}
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Choose Your Plan</Text>
+          <Text style={styles.title}>Upgrade to Premium</Text>
           <Text style={styles.subtitle}>
-            Unlock premium features and strengthen your relationship
+            Unlock all features and strengthen your relationship
           </Text>
         </View>
 
-        {/* Current Subscription Status */}
-        {subscriptionData?.is_active && (
-          <View style={styles.currentSubCard}>
-            <View style={styles.currentSubHeader}>
-              <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
-              <Text style={styles.currentSubTitle}>Active Subscription</Text>
-            </View>
-            <Text style={styles.currentSubPlan}>
-              {subscriptionData.type === 'monthly' ? 'Premium Monthly' : 
-               subscriptionData.type === 'half_yearly' ? 'Premium 6-Month' : 
-               'Free Trial'}
-            </Text>
-            {subscriptionData.days_remaining && (
-              <Text style={styles.daysRemaining}>
-                {subscriptionData.days_remaining} days remaining
+        {/* Header Info */}
+        <View style={styles.headerInfo}>
+          {subscriptionData?.is_active ? (
+            <View style={styles.currentSubCard}>
+              <View style={styles.currentSubHeader}>
+                <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
+                <Text style={styles.currentSubTitle}>Active Subscription</Text>
+              </View>
+              <Text style={styles.currentSubPlan}>
+                {subscriptionData.type === 'monthly' ? 'Premium Monthly' : 
+                 subscriptionData.type === 'half_yearly' ? 'Premium 6-Month' : 
+                 'Free Trial'}
               </Text>
-            )}
-          </View>
-        )}
+              {subscriptionData.renewal_date_display && (
+                <>
+                  <Text style={styles.renewalText}>
+                    {subscriptionData.auto_renewal_enabled ? 'Renews on:' : 'Expires on:'} {subscriptionData.renewal_date_display}
+                  </Text>
+                  {subscriptionData.auto_renewal_enabled && (
+                    <View style={styles.autoRenewalBadge}>
+                      <Ionicons name="sync" size={16} color="#2196F3" />
+                      <Text style={styles.autoRenewalText}>Auto-Renewal Enabled</Text>
+                    </View>
+                  )}
+                </>
+              )}
+            </View>
+          ) : (
+            <Text style={styles.infoText}>
+              {trialAlreadyUsed 
+                ? 'Choose a plan to continue enjoying premium features' 
+                : 'Choose your plan and start your premium experience'}
+            </Text>
+          )}
+        </View>
 
         {/* Subscription Plans */}
         <View style={styles.plansContainer}>
@@ -348,7 +250,7 @@ export default function SubscriptionScreen() {
                 styles.planCard,
                 selectedPlan === 'trial' && styles.planCardSelected,
               ]}
-              onPress={() => handleSelectPlan('trial')}
+              onPress={() => handleSelectPlan('trial' as any)}
               activeOpacity={0.7}
             >
               <View style={styles.planHeader}>
@@ -361,7 +263,7 @@ export default function SubscriptionScreen() {
                       <View style={styles.radioButtonInner} />
                     )}
                   </View>
-                  <Text style={styles.planTitle}>14 Days Free Trial</Text>
+                  <Text style={styles.planTitle}>Free Trial</Text>
                 </View>
                 <View style={styles.recommendedBadge}>
                   <Text style={styles.recommendedText}>RECOMMENDED</Text>
@@ -376,11 +278,11 @@ export default function SubscriptionScreen() {
               <View style={styles.savingsBadge}>
                 <Text style={styles.savingsText}>No payment required</Text>
               </View>
-              <Text style={styles.featureNote}>⚠️ One-time offer only</Text>
+              <Text style={styles.oneTimeOnly}>⚠️ One-time offer only</Text>
             </TouchableOpacity>
           )}
 
-          {/* Trial Used Banner */}
+          {/* Show message if trial was already used */}
           {trialAlreadyUsed && !subscriptionData?.is_active && (
             <View style={styles.trialUsedBanner}>
               <Ionicons name="information-circle" size={24} color="#FF9800" />
@@ -389,37 +291,6 @@ export default function SubscriptionScreen() {
               </Text>
             </View>
           )}
-
-          {/* Monthly Plan */}
-          <TouchableOpacity
-            style={[
-              styles.planCard,
-              selectedPlan === 'monthly' && styles.planCardSelected,
-            ]}
-            onPress={() => handleSelectPlan('monthly')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.planHeader}>
-              <View style={styles.planHeaderLeft}>
-                <View style={[
-                  styles.radioButton,
-                  selectedPlan === 'monthly' && styles.radioButtonSelected,
-                ]}>
-                  {selectedPlan === 'monthly' && (
-                    <View style={styles.radioButtonInner} />
-                  )}
-                </View>
-                <Text style={styles.planTitle}>Monthly Plan</Text>
-              </View>
-            </View>
-            
-            <View style={styles.planPricing}>
-              <Text style={styles.planPrice}>{getPackagePrice('monthly')}</Text>
-              <Text style={styles.planPeriod}>per month</Text>
-            </View>
-            
-            <Text style={styles.featureNote}>✓ Auto-renewable subscription</Text>
-          </TouchableOpacity>
 
           {/* 6-Month Plan */}
           <TouchableOpacity
@@ -440,7 +311,7 @@ export default function SubscriptionScreen() {
                     <View style={styles.radioButtonInner} />
                   )}
                 </View>
-                <Text style={styles.planTitle}>6-Month Plan</Text>
+                <Text style={styles.planTitle}>6 Months</Text>
               </View>
               <View style={styles.recommendedBadge}>
                 <Text style={styles.recommendedText}>BEST VALUE</Text>
@@ -448,14 +319,42 @@ export default function SubscriptionScreen() {
             </View>
             
             <View style={styles.planPricing}>
-              <Text style={styles.planPrice}>{getPackagePrice('sixmonth')}</Text>
+              <Text style={styles.planPrice}>₹450</Text>
               <Text style={styles.planPeriod}>for 6 months</Text>
             </View>
             
             <View style={styles.savingsBadge}>
               <Text style={styles.savingsText}>Save ₹24 • ₹75/month</Text>
             </View>
-            <Text style={styles.featureNote}>✓ Auto-renewable subscription</Text>
+          </TouchableOpacity>
+
+          {/* Monthly Plan */}
+          <TouchableOpacity
+            style={[
+              styles.planCard,
+              selectedPlan === 'monthly' && styles.planCardSelected,
+            ]}
+            onPress={() => handleSelectPlan('monthly')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.planHeader}>
+              <View style={styles.planHeaderLeft}>
+                <View style={[
+                  styles.radioButton,
+                  selectedPlan === 'monthly' && styles.radioButtonSelected,
+                ]}>
+                  {selectedPlan === 'monthly' && (
+                    <View style={styles.radioButtonInner} />
+                  )}
+                </View>
+                <Text style={styles.planTitle}>Monthly</Text>
+              </View>
+            </View>
+            
+            <View style={styles.planPricing}>
+              <Text style={styles.planPrice}>₹79</Text>
+              <Text style={styles.planPeriod}>per month</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -487,9 +386,19 @@ export default function SubscriptionScreen() {
             <Ionicons name="checkmark-circle" size={24} color="#10B981" />
             <Text style={styles.featureText}>Gamification & rewards</Text>
           </View>
+
+          <View style={styles.feature}>
+            <Ionicons name="checkmark-circle" size={24} color="#10B981" />
+            <Text style={styles.featureText}>Unlimited custom events</Text>
+          </View>
+
+          <View style={styles.feature}>
+            <Ionicons name="checkmark-circle" size={24} color="#10B981" />
+            <Text style={styles.featureText}>Ad-free experience</Text>
+          </View>
         </View>
 
-        {/* Continue Button */}
+        {/* Subscribe Button */}
         <TouchableOpacity
           style={[styles.subscribeButton, loading && styles.subscribeButtonDisabled]}
           onPress={handleContinue}
@@ -506,7 +415,7 @@ export default function SubscriptionScreen() {
               <Text style={styles.subscribeButtonSubtext}>
                 {selectedPlan === 'trial' 
                   ? 'No payment required • 14 days free'
-                  : 'Secure payment via Google Play'
+                  : 'Cancel anytime • No charges during trial'
                 }
               </Text>
             </>
@@ -525,7 +434,7 @@ export default function SubscriptionScreen() {
         {/* Terms */}
         <Text style={styles.termsText}>
           By subscribing, you agree to our Terms of Service and Privacy Policy.
-          {selectedPlan !== 'trial' && ' Subscription auto-renews unless cancelled 24 hours before period ends.'}
+          Subscription auto-renews unless cancelled 24 hours before period ends.
         </Text>
       </ScrollView>
     </SafeAreaView>
@@ -536,16 +445,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666',
   },
   backButton: {
     position: 'absolute',
@@ -577,6 +476,83 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
+  headerInfo: {
+    alignItems: 'center',
+    marginBottom: 24,
+    paddingHorizontal: 20,
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  currentSubCard: {
+    backgroundColor: '#E8F5E9',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#4CAF50',
+  },
+  currentSubHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  currentSubTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+  },
+  currentSubPlan: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  renewalText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+  },
+  autoRenewalBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#E3F2FD',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  autoRenewalText: {
+    fontSize: 12,
+    color: '#2196F3',
+    fontWeight: '600',
+  },
+  trialUsedBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF3E0',
+    padding: 16,
+    borderRadius: 12,
+    gap: 12,
+    marginBottom: 16,
+  },
+  trialUsedText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#F57C00',
+    fontWeight: '500',
+  },
+  oneTimeOnly: {
+    fontSize: 12,
+    color: '#F57C00',
+    textAlign: 'center',
+    marginTop: 8,
+    fontWeight: '600',
+  },
   logo: {
     width: 80,
     height: 80,
@@ -595,49 +571,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
-  currentSubCard: {
-    backgroundColor: '#E8F5E9',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#4CAF50',
+  trialBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFF0F7',
+    borderRadius: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#FFD6EB',
   },
-  currentSubHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  currentSubTitle: {
+  trialText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-  },
-  currentSubPlan: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 4,
-  },
-  daysRemaining: {
-    fontSize: 14,
-    color: '#666',
-  },
-  trialUsedBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF3E0',
-    padding: 16,
-    borderRadius: 12,
-    gap: 12,
-    marginBottom: 16,
-  },
-  trialUsedText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#F57C00',
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#FF1493',
+    marginLeft: 8,
   },
   plansContainer: {
     marginBottom: 32,
@@ -729,17 +679,11 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     alignSelf: 'flex-start',
-    marginBottom: 8,
   },
   savingsText: {
     fontSize: 14,
     fontWeight: '600',
     color: '#F59E0B',
-  },
-  featureNote: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
   },
   featuresContainer: {
     marginBottom: 32,
