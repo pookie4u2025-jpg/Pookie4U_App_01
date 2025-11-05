@@ -4182,57 +4182,7 @@ async def start_mockup_subscription(
 
 # Razorpay endpoint removed - Prepare for new payment gateway integration
 
-@app.get("/api/subscriptions/status", tags=["Subscriptions"])
-async def get_subscription_status(
-    credentials: HTTPAuthorizationCredentials = Depends(security)
-):
-    """Get current subscription status"""
-    try:
-        # Get current user
-        token = credentials.credentials
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email = payload.get("email")
-        
-        if not email:
-            raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        
-        # Get user data
-        user = await db.users.find_one({"email": email})
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        subscription_data = user.get('subscription', {})
-        
-        if not subscription_data or not subscription_data.get('subscription_id'):
-            return {
-                "has_subscription": False,
-                "subscription": None
-            }
-        
-        # Fetch latest details from Razorpay
-        subscription_id = subscription_data['subscription_id']
-        latest_details = razorpay_service.get_subscription_details(subscription_id)
-        
-        if latest_details:
-            # Update local copy
-            await db.users.update_one(
-                {"email": email},
-                {"$set": {
-                    "subscription.status": latest_details['status'],
-                    "subscription.updated_at": datetime.utcnow().isoformat(),
-                }}
-            )
-        
-        return {
-            "has_subscription": True,
-            "subscription": latest_details or subscription_data
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting subscription status: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to get subscription status: {str(e)}")
+# Razorpay endpoint removed - Using /api/subscription/status instead
 
 @app.post("/api/subscriptions/cancel", tags=["Subscriptions"])
 async def cancel_subscription(
