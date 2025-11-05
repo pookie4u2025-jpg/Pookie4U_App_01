@@ -139,80 +139,22 @@ export default function SubscriptionScreen() {
       return;
     }
 
-    setLoading(true);
+    // Payment gateway integration coming soon
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-    try {
-      // Step 1: Create subscription on backend
-      const url = `${BACKEND_URL}/api/subscriptions/create`;
-      console.log('📤 Creating subscription at:', url);
-      console.log('📤 Plan type:', selectedPlan);
-      
-      const createResponse = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+    Alert.alert(
+      '🚀 Coming Soon',
+      'Payment integration is currently being set up. You can still enjoy the free trial! Premium payment options will be available soon.',
+      [
+        {
+          text: 'Start Free Trial',
+          onPress: () => handleFreeTrial(),
         },
-        body: JSON.stringify({
-          plan_type: selectedPlan,
-        }),
-      });
-
-      console.log('📥 Response status:', createResponse.status);
-      console.log('📥 Response statusText:', createResponse.statusText);
-
-      if (!createResponse.ok) {
-        const errorText = await createResponse.text();
-        console.error('❌ Subscription creation failed:', errorText);
-        throw new Error(`Failed to create subscription: ${createResponse.status} - ${errorText}`);
-      }
-
-      const subscriptionData = await createResponse.json();
-      
-      if (!subscriptionData.success) {
-        throw new Error(subscriptionData.error || 'Failed to create subscription');
-      }
-
-      // Step 2: Open Razorpay web checkout in browser
-      const paymentUrl = subscriptionData.short_url;
-      
-      if (!paymentUrl) {
-        throw new Error('No payment URL received');
-      }
-
-      // Open Razorpay checkout in browser
-      const result = await WebBrowser.openBrowserAsync(paymentUrl);
-      
-      setLoading(false);
-      
-      // Show success message (in production, you'd verify via webhook)
-      if (result.type === 'cancel' || result.type === 'dismiss') {
-        Alert.alert(
-          'Payment Cancelled',
-          'You can complete the payment anytime from your profile.',
-          [{ text: 'OK' }]
-        );
-      } else {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        Alert.alert(
-          '🎉 Payment Initiated!',
-          'Once payment is complete, your subscription will be activated. Check your subscription status in your profile.',
-          [
-            {
-              text: 'Got It',
-              onPress: () => router.push('/(tabs)'),
-            },
-          ]
-        );
-      }
-      
-    } catch (error) {
-      setLoading(false);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert('Error', 'Failed to initiate payment. Please try again.');
-      console.error('Subscription error:', error);
-    }
+        {
+          text: 'OK',
+          style: 'cancel'
+        }
+      ]
+    );
   };
 
   const handleContinue = () => {
