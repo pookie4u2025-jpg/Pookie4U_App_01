@@ -309,7 +309,7 @@ export default function SubscriptionScreen() {
         {/* Header with Logo */}
         <View style={styles.header}>
           <Image 
-            source={require('../src/assets/images/logos/p4u-logo-new.png')}
+            source={require('../assets/images/logos/p4u-short-logo.png')}
             style={styles.logo}
             resizeMode="contain"
           />
