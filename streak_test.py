@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://lovejourney-app.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('EXPO_PUBLIC_BACKEND_URL', 'https://streaky-couples-app.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 class StreakTestSuite:

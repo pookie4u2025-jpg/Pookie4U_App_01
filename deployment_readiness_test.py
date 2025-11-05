@@ -11,7 +11,7 @@ from datetime import datetime
 
 class DeploymentReadinessTest:
     def __init__(self):
-        self.base_url = "https://lovejourney-app.preview.emergentagent.com/api"
+        self.base_url = "https://streaky-couples-app.preview.emergentagent.com/api"
         self.test_user = {
             "email": f"deploy.test.{int(time.time())}@example.com",
             "password": "DeployTest123!",
