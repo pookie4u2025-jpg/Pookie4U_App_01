@@ -183,13 +183,19 @@ class BackendTester:
         
         if response["success"] and response["status_code"] == 200:
             status_data = response["data"]
-            required_fields = ["type", "status", "is_active", "days_remaining", "can_start_trial"]
-            missing_fields = [field for field in required_fields if field not in status_data]
             
-            if not missing_fields:
-                self.log_test("Subscription Status", True, f"Status endpoint working correctly: {status_data.get('type', 'unknown')} subscription")
+            # Check if response has correct structure
+            if "success" in status_data and "subscription" in status_data:
+                subscription = status_data["subscription"]
+                required_fields = ["type", "status", "is_active", "days_remaining", "can_start_trial"]
+                missing_fields = [field for field in required_fields if field not in subscription]
+                
+                if not missing_fields:
+                    self.log_test("Subscription Status", True, f"Status endpoint working correctly: {subscription.get('type', 'unknown')} subscription")
+                else:
+                    self.log_test("Subscription Status", False, f"Subscription object missing fields: {missing_fields}")
             else:
-                self.log_test("Subscription Status", False, f"Status response missing fields: {missing_fields}")
+                self.log_test("Subscription Status", False, f"Response missing 'success' or 'subscription' fields: {list(status_data.keys())}")
         else:
             self.log_test("Subscription Status", False, f"Status endpoint failed: {response.get('error', response.get('data', 'Unknown error'))}")
             
