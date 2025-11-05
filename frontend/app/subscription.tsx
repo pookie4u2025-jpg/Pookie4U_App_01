@@ -14,10 +14,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import Purchases, { PurchasesError, PurchasesPackage } from 'react-native-purchases';
 import { useAuthStore } from '../src/stores/useAuthStore';
 
 const { width } = Dimensions.get('window');
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+
+type PlanType = 'trial' | 'monthly' | 'sixmonth';
 
 export default function SubscriptionScreen() {
   const router = useRouter();
