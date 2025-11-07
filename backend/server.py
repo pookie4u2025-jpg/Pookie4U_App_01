@@ -3090,9 +3090,11 @@ async def get_weekly_tasks(
     
     # Return existing tasks
     existing_tasks = current_user.get("ai_weekly_tasks", [])
+    remaining_refreshes = 2 - weekly_refresh_count
     return {
         "tasks": existing_tasks,
-        "generated_for_mode": mode
+        "generated_for_mode": mode,
+        "remaining_refreshes": remaining_refreshes
     }
 
 @api_router.post("/tasks/complete")
