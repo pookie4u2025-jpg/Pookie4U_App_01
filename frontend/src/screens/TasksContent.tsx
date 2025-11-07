@@ -17,7 +17,7 @@ import { useTheme } from '../contexts/ThemeContext';
 
 export default function TasksContent() {
   const { token, user } = useAuthStore();
-  const { dailyTasks, weeklyTask, fetchDailyTasks, fetchWeeklyTask, completeTask: completeTaskAPI } = useTaskStore();
+  const { dailyTasks, weeklyTask, weeklyRefreshesRemaining, fetchDailyTasks, fetchWeeklyTask, completeTask: completeTaskAPI } = useTaskStore();
   const { completeTask: updateGameProgress } = useGameStore();
   const { theme } = useTheme();
 
