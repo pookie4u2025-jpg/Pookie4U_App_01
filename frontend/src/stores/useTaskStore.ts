@@ -119,6 +119,7 @@ export const useTaskStore = create<TaskState>()(
             loading: false, 
             error: error instanceof Error ? error.message : 'Failed to fetch weekly task'
           });
+          return { success: false, error: error instanceof Error ? error.message : 'Failed to fetch weekly task' };
         }
       },
 
