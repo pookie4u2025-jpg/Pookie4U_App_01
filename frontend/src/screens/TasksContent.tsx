@@ -301,17 +301,32 @@ export default function TasksContent() {
                 </View>
               )}
             </View>
-            <TouchableOpacity
-              style={[styles.regenerateButton, { backgroundColor: theme.surface }]}
-              onPress={() => regenerateTasks('weekly')}
-              disabled={regenerating.weekly}
-            >
-              {regenerating.weekly ? (
-                <ActivityIndicator size="small" color={theme.primary} />
-              ) : (
-                <Ionicons name="refresh" size={20} color={theme.primary} />
+            <View style={styles.refreshContainer}>
+              {weeklyRefreshesRemaining > 0 && (
+                <Text style={[styles.refreshCountText, { color: theme.textSecondary }]}>
+                  🔄 {weeklyRefreshesRemaining}/2
+                </Text>
               )}
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.regenerateButton, 
+                  { backgroundColor: weeklyRefreshesRemaining === 0 ? theme.disabled : theme.surface },
+                  weeklyRefreshesRemaining === 0 && styles.regenerateButtonDisabled
+                ]}
+                onPress={() => regenerateTasks('weekly')}
+                disabled={regenerating.weekly || weeklyRefreshesRemaining === 0}
+              >
+                {regenerating.weekly ? (
+                  <ActivityIndicator size="small" color={theme.primary} />
+                ) : (
+                  <Ionicons 
+                    name="refresh" 
+                    size={20} 
+                    color={weeklyRefreshesRemaining === 0 ? theme.textSecondary : theme.primary} 
+                  />
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
           
           {weeklyTask ? (
