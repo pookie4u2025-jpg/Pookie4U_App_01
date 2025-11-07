@@ -51,15 +51,28 @@ export default function TasksContent() {
     try {
       if (taskType === 'daily') {
         await fetchDailyTasks(token, true); // Pass regenerate=true
+        Alert.alert(
+          '🤖 AI Tasks Generated!',
+          `New daily tasks have been generated based on your relationship mode!`,
+          [{ text: 'Great!', style: 'default' }]
+        );
       } else {
-        await fetchWeeklyTask(token, true); // Pass regenerate=true
+        const result = await fetchWeeklyTask(token, true); // Pass regenerate=true
+        if (result.success) {
+          Alert.alert(
+            '🤖 New Weekly Task!',
+            `A fresh weekly challenge has been generated! You have ${weeklyRefreshesRemaining - 1} refresh${weeklyRefreshesRemaining - 1 === 1 ? '' : 'es'} left this week.`,
+            [{ text: 'Great!', style: 'default' }]
+          );
+        } else {
+          // Handle refresh limit exceeded
+          Alert.alert(
+            '⏸️ Refresh Limit Reached',
+            result.error || "You've used both weekly refreshes. New refreshes available next week!",
+            [{ text: 'Got It', style: 'default' }]
+          );
+        }
       }
-      
-      Alert.alert(
-        '🤖 AI Tasks Generated!',
-        `New ${taskType} tasks have been generated based on your relationship mode!`,
-        [{ text: 'Great!', style: 'default' }]
-      );
     } catch (error) {
       Alert.alert('Error', `Failed to regenerate ${taskType} tasks. Please try again.`);
     } finally {
