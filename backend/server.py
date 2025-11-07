@@ -2980,6 +2980,32 @@ async def get_weekly_tasks(
     last_weekly_date = current_user.get("last_weekly_task_date")
     mode = current_user.get("relationship_mode", "SAME_HOME")
     
+    # Get refresh tracking data
+    weekly_refresh_count = current_user.get("weekly_refresh_count", 0)
+    last_refresh_reset = current_user.get("last_weekly_refresh_reset")
+    
+    # Reset refresh count every Sunday (start of new week)
+    if not last_refresh_reset or (today - last_refresh_reset).days >= 7:
+        weekly_refresh_count = 0
+        last_refresh_reset = today
+        await db.users.update_one(
+            {"_id": current_user["_id"]},
+            {"$set": {
+                "weekly_refresh_count": 0,
+                "last_weekly_refresh_reset": today
+            }}
+        )
+    
+    # Check if manual refresh is requested but limit exceeded
+    if regenerate and weekly_refresh_count >= 2:
+        return {
+            "error": "refresh_limit_exceeded",
+            "message": "You've used both weekly refreshes. Try again next week!",
+            "remaining_refreshes": 0,
+            "tasks": current_user.get("ai_weekly_tasks", []),
+            "generated_for_mode": mode
+        }
+    
     # Check if we need new weekly tasks (regenerate weekly on Sundays or after 7 days)
     need_new_tasks = (
         regenerate or
