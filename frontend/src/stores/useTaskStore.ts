@@ -29,13 +29,14 @@ interface Task {
 interface TaskState {
   dailyTasks: Task[];
   weeklyTask: Task | null;
+  weeklyRefreshesRemaining: number;
   loading: boolean;
   error: string | null;
   
   // Actions
   fetchDailyTasks: (token: string, regenerate?: boolean) => Promise<void>;
-  fetchWeeklyTask: (token: string, regenerate?: boolean) => Promise<void>;
-  completeTask: (taskId: string, token: string) => Promise<boolean>;
+  fetchWeeklyTask: (token: string, regenerate?: boolean) => Promise<{success: boolean; error?: string}>;
+  completeTask: (taskId: string, token: string) => Promise<{success: boolean; data?: any}>;
   clearError: () => void;
 }
 
