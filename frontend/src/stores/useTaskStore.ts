@@ -92,13 +92,28 @@ export const useTaskStore = create<TaskState>()(
           }
 
           const data = await response.json();
+          
+          // Check if refresh limit exceeded
+          if (data.error === 'refresh_limit_exceeded') {
+            set({ 
+              loading: false,
+              weeklyRefreshesRemaining: 0
+            });
+            return { success: false, error: data.message || 'Refresh limit exceeded' };
+          }
+          
           // Backend returns tasks array, we need the first (and only) weekly task
           const weeklyTask = data.tasks && data.tasks.length > 0 ? data.tasks[0] : null;
+          const remainingRefreshes = data.remaining_refreshes !== undefined ? data.remaining_refreshes : 2;
+          
           set({ 
             weeklyTask: weeklyTask,
+            weeklyRefreshesRemaining: remainingRefreshes,
             loading: false,
             error: null
           });
+          
+          return { success: true };
         } catch (error) {
           set({ 
             loading: false, 
