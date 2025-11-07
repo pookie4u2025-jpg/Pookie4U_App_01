@@ -45,6 +45,7 @@ export const useTaskStore = create<TaskState>()(
     (set, get) => ({
       dailyTasks: [],
       weeklyTask: null,
+      weeklyRefreshesRemaining: 2,
       loading: false,
       error: null,
 
