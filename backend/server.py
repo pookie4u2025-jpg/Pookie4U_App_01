@@ -3035,20 +3035,30 @@ async def get_weekly_tasks(
                 task["completed"] = False
                 task["completed_at"] = None
             
+            # Increment refresh count if manually regenerated
+            update_data = {
+                "ai_weekly_tasks": ai_tasks,
+                "last_weekly_task_date": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            }
+            
+            if regenerate:
+                update_data["weekly_refresh_count"] = weekly_refresh_count + 1
+            
             # Store AI tasks
             await db.users.update_one(
                 {"_id": current_user["_id"]},
-                {"$set": {
-                    "ai_weekly_tasks": ai_tasks,
-                    "last_weekly_task_date": datetime.utcnow(),
-                    "updated_at": datetime.utcnow()
-                }}
+                {"$set": update_data}
             )
+            
+            # Calculate remaining refreshes
+            remaining_refreshes = 2 - (weekly_refresh_count + (1 if regenerate else 0))
             
             return {
                 "tasks": ai_tasks,
                 "generated_for_mode": mode,
-                "generation_date": datetime.utcnow()
+                "generation_date": datetime.utcnow(),
+                "remaining_refreshes": remaining_refreshes
             }
             
         except Exception as e:
