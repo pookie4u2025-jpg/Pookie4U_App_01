@@ -673,6 +673,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e0e0e0',
   },
+  regenerateButtonDisabled: {
+    opacity: 0.5,
+  },
+  refreshContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  refreshCountText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
   taskMeta: {
     flexDirection: 'row',
     alignItems: 'center',
