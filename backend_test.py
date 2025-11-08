@@ -12,7 +12,7 @@ import string
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://streaky-couples-app.preview.emergentagent.com/api"
+BACKEND_URL = "https://revenuecat-play.preview.emergentagent.com/api"
 TEST_USER_EMAIL = f"testuser_{int(time.time())}@example.com"
 TEST_USER_PASSWORD = "TestPassword123!"
 TEST_USER_NAME = "Test User"

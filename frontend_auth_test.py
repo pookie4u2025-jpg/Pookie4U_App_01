@@ -9,7 +9,7 @@ import json
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://streaky-couples-app.preview.emergentagent.com/api"
+BACKEND_URL = "https://revenuecat-play.preview.emergentagent.com/api"
 
 class FrontendAuthTester:
     def __init__(self):

@@ -160,7 +160,7 @@ export default function EnhancedEventsContent() {
     }
     
     try {
-      const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://streaky-couples-app.preview.emergentagent.com';
+      const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://revenuecat-play.preview.emergentagent.com';
       const offset = loadMore ? currentOffset : 0;
       const limit = 20; // Load 20 events at a time
       
@@ -404,7 +404,7 @@ export default function EnhancedEventsContent() {
     
     setDeletingEventId(eventId);
     try {
-      const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://streaky-couples-app.preview.emergentagent.com';
+      const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://revenuecat-play.preview.emergentagent.com';
       const response = await fetch(`${apiUrl}/api/events/custom/${eventId}`, {
         method: 'DELETE',
         headers: {
@@ -439,7 +439,7 @@ export default function EnhancedEventsContent() {
     if (!token) return;
     
     try {
-      const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://streaky-couples-app.preview.emergentagent.com';
+      const apiUrl = process.env.EXPO_PUBLIC_BACKEND_URL || 'https://revenuecat-play.preview.emergentagent.com';
       const response = await fetch(`${apiUrl}/api/events/custom/${eventId}`, {
         method: 'PATCH',
         headers: {
