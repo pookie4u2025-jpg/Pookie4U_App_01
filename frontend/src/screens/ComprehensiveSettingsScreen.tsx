@@ -51,6 +51,12 @@ export default function ComprehensiveSettingsScreen() {
   const [editEmail, setEditEmail] = useState('');
   const [editMobile, setEditMobile] = useState('');
   const [isSavingAccount, setIsSavingAccount] = useState(false);
+  
+  // Add password modal state (for OAuth users)
+  const [showAddPasswordModal, setShowAddPasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
 
   // Relationship mode options (same as in ProfileContent)
   const RELATIONSHIP_MODES = [
