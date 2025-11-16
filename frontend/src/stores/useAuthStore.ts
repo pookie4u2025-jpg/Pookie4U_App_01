@@ -642,6 +642,22 @@ export const useAuthStore = create<AuthState>()(
               isAuthenticated: true,
               error: null 
             });
+            
+            // Sync game data from backend user profile
+            try {
+              const gameStore = useGameStore.getState();
+              await gameStore.syncFromBackend({
+                total_points: user.total_points,
+                current_level: user.current_level,
+                current_streak: user.current_streak,
+                longest_streak: user.longest_streak,
+                tasks_completed: user.tasks_completed,
+                badges: user.badges || [],
+              });
+              console.log('✅ Game data synced from backend on session validation');
+            } catch (error) {
+              console.error('⚠️ Failed to sync game data on session validation:', error);
+            }
           } else if (response.status === 401 || response.status === 403) {
             // Token is invalid or expired, clear auth state
             console.log('❌ Token validation failed (401/403), clearing auth state');
