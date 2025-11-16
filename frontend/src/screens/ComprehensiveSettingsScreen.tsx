@@ -129,16 +129,7 @@ export default function ComprehensiveSettingsScreen() {
   };
 
   const handleHelpSupport = () => {
-    Alert.alert(
-      'Help & Support',
-      'Need help? Contact us:',
-      [
-        { text: 'Email Support', onPress: () => Linking.openURL('mailto:support@pookie4u.com') },
-        { text: 'FAQ', onPress: () => Linking.openURL('https://pookie4u.com/faq') },
-        { text: 'Live Chat', onPress: () => Alert.alert('Coming Soon', 'Live chat will be available in the next update!') },
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
+    Linking.openURL('https://pookie4u.com/contact');
   };
 
   const handleLogout = () => {
