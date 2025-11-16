@@ -117,7 +117,7 @@ export default function ComprehensiveSettingsScreen() {
   };
 
   const handleCookiePolicy = () => {
-    Linking.openURL('https://pookie4u.com/cookie-policy');
+    Linking.openURL('https://pookie4u.com/cookies');
   };
 
   const handleLicense = () => {
