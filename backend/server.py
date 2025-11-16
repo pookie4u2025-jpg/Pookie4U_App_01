@@ -2529,6 +2529,30 @@ async def update_user_profile(profile_update: dict, current_user: dict = Depends
     
     return {"message": "Profile updated successfully"}
 
+@api_router.post("/user/add-password")
+async def add_password(password_data: dict, current_user: dict = Depends(get_current_user)):
+    """
+    Allow OAuth users to add a password so they can login with email/password too
+    """
+    password = password_data.get("password")
+    
+    if not password or len(password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Hash the password
+    hashed_password = hash_password(password)
+    
+    # Update user with password
+    await db.users.update_one(
+        {"_id": current_user["_id"]},
+        {"$set": {
+            "password": hashed_password,
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    return {"message": "Password added successfully! You can now login with email/password."}
+
 @api_router.put("/user/partner-profile")
 async def update_partner_profile(partner: PartnerProfile, current_user: dict = Depends(get_current_user)):
     # Update partner profile
