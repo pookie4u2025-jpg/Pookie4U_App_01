@@ -167,6 +167,110 @@ export default function AuthScreen() {
       );
     }
   }, [emergentSignIn, loginWithEmergentOAuth, router]);
+  
+  // Forgot Password Handlers
+  const handleSendResetCode = useCallback(async () => {
+    if (!resetEmail.trim()) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'Please enter your email address');
+      return;
+    }
+    
+    setIsResetting(true);
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: resetEmail.trim().toLowerCase() }),
+      });
+      
+      const data = await response.json();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert('Reset Code Sent', data.message || 'Check your email for the reset code.');
+      setResetStep('code');
+    } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'Failed to send reset code. Please try again.');
+    } finally {
+      setIsResetting(false);
+    }
+  }, [resetEmail]);
+  
+  const handleVerifyCode = useCallback(() => {
+    if (!resetCode.trim() || resetCode.length !== 6) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'Please enter the 6-digit code from your email');
+      return;
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setResetStep('password');
+  }, [resetCode]);
+  
+  const handleResetPassword = useCallback(async () => {
+    if (!newPassword || !confirmNewPassword) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'Please fill in all password fields');
+      return;
+    }
+    
+    if (newPassword !== confirmNewPassword) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+    
+    if (newPassword.length < 6) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Error', 'Password must be at least 6 characters');
+      return;
+    }
+    
+    setIsResetting(true);
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: resetEmail.trim().toLowerCase(),
+          code: resetCode.trim(),
+          password: newPassword
+        }),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        Alert.alert('Success!', data.message || 'Password reset successfully! You can now login.', [
+          {
+            text: 'Login Now',
+            onPress: () => {
+              // Reset states
+              setResetEmail('');
+              setResetCode('');
+              setNewPassword('');
+              setConfirmNewPassword('');
+              setResetStep('email');
+              // Navigate to login
+              navigateToScreen('login');
+            }
+          }
+        ]);
+      } else {
+        const error = await response.json();
+        throw new Error(error.detail || 'Failed to reset password');
+      }
+    } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to reset password';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setIsResetting(false);
+    }
+  }, [resetEmail, resetCode, newPassword, confirmNewPassword, navigateToScreen]);
 
   const handleAppleSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
