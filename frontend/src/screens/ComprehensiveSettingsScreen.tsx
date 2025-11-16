@@ -113,7 +113,7 @@ export default function ComprehensiveSettingsScreen() {
   };
 
   const handleTermsOfService = () => {
-    Linking.openURL('https://pookie4u.com/terms-of-service');
+    Linking.openURL('https://pookie4u.com/terms');
   };
 
   const handleCookiePolicy = () => {
