@@ -237,6 +237,7 @@ export default function ComprehensiveSettingsScreen() {
       const success = await updateUserProfile({
         name: editName.trim(),
         email: editEmail.trim(),
+        mobile: editMobile.trim(),
       });
 
       if (success) {
