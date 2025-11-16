@@ -1915,6 +1915,13 @@ async def login(user: UserLogin):
     if not db_user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
+    # Check if user was created via OAuth (no password field)
+    if "password" not in db_user or db_user["password"] is None:
+        raise HTTPException(
+            status_code=400, 
+            detail="This account was created using Google Sign-In. Please use 'Continue with Google' to login."
+        )
+    
     # Verify password
     if not verify_password(user.password, db_user["password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
