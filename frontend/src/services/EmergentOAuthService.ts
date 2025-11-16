@@ -27,11 +27,27 @@ class EmergentOAuthService {
    * This should point to your app's main route (home/dashboard)
    */
   private getRedirectUrl(): string {
-    // Use Expo's linking to create a deep link back to the app
-    // This will be something like: exp://192.168.x.x:3000 or your-app://
-    const redirectUrl = Linking.createURL('/');
-    console.log('🔗 Emergent OAuth Redirect URL:', redirectUrl);
-    return redirectUrl;
+    try {
+      // Use Expo's linking to create a deep link back to the app
+      // This will be something like: exp://192.168.x.x:3000 or your-app://
+      const redirectUrl = Linking.createURL('/');
+      console.log('🔗 Emergent OAuth Redirect URL:', redirectUrl);
+      return redirectUrl;
+    } catch (error) {
+      console.log('⚠️ Error creating redirect URL:', error);
+      // Fallback for web or when Linking fails
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        try {
+          const webUrl = window.location.origin;
+          console.log('🌐 Using web origin as redirect:', webUrl);
+          return webUrl;
+        } catch (webError) {
+          console.log('⚠️ Could not access window.location:', webError);
+        }
+      }
+      // Final fallback
+      return 'https://revenuecat-play.preview.emergentagent.com';
+    }
   }
 
   /**
