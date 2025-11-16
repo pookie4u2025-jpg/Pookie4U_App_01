@@ -1922,7 +1922,7 @@ async def login(user: UserLogin):
     if "password" not in db_user or db_user["password"] is None:
         raise HTTPException(
             status_code=400, 
-            detail="This account was created using Google Sign-In. Please use 'Continue with Google' to login."
+            detail="You don't have a password set yet. Please:\n1. Login with 'Continue with Google'\n2. Go to Profile → Settings → Set Password\n3. Then you can login with email/password!"
         )
     
     # Verify password
