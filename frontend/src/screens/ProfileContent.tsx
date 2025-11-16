@@ -90,7 +90,7 @@ export default function ProfileContent() {
     try {
       console.log('📥 Fetching profile data to sync game stats...');
       const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
-      const response = await fetch(`${backendUrl}/api/auth/profile`, {
+      const response = await fetch(`${backendUrl}/api/user/profile`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
