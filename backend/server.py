@@ -57,7 +57,7 @@ rate_limit_storage = defaultdict(list)
 failed_attempts = defaultdict(list)
 
 # Security configuration
-SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production-min-32-chars-long')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 30
