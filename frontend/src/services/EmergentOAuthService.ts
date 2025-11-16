@@ -2,8 +2,14 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { Platform } from 'react-native';
 
-// Complete the auth session when browser closes
-WebBrowser.maybeCompleteAuthSession();
+// Complete the auth session when browser closes (only on native)
+try {
+  if (Platform.OS !== 'web') {
+    WebBrowser.maybeCompleteAuthSession();
+  }
+} catch (error) {
+  console.log('⚠️ Could not complete auth session:', error);
+}
 
 export interface EmergentOAuthResult {
   type: 'success' | 'error' | 'dismiss';
