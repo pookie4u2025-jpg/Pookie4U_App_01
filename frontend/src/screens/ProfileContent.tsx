@@ -85,6 +85,47 @@ export default function ProfileContent() {
     }
   };
   
+  // Fetch profile data and sync game stats
+  const fetchProfileAndSyncGameData = async () => {
+    try {
+      console.log('📥 Fetching profile data to sync game stats...');
+      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+      const response = await fetch(`${backendUrl}/api/auth/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        const profileData = await response.json();
+        console.log('✅ Profile data fetched:', {
+          points: profileData.total_points,
+          level: profileData.current_level,
+          streak: profileData.current_streak,
+          longestStreak: profileData.longest_streak,
+          tasksCompleted: profileData.tasks_completed,
+          badges: profileData.badges?.length || 0
+        });
+        
+        // Sync game store with backend data
+        await syncFromBackend({
+          total_points: profileData.total_points,
+          current_level: profileData.current_level,
+          current_streak: profileData.current_streak,
+          longest_streak: profileData.longest_streak,
+          tasks_completed: profileData.tasks_completed,
+          badges: profileData.badges || [],
+        });
+        
+        console.log('✅ Game stats synced from backend!');
+      } else {
+        console.error('Failed to fetch profile:', response.status);
+      }
+    } catch (error) {
+      console.error('Error fetching profile and syncing game data:', error);
+    }
+  };
+  
   // Start free trial
   const handleStartTrial = async () => {
     try {
