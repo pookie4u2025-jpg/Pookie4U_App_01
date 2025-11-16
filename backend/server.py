@@ -2512,7 +2512,7 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
 @api_router.put("/user/profile")
 async def update_user_profile(profile_update: dict, current_user: dict = Depends(get_current_user)):
     # Validate allowed fields
-    allowed_fields = {"name", "email"}
+    allowed_fields = {"name", "email", "mobile"}
     update_data = {k: v for k, v in profile_update.items() if k in allowed_fields}
     
     if not update_data:
