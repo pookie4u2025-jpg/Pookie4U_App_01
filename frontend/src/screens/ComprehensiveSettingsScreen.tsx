@@ -607,6 +607,23 @@ export default function ComprehensiveSettingsScreen() {
                 />
               </View>
 
+              <View style={styles.formGroup}>
+                <Text style={[styles.formLabel, { color: theme.text }]}>Mobile Number</Text>
+                <TextInput
+                  style={[styles.formInput, { 
+                    backgroundColor: theme.background, 
+                    color: theme.text,
+                    borderColor: theme.border
+                  }]}
+                  value={editMobile}
+                  onChangeText={setEditMobile}
+                  placeholder="Enter your mobile number"
+                  placeholderTextColor={theme.textSecondary}
+                  keyboardType="phone-pad"
+                  editable={!isSavingAccount}
+                />
+              </View>
+
               <TouchableOpacity
                 style={[styles.saveButton, { 
                   backgroundColor: theme.primary,
