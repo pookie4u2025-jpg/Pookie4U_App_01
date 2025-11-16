@@ -46,7 +46,7 @@ class EmergentOAuthService {
         }
       }
       // Final fallback
-      return 'https://revenuecat-play.preview.emergentagent.com';
+      return 'https://pookie-connect.preview.emergentagent.com';
     }
   }
 

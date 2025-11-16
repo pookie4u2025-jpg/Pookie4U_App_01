@@ -10,8 +10,8 @@ import time
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://revenuecat-play.preview.emergentagent.com/api"
-FRONTEND_URL = "https://revenuecat-play.preview.emergentagent.com"
+BACKEND_URL = "https://pookie-connect.preview.emergentagent.com/api"
+FRONTEND_URL = "https://pookie-connect.preview.emergentagent.com"
 
 class NetworkTester:
     def __init__(self):
