@@ -336,6 +336,13 @@ export default function ComprehensiveSettingsScreen() {
           onPress: handleEditAccount
         },
         {
+          id: 'set_password',
+          title: user?.password ? 'Change Password' : 'Set Password for Login',
+          subtitle: user?.password ? 'Update your password' : 'Enable email/password login',
+          type: 'navigation',
+          onPress: handleAddPassword
+        },
+        {
           id: 'relationship_mode',
           title: 'Relationship Mode',
           subtitle: user?.relationship_mode?.replace('_', ' '),
