@@ -2556,6 +2556,98 @@ async def add_password(password_data: dict, current_user: dict = Depends(get_cur
     
     return {"message": "Password added successfully! You can now login with email/password."}
 
+@api_router.post("/auth/forgot-password")
+async def forgot_password(email_data: dict):
+    """
+    Send password reset email with code
+    """
+    email = email_data.get("email")
+    
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
+    # Find user by email
+    user = await db.users.find_one({"email": email})
+    
+    if not user:
+        # Don't reveal if user exists for security
+        return {"message": "If an account exists with this email, a password reset code has been sent."}
+    
+    # Check if user has a password (not OAuth-only)
+    if "password" not in user or user["password"] is None:
+        return {"message": "This account was created with Google Sign-In. Please use 'Continue with Google' to login, or set a password in settings after logging in."}
+    
+    # Generate 6-digit reset code
+    reset_code = ''.join(random.choices(string.digits, k=6))
+    
+    # Store reset code with expiration (1 hour)
+    reset_expires = datetime.utcnow() + timedelta(hours=1)
+    await db.users.update_one(
+        {"_id": user["_id"]},
+        {"$set": {
+            "reset_code": reset_code,
+            "reset_code_expires": reset_expires
+        }}
+    )
+    
+    # Create reset link (for mobile app deep linking or web)
+    app_url = os.getenv("APP_URL", "https://revenuecat-play.preview.emergentagent.com")
+    reset_link = f"{app_url}/reset-password?code={reset_code}&email={email}"
+    
+    # Send email
+    email_sent = email_service.send_password_reset_email(email, reset_code, reset_link)
+    
+    if email_sent:
+        return {"message": "Password reset code has been sent to your email. Please check your inbox."}
+    else:
+        return {"message": "If an account exists with this email, a password reset code has been sent."}
+
+@api_router.post("/auth/reset-password")
+async def reset_password(reset_data: dict):
+    """
+    Reset password using reset code
+    """
+    email = reset_data.get("email")
+    reset_code = reset_data.get("code")
+    new_password = reset_data.get("password")
+    
+    if not email or not reset_code or not new_password:
+        raise HTTPException(status_code=400, detail="Email, code, and new password are required")
+    
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Find user with matching email and reset code
+    user = await db.users.find_one({
+        "email": email,
+        "reset_code": reset_code
+    })
+    
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset code")
+    
+    # Check if code is expired
+    if "reset_code_expires" not in user or user["reset_code_expires"] < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Reset code has expired. Please request a new one.")
+    
+    # Hash new password
+    hashed_password = hash_password(new_password)
+    
+    # Update password and clear reset code
+    await db.users.update_one(
+        {"_id": user["_id"]},
+        {"$set": {
+            "password": hashed_password,
+            "updated_at": datetime.utcnow()
+        },
+        "$unset": {
+            "reset_code": "",
+            "reset_code_expires": ""
+        }}
+    )
+    
+    return {"message": "Password has been reset successfully! You can now login with your new password."}
+
 @api_router.put("/user/partner-profile")
 async def update_partner_profile(partner: PartnerProfile, current_user: dict = Depends(get_current_user)):
     # Update partner profile
