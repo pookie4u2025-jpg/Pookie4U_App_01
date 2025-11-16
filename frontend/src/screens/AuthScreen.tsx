@@ -27,7 +27,7 @@ import { useEmergentOAuth } from '../services/EmergentOAuthService';
 const { width, height } = Dimensions.get('window');
 
 export default function AuthScreen() {
-  const [currentScreen, setCurrentScreen] = useState<'welcome' | 'login' | 'register' | 'signup-options'>('welcome');
+  const [currentScreen, setCurrentScreen] = useState<'welcome' | 'login' | 'register' | 'signup-options' | 'forgot-password'>('welcome');
   const [registrationMethod, setRegistrationMethod] = useState<'email' | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,6 +35,14 @@ export default function AuthScreen() {
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  // Forgot password states
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetCode, setResetCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [resetStep, setResetStep] = useState<'email' | 'code' | 'password'>('email');
+  const [isResetting, setIsResetting] = useState(false);
 
   const { login, register, loading, error, clearError, loginWithEmergentOAuth } = useAuthStore();
   const { theme } = useTheme();
