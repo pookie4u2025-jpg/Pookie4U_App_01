@@ -218,6 +218,7 @@ export default function ComprehensiveSettingsScreen() {
     setShowEditAccountModal(true);
     setEditName(user?.name || '');
     setEditEmail(user?.email || '');
+    setEditMobile(user?.mobile || '');
   };
 
   const handleSaveAccount = async () => {
