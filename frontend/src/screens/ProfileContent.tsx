@@ -25,7 +25,7 @@ import { ReferralCard } from '../components/ReferralCard';
 
 export default function ProfileContent() {
   const { user, logout, updatePartnerProfile, updateRelationshipMode, updateProfileImage, token } = useAuthStore();
-  const { totalPoints, currentLevel, currentStreak, longestStreak, tasksCompleted, badges, loadPersistedData } = useGameStore();
+  const { totalPoints, currentLevel, currentStreak, longestStreak, tasksCompleted, badges, loadPersistedData, syncFromBackend } = useGameStore();
   const { resetOnboarding } = useAppStore();
   const { theme } = useTheme();
   const router = useRouter();
@@ -56,10 +56,11 @@ export default function ProfileContent() {
     additional_notes: user?.partner_profile?.additional_notes || '',
   });
 
-  // Initialize game store data
+  // Initialize game store data and fetch from backend
   useEffect(() => {
     loadPersistedData();
     fetchSubscriptionStatus();
+    fetchProfileAndSyncGameData();
   }, []);
   
   // Fetch subscription status
