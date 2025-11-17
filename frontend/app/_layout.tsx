@@ -5,6 +5,8 @@ import { Stack } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from '../src/contexts/ThemeContext';
 import { initializeRevenueCat } from '../src/config/revenuecatConfig';
+import { OfflineIndicator } from '../src/components/OfflineIndicator';
+import { OfflineManager } from '../src/utils/OfflineManager';
 
 // Import stores to initialize them
 import '../src/stores/useAuthStore';
