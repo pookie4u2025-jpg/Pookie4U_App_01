@@ -9,9 +9,11 @@ import {
   Clipboard,
   RefreshControl,
 } from 'react-native';
+import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useTheme } from '../contexts/ThemeContext';
+import { StaggeredListItem } from '../components/AnimatedComponents';
 
 // Define message categories
 const messageCategories = [
