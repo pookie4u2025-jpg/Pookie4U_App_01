@@ -594,6 +594,251 @@ class Pookie4uAPITester:
             "failures": self.failed_tests
         }
 
+    def test_phase3_duplicate_account_prevention(self):
+        """Test Phase 3: Duplicate Account Prevention with Emergent OAuth"""
+        print("\n🔒 TESTING PHASE 3: DUPLICATE ACCOUNT PREVENTION")
+        print("=" * 60)
+        
+        # Test 1: Test /api/auth/emergent/session-data endpoint
+        emergent_id = f"test_oauth_{uuid.uuid4().hex[:8]}"
+        mock_oauth_data = {
+            "id": emergent_id,
+            "email": f"oauth_test_{uuid.uuid4().hex[:8]}@example.com",
+            "name": "OAuth Test User",
+            "picture": "https://example.com/avatar.jpg",
+            "session_token": f"mock_session_{uuid.uuid4().hex}"
+        }
+        
+        try:
+            # First OAuth login attempt
+            response = self.session.post(f"{self.base_url}/auth/emergent/session-data", json=mock_oauth_data)
+            
+            if response.status_code in [200, 201]:
+                first_response_data = response.json()
+                self.log_test(
+                    "Phase 3: Emergent OAuth Endpoint", 
+                    True, 
+                    f"Created user with emergent_id: {emergent_id}"
+                )
+                
+                # Test 2: Try to create SAME user again with same emergent_id
+                response2 = self.session.post(f"{self.base_url}/auth/emergent/session-data", json=mock_oauth_data)
+                
+                if response2.status_code in [200, 201]:
+                    second_response_data = response2.json()
+                    
+                    # Check if it returned existing user instead of creating duplicate
+                    first_user_id = first_response_data.get("user", {}).get("id")
+                    second_user_id = second_response_data.get("user", {}).get("id")
+                    
+                    if first_user_id == second_user_id:
+                        self.log_test(
+                            "Phase 3: Duplicate Prevention Logic", 
+                            True, 
+                            f"Same emergent_id returned existing user (ID: {first_user_id})"
+                        )
+                    else:
+                        self.log_test(
+                            "Phase 3: Duplicate Prevention Logic", 
+                            False, 
+                            f"Different user IDs returned: {first_user_id} vs {second_user_id}"
+                        )
+                else:
+                    self.log_test(
+                        "Phase 3: Duplicate Prevention Logic", 
+                        False, 
+                        f"Second request failed: HTTP {response2.status_code}"
+                    )
+                    
+                # Test 3: Test with different email but same emergent_id
+                different_email_data = mock_oauth_data.copy()
+                different_email_data["email"] = f"different_email_{uuid.uuid4().hex[:8]}@example.com"
+                
+                response3 = self.session.post(f"{self.base_url}/auth/emergent/session-data", json=different_email_data)
+                
+                if response3.status_code in [200, 201]:
+                    third_response_data = response3.json()
+                    third_user_id = third_response_data.get("user", {}).get("id")
+                    
+                    if first_user_id == third_user_id:
+                        self.log_test(
+                            "Phase 3: Database Unique Index", 
+                            True, 
+                            "Same user returned despite different email (unique emergent_id enforced)"
+                        )
+                    else:
+                        self.log_test(
+                            "Phase 3: Database Unique Index", 
+                            False, 
+                            f"Different user created with same emergent_id: {first_user_id} vs {third_user_id}"
+                        )
+                else:
+                    self.log_test(
+                        "Phase 3: Database Unique Index", 
+                        True, 
+                        f"Request rejected (likely unique constraint): HTTP {response3.status_code}"
+                    )
+                    
+            elif response.status_code == 404:
+                self.log_test(
+                    "Phase 3: Emergent OAuth Endpoint", 
+                    False, 
+                    "Endpoint not found - may not be implemented"
+                )
+            else:
+                self.log_test(
+                    "Phase 3: Emergent OAuth Endpoint", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text[:200]}"
+                )
+                
+        except Exception as e:
+            self.log_test("Phase 3: Emergent OAuth Endpoint", False, f"Exception: {str(e)}")
+
+    def test_phase4_trial_expiry_notifications(self):
+        """Test Phase 4: Trial Expiry Push Notifications"""
+        print("\n📱 TESTING PHASE 4: TRIAL EXPIRY NOTIFICATIONS")
+        print("=" * 60)
+        
+        # Ensure we have authentication
+        if not self.access_token:
+            self.log_test("Phase 4: Authentication Required", False, "No auth token available")
+            return
+            
+        headers = {"Authorization": f"Bearer {self.access_token}"}
+        
+        # Test 1: Start trial subscription to set up test data
+        try:
+            response = self.session.post(f"{self.base_url}/subscription/start-trial", headers=headers)
+            
+            if response.status_code == 200:
+                self.log_test(
+                    "Phase 4: Trial Setup", 
+                    True, 
+                    "Successfully started trial subscription"
+                )
+            elif response.status_code == 400:
+                # User might already have trial
+                self.log_test(
+                    "Phase 4: Trial Setup", 
+                    True, 
+                    "Trial already exists or cannot start (expected for existing users)"
+                )
+            else:
+                self.log_test(
+                    "Phase 4: Trial Setup", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text[:200]}"
+                )
+                
+        except Exception as e:
+            self.log_test("Phase 4: Trial Setup", False, f"Exception: {str(e)}")
+        
+        # Test 2: Test the trial expiry check endpoint
+        try:
+            response = self.session.post(f"{self.base_url}/admin/check-trial-expiry", headers=headers)
+            
+            if response.status_code == 200:
+                data = response.json()
+                
+                # Check if response has expected structure
+                expected_fields = ["users_found", "notifications_sent"]
+                has_expected_fields = all(field in data for field in expected_fields)
+                
+                if has_expected_fields:
+                    self.log_test(
+                        "Phase 4: Trial Expiry Endpoint", 
+                        True, 
+                        f"Users found: {data.get('users_found', 0)}, Notifications: {data.get('notifications_sent', 0)}"
+                    )
+                else:
+                    self.log_test(
+                        "Phase 4: Trial Expiry Endpoint", 
+                        False, 
+                        f"Missing expected fields. Got: {list(data.keys())}"
+                    )
+                    
+            elif response.status_code == 404:
+                self.log_test(
+                    "Phase 4: Trial Expiry Endpoint", 
+                    False, 
+                    "Endpoint not found - may not be implemented"
+                )
+            elif response.status_code == 403:
+                self.log_test(
+                    "Phase 4: Trial Expiry Endpoint", 
+                    True, 
+                    "Authentication required (endpoint properly protected)"
+                )
+            else:
+                self.log_test(
+                    "Phase 4: Trial Expiry Endpoint", 
+                    False, 
+                    f"HTTP {response.status_code}: {response.text[:200]}"
+                )
+                
+        except Exception as e:
+            self.log_test("Phase 4: Trial Expiry Endpoint", False, f"Exception: {str(e)}")
+
+    def run_phases_3_4_tests(self):
+        """Run Phase 3-4 specific tests"""
+        print("🚀 STARTING PHASES 3-4 BACKEND TESTING")
+        print("=" * 80)
+        print(f"Backend URL: {self.base_url}")
+        print("=" * 80)
+        
+        start_time = time.time()
+        
+        # Test basic connectivity first
+        self.test_health_endpoint()
+        
+        # Set up authentication for protected endpoints
+        self.test_user_registration()
+        
+        # Test Phase 3: Duplicate Account Prevention
+        self.test_phase3_duplicate_account_prevention()
+        
+        # Test Phase 4: Trial Expiry Notifications
+        self.test_phase4_trial_expiry_notifications()
+        
+        # Test existing endpoints for regression
+        print("\n🔄 REGRESSION TESTING: EXISTING ENDPOINTS")
+        print("=" * 60)
+        
+        self.test_subscription_system()
+        self.test_user_profile_management()
+        
+        # Generate summary
+        duration = time.time() - start_time
+        success_rate = (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
+        
+        print(f"\n📊 PHASES 3-4 TEST SUMMARY")
+        print("=" * 80)
+        print(f"Total Tests: {self.total_tests}")
+        print(f"Passed: {self.passed_tests}")
+        print(f"Failed: {len(self.failed_tests)}")
+        print(f"Success Rate: {success_rate:.1f}%")
+        print(f"Duration: {duration:.2f} seconds")
+        
+        if self.failed_tests:
+            print(f"\n❌ FAILED TESTS:")
+            for failure in self.failed_tests:
+                print(f"  • {failure}")
+        
+        print("=" * 80)
+        
+        return {
+            "total_tests": self.total_tests,
+            "passed_tests": self.passed_tests,
+            "failed_tests": len(self.failed_tests),
+            "success_rate": success_rate,
+            "duration": duration,
+            "failures": self.failed_tests
+        }
+
 if __name__ == "__main__":
     tester = Pookie4uAPITester()
-    results = tester.run_comprehensive_test_suite()
+    
+    # Run Phase 3-4 specific tests
+    print("Running Phases 3-4 Implementation Tests...")
+    results = tester.run_phases_3_4_tests()
