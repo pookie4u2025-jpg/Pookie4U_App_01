@@ -83,10 +83,10 @@ export default function OnboardingScreen() {
   
   const handleSubscriptionChoice = async (subscriptionType: 'trial' | 'monthly' | 'half_yearly') => {
     try {
-      // Call mockup subscription API
       const { token } = useAuthStore.getState();
       const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
       
+      // Step 1: Activate subscription
       const response = await fetch(`${backendUrl}/api/subscription/start-mockup`, {
         method: 'POST',
         headers: {
@@ -98,34 +98,42 @@ export default function OnboardingScreen() {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('Subscription activated:', data);
-        Alert.alert('Success!', data.message || 'Subscription activated successfully!');
+        console.log('✅ Subscription activated:', data);
       } else {
-        // Handle error gracefully
         const errorText = await response.text();
-        console.log('Subscription error:', errorText);
+        console.log('⚠️ Subscription error:', errorText);
         
-        // Check if it's the "trial already used" error
         if (errorText.includes('Free trial already used') || errorText.includes('trial already used')) {
-          Alert.alert(
-            'Free Trial Already Used',
-            'You have already used your free trial. You can still use the app or choose a paid subscription from your profile later.',
-            [{ text: 'OK', style: 'default' }]
-          );
-        } else {
-          // Show generic error for other cases
-          Alert.alert(
-            'Subscription Error',
-            'Unable to activate subscription right now. You can try again from your profile later.',
-            [{ text: 'OK', style: 'default' }]
-          );
+          console.log('Trial already used - continuing anyway');
         }
       }
+      
+      // Step 2: Mark onboarding as complete on backend (CRITICAL!)
+      const completeResponse = await fetch(`${backendUrl}/api/user/complete-onboarding`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (completeResponse.ok) {
+        const completeData = await completeResponse.json();
+        console.log('✅ Onboarding completed on backend:', completeData);
+        
+        // Update local user state with profile_completed = true
+        const currentUser = useAuthStore.getState().user;
+        if (currentUser) {
+          useAuthStore.setState({ 
+            user: { ...currentUser, profile_completed: true } 
+          });
+        }
+      }
+      
     } catch (error) {
-      console.error('Error activating subscription:', error);
-      // Continue anyway - don't block onboarding
+      console.error('❌ Error in onboarding:', error);
     } finally {
-      // Complete onboarding regardless - don't block user from using the app
+      // Complete onboarding in local state
       completeOnboarding();
     }
   };
