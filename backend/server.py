@@ -80,26 +80,34 @@ app = FastAPI(title="Pookie4u Authentication API", version="1.0.0")
 api_router = APIRouter(prefix="/api")
 
 # Health check endpoint (for deployment monitoring)
-@app.get("/health")
+@app.get("/health", response_model=None)
 async def health_check():
     """Health check endpoint for deployment systems"""
     try:
         # Check if database is accessible
         await db.users.find_one({}, {"_id": 1})
-        return {
-            "status": "healthy",
-            "service": "pookie4u-api",
-            "database": "connected",
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        return JSONResponse(
+            content={
+                "status": "healthy",
+                "service": "pookie4u-api",
+                "database": "connected",
+                "timestamp": datetime.utcnow().isoformat()
+            },
+            status_code=200,
+            media_type="application/json"
+        )
     except Exception as e:
-        return {
-            "status": "unhealthy",
-            "service": "pookie4u-api",
-            "database": "disconnected",
-            "error": str(e),
-            "timestamp": datetime.utcnow().isoformat()
-        }
+        return JSONResponse(
+            content={
+                "status": "unhealthy",
+                "service": "pookie4u-api",
+                "database": "disconnected",
+                "error": str(e),
+                "timestamp": datetime.utcnow().isoformat()
+            },
+            status_code=503,
+            media_type="application/json"
+        )
 
 # Add custom exception handler for validation errors
 @app.exception_handler(RequestValidationError)
