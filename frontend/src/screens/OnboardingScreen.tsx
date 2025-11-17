@@ -138,6 +138,8 @@ export default function OnboardingScreen() {
   
   const saveProfileAndShowSubscription = async () => {
     try {
+      setIsLoading(true);
+      
       // Update relationship mode
       await updateRelationshipMode(relationshipMode);
 
@@ -162,11 +164,17 @@ export default function OnboardingScreen() {
 
       await updatePartnerProfile(partnerProfile);
       
+      // Show success animation briefly
+      setShowSuccessAnimation(true);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       // Show subscription screen
       setShowSubscription(true);
     } catch (error) {
       console.error('Error saving profile:', error);
       Alert.alert('Error', 'Failed to save profile. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
   
