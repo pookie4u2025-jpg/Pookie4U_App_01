@@ -562,5 +562,5 @@ class Pookie4uAPITester:
         }
 
 if __name__ == "__main__":
-    tester = BackendTester()
-    tester.run_comprehensive_test()
+    tester = Pookie4uAPITester()
+    results = tester.run_comprehensive_test_suite()
