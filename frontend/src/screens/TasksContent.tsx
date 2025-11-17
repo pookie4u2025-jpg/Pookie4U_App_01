@@ -154,15 +154,21 @@ export default function TasksContent() {
         }
       >
         {/* Daily Tasks Progress */}
-        <View style={[styles.progressCard, { backgroundColor: theme.surface }]}>
+        <Animated.View 
+          entering={FadeInDown.delay(0).duration(400).springify()}
+          style={[styles.progressCard, { backgroundColor: theme.surface }]}
+        >
           <Text style={[styles.progressTitle, { color: theme.text }]}>Today's Progress</Text>
           <View style={[styles.progressBar, { backgroundColor: theme.border }]}>
-            <View style={[styles.progressFill, { backgroundColor: theme.primary }]} />
+            <Animated.View 
+              entering={FadeIn.delay(200).duration(600)}
+              style={[styles.progressFill, { backgroundColor: theme.primary, width: `${dailyProgress}%` }]} 
+            />
           </View>
           <Text style={[styles.progressText, { color: theme.textSecondary }]}>
             {completedDailyTasks} of {dailyTasks.length} daily tasks completed
           </Text>
-        </View>
+        </Animated.View>
 
         {/* Daily Tasks */}
         <View style={styles.section}>
