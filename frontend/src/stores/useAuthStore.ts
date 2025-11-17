@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { notificationManager } from '../utils/NotificationManager';
 import { useGameStore } from './useGameStore';
+import { OfflineManager } from '../utils/OfflineManager';
 
 // Import AsyncStorage conditionally to avoid SSR issues
 let AsyncStorage: any = null;
