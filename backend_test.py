@@ -90,22 +90,25 @@ class Pookie4uAPITester:
         """Test deployment health check endpoint"""
         print("\n🏥 Testing Health Check Endpoint")
         
-        response = self.make_request("GET", "/health")
+        # Health endpoint is at root level, not /api/health
+        health_url = f"{self.base_url.replace('/api', '')}/health"
         
-        if "error" in response:
-            self.log_test("Health Check", False, f"Request failed: {response['error']}")
-            return False
+        try:
+            response = self.session.get(health_url, timeout=10)
             
-        if response["status_code"] == 200:
-            data = response["data"]
-            if data.get("status") == "healthy":
-                self.log_test("Health Check", True, f"Service healthy, database: {data.get('database', 'unknown')}")
-                return True
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("status") == "healthy":
+                    self.log_test("Health Check", True, f"Service healthy, database: {data.get('database', 'unknown')}")
+                    return True
+                else:
+                    self.log_test("Health Check", False, f"Service unhealthy: {data}")
+                    return False
             else:
-                self.log_test("Health Check", False, f"Service unhealthy: {data}")
+                self.log_test("Health Check", False, f"Status {response.status_code}: {response.text}")
                 return False
-        else:
-            self.log_test("Health Check", False, f"Status {response['status_code']}: {response.get('data', {})}")
+        except Exception as e:
+            self.log_test("Health Check", False, f"Request failed: {str(e)}")
             return False
 
     def test_user_registration(self):
