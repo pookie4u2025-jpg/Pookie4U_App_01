@@ -253,6 +253,32 @@ backend:
         - agent: "testing"
         - comment: "🎯 STREAK CALCULATION FIX COMPREHENSIVE TESTING COMPLETED: Conducted exhaustive testing of the streak calculation fix with 19 comprehensive test scenarios achieving 100% success rate (19/19 tests passed). CRITICAL BUG FIX VERIFIED: ✅ NEW USER FIRST TASK: Streak correctly initializes to 1 after first task completion, starting from 0. ✅ SAME DAY MULTIPLE TASKS: Streak remains at 1 when completing multiple tasks on the same day (does NOT increment per task). ✅ CONSECUTIVE DAYS LOGIC: Verified logic correctly increments streak by 1 for consecutive day completions (days_diff = 1). ✅ STREAK RESET LOGIC: Verified logic correctly resets streak to 1 after gaps of 2+ days (tested gaps of 2 and 7 days). ✅ PROFILE PERSISTENCE: Streak data (current_streak, longest_streak, tasks_completed) persists correctly across multiple API requests. ✅ API ENDPOINTS FUNCTIONAL: All required endpoints working - GET /api/user/profile, GET /api/tasks/daily, POST /api/tasks/complete. ✅ EDGE CASES HANDLED: Duplicate task completion prevention working, invalid task ID handling working. ✅ REAL API BEHAVIOR: Live testing confirms streak increments only once per day, multiple same-day tasks don't affect streak, points and level calculation integrated correctly. ✅ DATA CONSISTENCY: Verified streak data remains consistent across 5 consecutive profile requests. USER-REPORTED BUG RESOLUTION CONFIRMED: The original issue where streak was incorrectly showing 0 even after completing tasks has been completely resolved. The backend now properly tracks daily consecutive completions with last_streak_update field, ensuring streak increments only once per day and resets appropriately after gaps. Streak calculation fix is production-ready and fully resolves the user-reported bug."
   
+
+
+  - task: "Phase 3: Duplicate Account Prevention"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "🔒 PHASE 3: DUPLICATE ACCOUNT PREVENTION IMPLEMENTED: Added comprehensive logic to prevent duplicate Google/Emergent OAuth accounts. DATABASE LEVEL PROTECTION: Created unique sparse index on 'oauth_providers.emergent.emergent_id' field at startup, prevents duplicate Emergent IDs at database level, sparse index allows users without OAuth (email/password only). APPLICATION LEVEL PROTECTION: Modified /api/auth/emergent/session-data endpoint to check for existing user by Emergent ID FIRST before checking email, if user with same Emergent ID exists, returns existing user instead of creating duplicate, maintains account linking for email-based users. IMPLEMENTATION DETAILS: Added startup event handler to create database indexes (lines 82-92), updated OAuth endpoint logic (lines 2123-2143) to query by emergent_id first, proper error handling and logging for duplicate prevention. BENEFITS: Users cannot create multiple accounts with same Google login, prevents data fragmentation and user confusion, maintains referential integrity at database level, backwards compatible with existing users. Ready for comprehensive testing to verify no duplicate accounts can be created."
+
+  - task: "Phase 4: Trial Expiry Push Notifications"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py, backend/trial_expiry_notifier.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "📱 PHASE 4: TRIAL EXPIRY PUSH NOTIFICATIONS IMPLEMENTED: Created comprehensive trial expiry notification system with push notifications as requested. NOTIFICATION SERVICE CREATED: New file 'trial_expiry_notifier.py' with async function check_and_notify_trial_expiry(), checks for users with trial expiring in exactly 2 days, sends personalized push notifications via Expo Push Service, prevents duplicate notifications with tracking flag. NOTIFICATION LOGIC: Queries database for users with subscription_type='trial', subscription_status='active', subscription_end_date in 2 days from now, and valid push_token. Sends personalized message: 'Hi {name}! Your 14-day free trial expires in 2 days. Keep strengthening your relationship with {partner} by upgrading to premium.' Includes deep link data to subscription screen. TRACKING & PREVENTION: Stores notification_sent_key per expiry date to prevent duplicate sends, updates last_trial_notification_sent timestamp, comprehensive error handling and logging. API ENDPOINT: Added POST /api/admin/check-trial-expiry endpoint in server.py (lines 5052-5067) for manual trigger or cron job integration, returns detailed result with users_found, notifications_sent, notifications_failed counts. CRON SETUP: Can be scheduled via external cron service (cron-job.org, etc.), endpoint protected with authentication, runs daily at specific time. PUSH TOKEN REGISTRATION: User profile model already includes push_token and notification_preferences fields, POST /api/notifications/register endpoint already exists for token registration. Ready for testing to verify notifications are sent correctly 2 days before trial expiry."
+
   - task: "Messages System Frontend Complete"
     implemented: true
     working: true
