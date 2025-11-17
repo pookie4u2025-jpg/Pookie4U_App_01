@@ -701,20 +701,22 @@ class Pookie4uAPITester:
                 data = response.json()
                 
                 # Check if response has expected structure
-                expected_fields = ["users_found", "notifications_sent"]
-                has_expected_fields = all(field in data for field in expected_fields)
-                
-                if has_expected_fields:
+                # The endpoint returns {success, message, result} where result contains the trial expiry data
+                if "result" in data and isinstance(data["result"], dict):
+                    result = data["result"]
+                    users_found = result.get("users_found", 0)
+                    notifications_sent = result.get("notifications_sent", 0)
+                    
                     self.log_test(
                         "Phase 4: Trial Expiry Endpoint", 
                         True, 
-                        f"Users found: {data.get('users_found', 0)}, Notifications: {data.get('notifications_sent', 0)}"
+                        f"Users found: {users_found}, Notifications sent: {notifications_sent}"
                     )
                 else:
                     self.log_test(
                         "Phase 4: Trial Expiry Endpoint", 
                         False, 
-                        f"Missing expected fields. Got: {list(data.keys())}"
+                        f"Unexpected response format. Got: {list(data.keys())}"
                     )
                     
             elif response.status_code == 404:
