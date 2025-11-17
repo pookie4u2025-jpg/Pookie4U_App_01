@@ -62,11 +62,72 @@ export default function OnboardingScreen() {
     });
   }, [step]);
 
-  const handleNext = () => {
-    if (step === 1 && !partnerName.trim()) {
-      Alert.alert('Required', 'Please enter your partner\'s name');
-      return;
+  // Validation functions
+  const validatePartnerName = (name: string): boolean => {
+    if (!name.trim()) {
+      setPartnerNameError('Please enter your partner\'s name');
+      return false;
     }
+    if (name.trim().length < 2) {
+      setPartnerNameError('Name should be at least 2 characters');
+      return false;
+    }
+    setPartnerNameError('');
+    return true;
+  };
+  
+  const validateDate = (dateStr: string, fieldName: string): boolean => {
+    if (!dateStr.trim()) {
+      // Optional fields - no error for empty
+      return true;
+    }
+    
+    const parts = dateStr.trim().split('-');
+    if (parts.length !== 3) {
+      return false;
+    }
+    
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+    
+    if (isNaN(day) || isNaN(month) || isNaN(year)) {
+      return false;
+    }
+    
+    if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2100) {
+      return false;
+    }
+    
+    return true;
+  };
+  
+  const handleNext = () => {
+    // Step 1: Partner Name validation
+    if (step === 1) {
+      if (!validatePartnerName(partnerName)) {
+        return;
+      }
+    }
+    
+    // Step 3: Birthday validation
+    if (step === 3 && birthday.trim()) {
+      if (!validateDate(birthday, 'birthday')) {
+        setBirthdayError('Please enter a valid date (DD-MM-YYYY)');
+        return;
+      }
+      setBirthdayError('');
+    }
+    
+    // Step 4: Anniversary validation
+    if (step === 4 && anniversary.trim()) {
+      if (!validateDate(anniversary, 'anniversary')) {
+        setAnniversaryError('Please enter a valid date (DD-MM-YYYY)');
+        return;
+      }
+      setAnniversaryError('');
+    }
+    
     if (step < 4) {
       setStep(step + 1);
     } else {
