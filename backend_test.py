@@ -805,8 +805,8 @@ class Pookie4uAPITester:
         print("\n🔄 REGRESSION TESTING: EXISTING ENDPOINTS")
         print("=" * 60)
         
-        self.test_subscription_system()
-        self.test_user_profile_management()
+        self.test_subscription_endpoints()
+        self.test_user_profile_endpoints()
         
         # Generate summary
         duration = time.time() - start_time
