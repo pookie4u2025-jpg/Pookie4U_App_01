@@ -805,7 +805,18 @@ class Pookie4uAPITester:
         print("\n🔄 REGRESSION TESTING: EXISTING ENDPOINTS")
         print("=" * 60)
         
-        self.test_subscription_endpoints()
+        # Test subscription status endpoint
+        if self.access_token:
+            headers = {"Authorization": f"Bearer {self.access_token}"}
+            try:
+                response = self.session.get(f"{self.base_url}/subscription/status", headers=headers)
+                if response.status_code == 200:
+                    self.log_test("Regression: Subscription Status", True, "Endpoint working")
+                else:
+                    self.log_test("Regression: Subscription Status", False, f"HTTP {response.status_code}")
+            except Exception as e:
+                self.log_test("Regression: Subscription Status", False, f"Exception: {str(e)}")
+        
         self.test_user_profile_endpoints()
         
         # Generate summary
