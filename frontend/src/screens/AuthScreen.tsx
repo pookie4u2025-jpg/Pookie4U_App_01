@@ -491,31 +491,19 @@ export default function AuthScreen() {
     </SafeAreaView>
   );
 
+  // Login Screen - Google First, Email/Password Optional
   const renderLoginScreen = () => (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.cleanContainer}
+      <ScrollView 
+        contentContainerStyle={styles.cleanScrollContent}
+        bounces={false}
       >
-        <ScrollView 
-          contentContainerStyle={styles.cleanScrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
+        <View style={styles.cleanContainer}>
           {/* Back Button */}
           <TouchableOpacity
             style={styles.cleanBackButton}
-            onPress={() => {
-              if (registrationMethod === 'email') {
-                setRegistrationMethod(null);
-                setEmail('');
-                setPassword('');
-                clearError();
-              } else {
-                navigateToScreen('welcome');
-              }
-            }}
+            onPress={() => navigateToScreen('welcome')}
             activeOpacity={0.7}
           >
             <Ionicons name="arrow-back" size={24} color="#333333" />
@@ -528,122 +516,99 @@ export default function AuthScreen() {
               style={styles.shortLogo}
               resizeMode="contain"
             />
-            <Text style={styles.cleanTitle}>
-              {registrationMethod === 'email' ? 'Sign in with Email' : 'Welcome back!'}
-            </Text>
-            <Text style={styles.cleanSubtitle}>
-              {registrationMethod === 'email' ? 'Enter your email and password' : 'Choose how you\'d like to sign in'}
-            </Text>
+            <Text style={styles.cleanTitle}>Welcome back!</Text>
+            <Text style={styles.cleanSubtitle}>Sign in to continue your journey</Text>
           </View>
 
-          {/* Error Display */}
-          {error && (
-            <View style={styles.cleanErrorContainer}>
-              <Ionicons name="alert-circle-outline" size={20} color="#FF4444" />
-              <Text style={styles.cleanErrorText}>
-                {typeof error === 'string' ? error : error.message || error.detail || 'An error occurred'}
-              </Text>
-            </View>
-          )}
+          {/* PRIMARY: Continue with Google (Emergent OAuth) */}
+          <TouchableOpacity
+            style={[styles.cleanPrimaryButton, { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E0E0E0', marginBottom: 16 }]}
+            onPress={handleEmergentSignIn}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="logo-google" size={22} color="#4285F4" style={{ marginRight: 12 }} />
+            <Text style={[styles.cleanPrimaryButtonText, { color: '#1A1A1A', fontWeight: '600' }]}>Continue with Google</Text>
+          </TouchableOpacity>
 
-          {/* Email Login Form */}
-          {registrationMethod === 'email' && (
-            <View style={styles.cleanFormContainer}>
-              <View style={styles.cleanInputContainer}>
-                <TextInput
-                  style={styles.cleanInput}
-                  placeholder="Email address"
-                  placeholderTextColor="#999999"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
-
-              <View style={styles.cleanInputContainer}>
-                <TextInput
-                  style={styles.cleanInput}
-                  placeholder="Password"
-                  placeholderTextColor="#999999"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                />
-                <TouchableOpacity
-                  style={styles.cleanPasswordToggle}
-                  onPress={() => setShowPassword(!showPassword)}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons 
-                    name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                    size={20} 
-                    color="#999999" 
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity
-                style={[styles.cleanSubmitButton, loading && styles.cleanSubmitButtonDisabled]}
-                onPress={handleLogin}
-                disabled={loading}
-                activeOpacity={0.8}
-              >
-                {loading ? (
-                  <ActivityIndicator color="#FFFFFF" />
-                ) : (
-                  <Text style={styles.cleanSubmitButtonText}>Sign In</Text>
-                )}
-              </TouchableOpacity>
-
-              {/* Alternative Sign In Method */}
-              <View style={styles.cleanDivider}>
-                <View style={styles.cleanDividerLine} />
-                <Text style={styles.cleanDividerText}>or continue with</Text>
-                <View style={styles.cleanDividerLine} />
-              </View>
-
-              {/* Google OAuth removed */}
-            </View>
-          )}
-
-          {/* Removed mobile login - keeping only Email + Emergent OAuth */}
-
-          {/* Sign In Method Selection */}
-          {registrationMethod !== 'email' && (
-            <View style={styles.cleanOptionsContainer}>
-              {/* Email Address */}
-              <TouchableOpacity
-                style={styles.cleanOption}
-                onPress={() => setRegistrationMethod('email')}
-                activeOpacity={0.7}
-              >
-                <View style={styles.cleanOptionIconContainer}>
-                  <Ionicons name="mail" size={24} color="#FF1493" />
-                </View>
-                <View style={styles.cleanOptionContent}>
-                  <Text style={styles.cleanOptionTitle}>Email Address</Text>
-                  <Text style={styles.cleanOptionDescription}>Sign in with your email</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#999999" />
-              </TouchableOpacity>
-
-              {/* Google Account removed */}
-            </View>
-          )}
-
-          {/* Bottom Link - Fixed at bottom */}
-          <View style={styles.cleanBottomContainer}>
-            <View style={styles.cleanAlternativeLogin}>
-              <Text style={styles.cleanAlternativeText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => navigateToScreen('signup-options')}>
-                <Text style={styles.cleanAlternativeLink}>Sign Up</Text>
-              </TouchableOpacity>
-            </View>
+          {/* Divider */}
+          <View style={styles.cleanDivider}>
+            <View style={styles.cleanDividerLine} />
+            <Text style={styles.cleanDividerText}>or sign in with email</Text>
+            <View style={styles.cleanDividerLine} />
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+
+          {/* OPTIONAL: Email Input */}
+          <View style={styles.cleanInputContainer}>
+            <Ionicons name="mail-outline" size={20} color="#999999" style={styles.cleanInputIcon} />
+            <TextInput
+              style={styles.cleanInput}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#999999"
+            />
+          </View>
+
+          {/* OPTIONAL: Password Input */}
+          <View style={styles.cleanInputContainer}>
+            <Ionicons name="lock-closed-outline" size={20} color="#999999" style={styles.cleanInputIcon} />
+            <TextInput
+              style={styles.cleanInput}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              placeholderTextColor="#999999"
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              style={styles.cleanPasswordToggle}
+            >
+              <Ionicons
+                name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                size={20}
+                color="#999999"
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Forgot Password */}
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setShowForgotPassword(true);
+              setResetStep('email');
+            }}
+            style={styles.cleanForgotPassword}
+          >
+            <Text style={styles.cleanForgotPasswordText}>Forgot password?</Text>
+          </TouchableOpacity>
+
+          {/* Email Sign In Button */}
+          <TouchableOpacity
+            style={[styles.cleanPrimaryButton, { backgroundColor: '#FF1493' }]}
+            onPress={handleLogin}
+            activeOpacity={0.8}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.cleanPrimaryButtonText}>Sign In with Email</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Sign Up Link */}
+          <View style={styles.cleanSignUpLink}>
+            <Text style={styles.cleanLinkText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => navigateToScreen('register')}>
+              <Text style={styles.cleanLinkButton}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 
