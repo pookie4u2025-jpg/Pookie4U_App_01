@@ -2130,8 +2130,19 @@ async def get_emergent_session_data(request: Request):
     if not email or not emergent_session_token:
         raise HTTPException(status_code=400, detail="Invalid session data")
     
-    # Check if user exists with this email
-    existing_user = await db.users.find_one({"email": email})
+    # PHASE 3: Duplicate Account Prevention
+    # Check if user exists with this Google/Emergent ID (prevents duplicate accounts)
+    existing_user_by_oauth = await db.users.find_one({
+        "oauth_providers.emergent.emergent_id": user_id_from_emergent
+    })
+    
+    if existing_user_by_oauth:
+        # User already registered with this Google account
+        # Return existing user instead of creating duplicate
+        existing_user = existing_user_by_oauth
+    else:
+        # Check if user exists with this email (for linking accounts)
+        existing_user = await db.users.find_one({"email": email})
     
     if existing_user:
         # User exists - link Emergent OAuth if not already linked
