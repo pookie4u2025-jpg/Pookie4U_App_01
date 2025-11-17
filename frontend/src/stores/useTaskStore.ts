@@ -126,6 +126,52 @@ export const useTaskStore = create<TaskState>()(
       },
 
       completeTask: async (taskId: string, token: string) => {
+        // Update local state optimistically
+        set(state => {
+          const updatedDailyTasks = state.dailyTasks.map(task =>
+            task.id === taskId 
+              ? { ...task, completed: true, completed_at: new Date().toISOString() }
+              : task
+          );
+
+          const updatedWeeklyTask = state.weeklyTask && state.weeklyTask.id === taskId
+            ? { ...state.weeklyTask, completed: true, completed_at: new Date().toISOString() }
+            : state.weeklyTask;
+
+          return {
+            dailyTasks: updatedDailyTasks,
+            weeklyTask: updatedWeeklyTask,
+          };
+        });
+
+        // Check if online
+        if (!OfflineManager.getIsOnline()) {
+          console.log('📴 Offline: Queuing task completion');
+          
+          // Queue for later
+          await OfflineManager.queueAction({
+            type: 'COMPLETE_TASK',
+            payload: { taskId, token }
+          });
+          
+          return { 
+            success: true, 
+            queued: true,
+            data: {
+              points_earned: 0,
+              total_points: 0,
+              new_level: 1,
+              current_streak: 0,
+              longest_streak: 0,
+              tasks_completed: 0,
+              badges: [],
+              task_category: '',
+              task_type: '',
+            }
+          };
+        }
+
+        // Online: Execute immediately
         try {
           const response = await fetch(`${BACKEND_URL}/api/tasks/complete`, {
             method: 'POST',
@@ -142,27 +188,10 @@ export const useTaskStore = create<TaskState>()(
 
           const data = await response.json();
 
-          // Update local state
-          set(state => {
-            const updatedDailyTasks = state.dailyTasks.map(task =>
-              task.id === taskId 
-                ? { ...task, completed: true, completed_at: new Date().toISOString() }
-                : task
-            );
-
-            const updatedWeeklyTask = state.weeklyTask && state.weeklyTask.id === taskId
-              ? { ...state.weeklyTask, completed: true, completed_at: new Date().toISOString() }
-              : state.weeklyTask;
-
-            return {
-              dailyTasks: updatedDailyTasks,
-              weeklyTask: updatedWeeklyTask,
-            };
-          });
-
           // Return the response data including ALL backend values
           return {
             success: true,
+            queued: false,
             data: {
               points_earned: data.points_earned,
               total_points: data.total_points,
@@ -176,8 +205,9 @@ export const useTaskStore = create<TaskState>()(
             }
           };
         } catch (error) {
+          console.error('❌ Failed to complete task:', error);
           set({ error: error instanceof Error ? error.message : 'Failed to complete task' });
-          return { success: false };
+          return { success: false, queued: false };
         }
       },
 
