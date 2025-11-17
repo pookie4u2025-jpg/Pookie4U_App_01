@@ -32,13 +32,15 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
         <SafeAreaProvider>
-          <StatusBar style="dark" translucent={false} backgroundColor="transparent" />
-          <OfflineIndicator />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="tabs" options={{ headerShown: false }} />
-            <Stack.Screen name="comprehensive-settings" />
-          </Stack>
+          <ToastProvider>
+            <StatusBar style="dark" translucent={false} backgroundColor="transparent" />
+            <OfflineIndicator />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="tabs" options={{ headerShown: false }} />
+              <Stack.Screen name="comprehensive-settings" />
+            </Stack>
+          </ToastProvider>
         </SafeAreaProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
