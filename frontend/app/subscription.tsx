@@ -284,24 +284,24 @@ export default function SubscriptionScreen() {
 
   if (loadingStatus) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#FF1493" />
-          <Text style={styles.loadingText}>Loading subscription options...</Text>
+          <ActivityIndicator size="large" color={theme.primary} />
+          <Text style={[styles.loadingText, { color: theme.text }]}>Loading subscription options...</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Back Button */}
       <TouchableOpacity
-        style={styles.backButton}
+        style={[styles.backButton, { backgroundColor: theme.surface }]}
         onPress={handleSkip}
         activeOpacity={0.7}
       >
-        <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
+        <Ionicons name="arrow-back" size={24} color={theme.text} />
       </TouchableOpacity>
       
       <ScrollView 
