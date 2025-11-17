@@ -4261,6 +4261,12 @@ async def get_subscription_status(current_user: dict = Depends(get_current_user)
             renewal_date = subscription_info.subscription_end_date.isoformat()
             renewal_date_display = subscription_service.get_renewal_date_display(subscription_info.subscription_end_date)
         
+        # Prize eligibility check: free trial users cannot win prizes
+        is_eligible_for_prizes = (
+            subscription_info.is_active and 
+            subscription_info.subscription_type != "free_trial"
+        )
+        
         return {
             "success": True,
             "subscription": {
@@ -4276,7 +4282,8 @@ async def get_subscription_status(current_user: dict = Depends(get_current_user)
                 "renewal_date_display": renewal_date_display,
                 "auto_renewal_enabled": auto_renewal_enabled,
                 "renewal_count": current_user.get("renewal_count", 0),
-                "display_text": subscription_service.get_display_text(subscription_info)
+                "display_text": subscription_service.get_display_text(subscription_info),
+                "is_eligible_for_prizes": is_eligible_for_prizes  # NEW: Prize eligibility
             }
         }
     except Exception as e:
