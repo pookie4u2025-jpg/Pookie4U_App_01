@@ -44,8 +44,8 @@ export default function TabLayout() {
         name="tasks"
         options={{
           title: 'Tasks',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="checkmark-circle" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabBarIcon name="checkmark-circle" size={size} color={color} focused={focused} />
           ),
         }}
       />
@@ -53,8 +53,8 @@ export default function TabLayout() {
         name="gifts"
         options={{
           title: 'Gifts',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="gift" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabBarIcon name="gift" size={size} color={color} focused={focused} />
           ),
         }}
       />
@@ -62,8 +62,8 @@ export default function TabLayout() {
         name="messages"
         options={{
           title: 'Messages',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabBarIcon name="heart" size={size} color={color} focused={focused} />
           ),
         }}
       />
@@ -71,8 +71,8 @@ export default function TabLayout() {
         name="events"
         options={{
           title: 'Events',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabBarIcon name="calendar" size={size} color={color} focused={focused} />
           ),
         }}
       />
@@ -80,8 +80,8 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <AnimatedTabBarIcon name="person" size={size} color={color} focused={focused} />
           ),
         }}
       />
