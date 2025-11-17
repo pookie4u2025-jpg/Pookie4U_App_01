@@ -3484,6 +3484,15 @@ async def generate_tasks_manually(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Task generation failed: {str(e)}")
 
+# Alias endpoint for regenerating tasks (same as generate)
+@api_router.post("/tasks/regenerate")
+async def regenerate_tasks(
+    request: TaskGenerationRequest,
+    current_user: dict = Depends(get_current_user)
+):
+    """Regenerate tasks - alias for generate_tasks_manually"""
+    return await generate_tasks_manually(request, current_user)
+
 @api_router.get("/gifts")
 async def get_gift_ideas():
     return {"gifts": GIFT_IDEAS}
