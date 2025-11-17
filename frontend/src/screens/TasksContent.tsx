@@ -9,11 +9,13 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
+import Animated, { FadeInDown, FadeIn, ZoomIn } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useTaskStore } from '../stores/useTaskStore';
 import { useGameStore } from '../stores/useGameStore';
 import { useTheme } from '../contexts/ThemeContext';
+import { StaggeredListItem } from '../components/AnimatedComponents';
 
 export default function TasksContent() {
   const { token, user } = useAuthStore();
