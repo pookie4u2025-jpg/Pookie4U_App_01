@@ -264,30 +264,35 @@ class Pookie4uAPITester:
             self.log_test("Task Management - Get Daily Tasks", False, f"Request failed: {daily_response['error']}")
         elif daily_response["status_code"] == 200:
             daily_data = daily_response["data"]
-            if isinstance(daily_data, list) and len(daily_data) > 0:
-                self.log_test("Task Management - Get Daily Tasks", True, f"Retrieved {len(daily_data)} daily tasks")
-                
-                # Test task completion with first task
-                first_task = daily_data[0]
-                task_id = first_task.get("id")
-                
-                if task_id:
-                    complete_data = {"task_id": task_id}
-                    complete_response = self.make_request("POST", "/tasks/complete", complete_data)
+            # Handle the actual response format which has 'tasks' array
+            if isinstance(daily_data, dict) and "tasks" in daily_data:
+                tasks = daily_data["tasks"]
+                if isinstance(tasks, list) and len(tasks) > 0:
+                    self.log_test("Task Management - Get Daily Tasks", True, f"Retrieved {len(tasks)} daily tasks")
                     
-                    if complete_response["status_code"] == 200:
-                        complete_result = complete_response["data"]
-                        if complete_result.get("success") and "points_earned" in complete_result:
-                            self.log_test("Task Management - Complete Task", True, 
-                                        f"Task completed, earned {complete_result['points_earned']} points")
+                    # Test task completion with first task
+                    first_task = tasks[0]
+                    task_id = first_task.get("id")
+                    
+                    if task_id:
+                        complete_data = {"task_id": task_id}
+                        complete_response = self.make_request("POST", "/tasks/complete", complete_data)
+                        
+                        if complete_response["status_code"] == 200:
+                            complete_result = complete_response["data"]
+                            if complete_result.get("success") and "points_earned" in complete_result:
+                                self.log_test("Task Management - Complete Task", True, 
+                                            f"Task completed, earned {complete_result['points_earned']} points")
+                            else:
+                                self.log_test("Task Management - Complete Task", False, f"Unexpected response: {complete_result}")
                         else:
-                            self.log_test("Task Management - Complete Task", False, f"Unexpected response: {complete_result}")
+                            self.log_test("Task Management - Complete Task", False, f"Status {complete_response['status_code']}")
                     else:
-                        self.log_test("Task Management - Complete Task", False, f"Status {complete_response['status_code']}")
+                        self.log_test("Task Management - Complete Task", False, "No task ID found in daily tasks")
                 else:
-                    self.log_test("Task Management - Complete Task", False, "No task ID found in daily tasks")
+                    self.log_test("Task Management - Get Daily Tasks", False, f"No tasks in response: {tasks}")
             else:
-                self.log_test("Task Management - Get Daily Tasks", False, f"No tasks returned: {daily_data}")
+                self.log_test("Task Management - Get Daily Tasks", False, f"Unexpected response format: {daily_data}")
         else:
             self.log_test("Task Management - Get Daily Tasks", False, f"Status {daily_response['status_code']}")
         
