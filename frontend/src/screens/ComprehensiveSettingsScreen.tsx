@@ -250,55 +250,6 @@ export default function ComprehensiveSettingsScreen() {
     }
   };
   
-  const handleAddPassword = () => {
-    setShowAddPasswordModal(true);
-    setNewPassword('');
-    setConfirmPassword('');
-  };
-  
-  const handleSavePassword = async () => {
-    if (!newPassword.trim()) {
-      Alert.alert('Error', 'Password cannot be empty');
-      return;
-    }
-    
-    if (newPassword.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
-      return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
-      return;
-    }
-    
-    setIsSavingPassword(true);
-    try {
-      const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
-      const response = await fetch(`${backendUrl}/api/user/add-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ password: newPassword }),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setShowAddPasswordModal(false);
-        Alert.alert('Success', data.message || 'Password set successfully! You can now login with email/password.');
-      } else {
-        const error = await response.json();
-        Alert.alert('Error', error.detail || 'Failed to set password');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Failed to set password. Please try again.');
-    } finally {
-      setIsSavingPassword(false);
-    }
-  };
-
   const handleRelationshipModePress = () => {
     setShowRelationshipModeSelector(true);
   };
