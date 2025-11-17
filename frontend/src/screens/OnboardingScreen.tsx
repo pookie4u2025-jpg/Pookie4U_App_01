@@ -507,7 +507,14 @@ export default function OnboardingScreen() {
           <View style={styles.header}>
             <Text style={styles.title}>Let's Set Up Your Profile</Text>
             <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: `${(step / 4) * 100}%` }]} />
+              <Animated.View 
+                style={[
+                  styles.progressFill, 
+                  useAnimatedStyle(() => ({
+                    width: `${progressAnimation.value}%`,
+                  }))
+                ]} 
+              />
             </View>
             <Text style={styles.progressText}>Step {step} of 4</Text>
           </View>
