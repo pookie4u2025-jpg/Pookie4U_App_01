@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-Backend Testing Script for Pookie4u - Razorpay Removal Verification
-Tests subscription endpoints, authentication, and core functionality
+Comprehensive Backend API Testing for Pookie4u Production Readiness
+Testing all critical endpoints for authentication, user profiles, tasks, events, and gamification.
 """
 
 import requests
 import json
 import time
-import random
-import string
-from datetime import datetime
+import uuid
+from datetime import datetime, timedelta
+from typing import Dict, Any, Optional
 
 # Configuration
 BACKEND_URL = "https://pookie-connect.preview.emergentagent.com/api"
-TEST_USER_EMAIL = f"testuser_{int(time.time())}@example.com"
-TEST_USER_PASSWORD = "TestPassword123!"
+TEST_USER_EMAIL = f"test.user.{int(time.time())}@example.com"
+TEST_USER_PASSWORD = "SecurePass123!"
 TEST_USER_NAME = "Test User"
 
 class BackendTester:
