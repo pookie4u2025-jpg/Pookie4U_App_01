@@ -470,13 +470,34 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      updateUserProfile: async (profile: { name?: string; email?: string }) => {
+      updateUserProfile: async (profile: { name?: string; email?: string; mobile?: string }) => {
         const { token } = get();
         if (!token) {
           console.log('❌ No token available for profile update');
           return false;
         }
 
+        // Update local state optimistically
+        set(state => ({
+          user: state.user ? {
+            ...state.user,
+            ...profile
+          } : null
+        }));
+
+        // Check if online
+        if (!OfflineManager.getIsOnline()) {
+          console.log('📴 Offline: Queuing profile update');
+          
+          await OfflineManager.queueAction({
+            type: 'UPDATE_PROFILE',
+            payload: { updates: profile, token }
+          });
+          
+          return true; // Queued successfully
+        }
+
+        // Online: Execute immediately
         try {
           console.log('📤 Updating user profile:', profile);
           const response = await fetch(`${BACKEND_URL}/api/user/profile`, {
@@ -498,7 +519,6 @@ export const useAuthStore = create<AuthState>()(
             if (response.status === 401 || response.status === 403) {
               console.log('❌ Token expired, user needs to re-login');
               set({ error: 'Session expired. Please log in again.' });
-              // Don't auto-logout here, let the user know
             }
             
             throw new Error(`Failed to update user profile: ${response.status}`);
@@ -506,14 +526,6 @@ export const useAuthStore = create<AuthState>()(
 
           const result = await response.json();
           console.log('✅ Profile updated successfully:', result);
-
-          // Update local state
-          set(state => ({
-            user: state.user ? {
-              ...state.user,
-              ...profile
-            } : null
-          }));
 
           return true;
         } catch (error) {
