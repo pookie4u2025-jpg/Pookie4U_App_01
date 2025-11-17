@@ -14,12 +14,14 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { formatDate, formatCountdown, getDaysUntil } from '../utils/DateFormatter';
 import * as Haptics from 'expo-haptics';
+import { StaggeredListItem } from '../components/AnimatedComponents';
 
 const { width } = Dimensions.get('window');
 
