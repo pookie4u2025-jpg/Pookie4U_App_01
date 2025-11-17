@@ -17,6 +17,14 @@ export default function RootLayout() {
   useEffect(() => {
     // Initialize RevenueCat when app starts
     initializeRevenueCat();
+    
+    // Initialize OfflineManager
+    OfflineManager.initialize();
+    
+    return () => {
+      // Cleanup on unmount
+      OfflineManager.cleanup();
+    };
   }, []);
 
   return (
@@ -24,6 +32,7 @@ export default function RootLayout() {
       <ThemeProvider>
         <SafeAreaProvider>
           <StatusBar style="dark" translucent={false} backgroundColor="transparent" />
+          <OfflineIndicator />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="tabs" options={{ headerShown: false }} />
