@@ -1060,11 +1060,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Phase 2: Onboarding Polish - Enhanced UX"
+    - "Phase 3: Duplicate Account Prevention"
+    - "Phase 4: Trial Expiry Push Notifications"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
-  notes: "Phase 2 onboarding enhancements completed. Need to verify animations, validation feedback, and loading states work properly across different mobile devices."
+  notes: "Phases 3 & 4 backend implementations completed. Need to test: (1) Duplicate OAuth prevention logic, (2) Database unique index enforcement, (3) Trial expiry notification endpoint, (4) Push notification service integration. Phase 5 (documentation) and Phase 6 (EAS build) ready after testing."
 
 frontend:
   - task: "Comprehensive Frontend Testing for Production Readiness"
