@@ -40,9 +40,27 @@ export default function OnboardingScreen() {
   const [relationshipMode, setRelationshipMode] = useState('SAME_HOME');
   const [birthday, setBirthday] = useState('');
   const [anniversary, setAnniversary] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+  
+  // Validation states
+  const [partnerNameError, setPartnerNameError] = useState('');
+  const [birthdayError, setBirthdayError] = useState('');
+  const [anniversaryError, setAnniversaryError] = useState('');
+  
+  // Animated values
+  const progressAnimation = useSharedValue(0);
 
   const { updatePartnerProfile, updateRelationshipMode } = useAuthStore();
   const { completeOnboarding } = useAppStore();
+  
+  // Update progress animation when step changes
+  useEffect(() => {
+    progressAnimation.value = withSpring((step / 4) * 100, {
+      damping: 15,
+      stiffness: 100,
+    });
+  }, [step]);
 
   const handleNext = () => {
     if (step === 1 && !partnerName.trim()) {
