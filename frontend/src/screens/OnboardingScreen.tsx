@@ -636,6 +636,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#f9f9f9',
   },
+  inputError: {
+    borderColor: '#ff4444',
+    borderWidth: 2,
+    backgroundColor: '#fff5f5',
+  },
+  errorText: {
+    color: '#ff4444',
+    fontSize: 14,
+    marginTop: 8,
+    marginLeft: 4,
+  },
+  helperText: {
+    color: '#888',
+    fontSize: 14,
+    marginTop: 12,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  nextButtonDisabled: {
+    opacity: 0.7,
+  },
   pickerContainer: {
     borderWidth: 1,
     borderColor: '#e0e0e0',
