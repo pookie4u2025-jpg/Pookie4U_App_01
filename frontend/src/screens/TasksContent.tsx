@@ -292,7 +292,7 @@ export default function TasksContent() {
                   </TouchableOpacity>
                 )}
               </View>
-            </View>
+            </StaggeredListItem>
           ))}
         </View>
 
