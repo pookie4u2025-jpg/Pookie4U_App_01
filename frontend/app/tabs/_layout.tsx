@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { AnimatedTabBarIcon } from '../../src/components/AnimatedTabBarIcon';
 
 export default function TabLayout() {
   const { theme } = useTheme();
