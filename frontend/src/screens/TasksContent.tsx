@@ -201,7 +201,7 @@ export default function TasksContent() {
           </Text>
           
           {dailyTasks.map((task, index) => (
-            <View key={task.id} style={[styles.taskCard, { backgroundColor: theme.surface }]}>
+            <StaggeredListItem key={task.id} index={index} staggerDelay={80} style={[styles.taskCard, { backgroundColor: theme.surface }]}>
               <View style={styles.taskHeader}>
                 <View style={[styles.taskNumber, { backgroundColor: theme.primary }]}>
                   <Text style={styles.taskNumberText}>{index + 1}</Text>
