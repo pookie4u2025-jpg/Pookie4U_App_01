@@ -516,22 +516,47 @@ export default function OnboardingScreen() {
 
           <View style={styles.buttonContainer}>
             {step > 1 && (
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => setStep(step - 1)}
+              <Animated.View 
+                entering={FadeInDown.duration(300)}
+                style={{ flex: 1 }}
               >
-                <Text style={styles.backButtonText}>Back</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.backButton}
+                  onPress={() => setStep(step - 1)}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.backButtonText}>Back</Text>
+                </TouchableOpacity>
+              </Animated.View>
             )}
             
-            <TouchableOpacity
-              style={styles.nextButton}
-              onPress={handleNext}
+            <Animated.View 
+              entering={FadeInDown.duration(300).delay(100)}
+              style={{ flex: step > 1 ? 2 : 1 }}
             >
-              <Text style={styles.nextButtonText}>
-                {step === 4 ? 'Complete Setup' : 'Next'}
-              </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.nextButton,
+                  isLoading && styles.nextButtonDisabled,
+                ]}
+                onPress={handleNext}
+                disabled={isLoading}
+                activeOpacity={0.7}
+              >
+                {isLoading ? (
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator color="#fff" size="small" />
+                    <Text style={styles.nextButtonText}>  Saving...</Text>
+                  </View>
+                ) : showSuccessAnimation ? (
+                  <Text style={styles.nextButtonText}>✓ Saved!</Text>
+                ) : (
+                  <Text style={styles.nextButtonText}>
+                    {step === 4 ? 'Complete Setup' : 'Next'}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
