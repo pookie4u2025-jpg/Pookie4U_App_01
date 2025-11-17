@@ -16,6 +16,7 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
+import Animated, { FadeInDown, FadeInUp, FadeIn, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -23,6 +24,7 @@ import { useRouter } from 'expo-router';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useTheme } from '../contexts/ThemeContext';
 import { useEmergentOAuth } from '../services/EmergentOAuthService';
+import { AnimatedInput } from '../components/AnimatedInput';
 
 const { width, height } = Dimensions.get('window');
 
