@@ -267,7 +267,13 @@ export default function SubscriptionScreen() {
 
   const handleSkip = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push('/(tabs)');
+    // Use router.back() to properly navigate back in the stack
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      // Fallback to home if no history
+      router.replace('/(tabs)/home');
+    }
   };
 
   // Get pricing from RevenueCat packages
