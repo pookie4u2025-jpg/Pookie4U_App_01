@@ -341,7 +341,16 @@ class Pookie4uAPITester:
             return False
         elif events_response["status_code"] == 200:
             events_data = events_response["data"]
-            if isinstance(events_data, list):
+            # Handle the actual response format which has 'events' array
+            if isinstance(events_data, dict) and "events" in events_data:
+                events = events_data["events"]
+                if isinstance(events, list):
+                    self.log_test("Events - Get Events", True, f"Retrieved {len(events)} events")
+                else:
+                    self.log_test("Events - Get Events", False, f"Events not a list: {events}")
+                    return False
+            elif isinstance(events_data, list):
+                # Fallback for direct array response
                 self.log_test("Events - Get Events", True, f"Retrieved {len(events_data)} events")
             else:
                 self.log_test("Events - Get Events", False, f"Unexpected response format: {events_data}")
