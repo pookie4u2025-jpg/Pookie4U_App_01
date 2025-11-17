@@ -16,6 +16,7 @@ import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Purchases, { PurchasesError, PurchasesPackage } from 'react-native-purchases';
 import { useAuthStore } from '../src/stores/useAuthStore';
+import { useTheme } from '../src/contexts/ThemeContext';
 
 const { width } = Dimensions.get('window');
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
@@ -25,6 +26,7 @@ type PlanType = 'trial' | 'monthly' | 'sixmonth';
 export default function SubscriptionScreen() {
   const router = useRouter();
   const { user, token } = useAuthStore();
+  const { theme } = useTheme();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('trial');
   const [loading, setLoading] = useState(false);
   const [trialAlreadyUsed, setTrialAlreadyUsed] = useState(false);
