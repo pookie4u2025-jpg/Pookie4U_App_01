@@ -37,6 +37,7 @@ export default function AuthScreen() {
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   
   // Forgot password states
   const [resetEmail, setResetEmail] = useState('');
