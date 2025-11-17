@@ -315,8 +315,8 @@ export default function SubscriptionScreen() {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Choose Your Plan</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, { color: theme.text }]}>Choose Your Plan</Text>
+          <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
             Unlock premium features and strengthen your relationship
           </Text>
         </View>
