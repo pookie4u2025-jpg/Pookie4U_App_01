@@ -1695,4 +1695,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  cleanInputIcon: {
+    marginLeft: 16,
+    marginRight: 12,
+  },
+  cleanForgotPassword: {
+    alignItems: 'flex-end',
+    marginBottom: 20,
+    marginTop: -8,
+  },
+  cleanForgotPasswordText: {
+    fontSize: 14,
+    color: '#FF1493',
+    fontWeight: '500',
+  },
 });
