@@ -417,13 +417,24 @@ class Pookie4uAPITester:
         # Get daily tasks and complete one to test point system
         tasks_response = self.make_request("GET", "/tasks/daily")
         
-        if tasks_response["status_code"] == 200 and isinstance(tasks_response["data"], list) and len(tasks_response["data"]) > 0:
-            # Find an uncompleted task
-            uncompleted_task = None
-            for task in tasks_response["data"]:
-                if not task.get("completed", False):
-                    uncompleted_task = task
-                    break
+        if tasks_response["status_code"] == 200:
+            tasks_data = tasks_response["data"]
+            # Handle the actual response format which has 'tasks' array
+            if isinstance(tasks_data, dict) and "tasks" in tasks_data:
+                tasks = tasks_data["tasks"]
+                if isinstance(tasks, list) and len(tasks) > 0:
+                    # Find an uncompleted task
+                    uncompleted_task = None
+                    for task in tasks:
+                        if not task.get("completed", False):
+                            uncompleted_task = task
+                            break
+                else:
+                    self.log_test("Gamification - Get Tasks for Testing", False, "No tasks in response")
+                    return
+            else:
+                self.log_test("Gamification - Get Tasks for Testing", False, "Unexpected response format")
+                return
             
             if uncompleted_task:
                 task_id = uncompleted_task.get("id")
