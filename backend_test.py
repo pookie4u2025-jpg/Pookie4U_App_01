@@ -17,83 +17,73 @@ TEST_USER_EMAIL = f"test.user.{int(time.time())}@example.com"
 TEST_USER_PASSWORD = "SecurePass123!"
 TEST_USER_NAME = "Test User"
 
-class BackendTester:
+class Pookie4uAPITester:
     def __init__(self):
+        # Use the production URL from frontend .env
         self.base_url = BACKEND_URL
+        self.session = requests.Session()
+        self.test_user_email = TEST_USER_EMAIL
+        self.test_user_password = TEST_USER_PASSWORD
+        self.test_user_name = TEST_USER_NAME
         self.access_token = None
-        self.test_results = []
+        self.user_id = None
+        
+        # Test results tracking
         self.total_tests = 0
         self.passed_tests = 0
+        self.failed_tests = []
         
-    def log_test(self, test_name, success, message, response_data=None):
+        print(f"🚀 Initializing Pookie4u API Tester")
+        print(f"📍 Base URL: {self.base_url}")
+        print(f"👤 Test User: {self.test_user_email}")
+        print("=" * 80)
+
+    def log_test(self, test_name: str, success: bool, details: str = ""):
         """Log test results"""
         self.total_tests += 1
         if success:
             self.passed_tests += 1
-            status = "✅ PASS"
+            print(f"✅ {test_name}: PASSED {details}")
         else:
-            status = "❌ FAIL"
-            
-        result = {
-            "test": test_name,
-            "status": status,
-            "message": message,
-            "response_data": response_data
-        }
-        self.test_results.append(result)
-        print(f"{status}: {test_name} - {message}")
-        
-    def make_request(self, method, endpoint, data=None, headers=None, expect_status=None):
+            self.failed_tests.append(f"{test_name}: {details}")
+            print(f"❌ {test_name}: FAILED {details}")
+
+    def make_request(self, method: str, endpoint: str, data: Dict = None, headers: Dict = None) -> Dict[str, Any]:
         """Make HTTP request with error handling"""
         url = f"{self.base_url}{endpoint}"
         
-        if headers is None:
-            headers = {"Content-Type": "application/json"}
-            
-        if self.access_token and "Authorization" not in headers:
+        # Add authorization header if token exists
+        if self.access_token and headers is None:
+            headers = {"Authorization": f"Bearer {self.access_token}"}
+        elif self.access_token and headers:
             headers["Authorization"] = f"Bearer {self.access_token}"
             
         try:
             if method.upper() == "GET":
-                response = requests.get(url, headers=headers, timeout=10)
+                response = self.session.get(url, headers=headers, timeout=10)
             elif method.upper() == "POST":
-                response = requests.post(url, json=data, headers=headers, timeout=10)
+                response = self.session.post(url, json=data, headers=headers, timeout=10)
+            elif method.upper() == "PUT":
+                response = self.session.put(url, json=data, headers=headers, timeout=10)
             elif method.upper() == "PATCH":
-                response = requests.patch(url, json=data, headers=headers, timeout=10)
+                response = self.session.patch(url, json=data, headers=headers, timeout=10)
             elif method.upper() == "DELETE":
-                response = requests.delete(url, headers=headers, timeout=10)
+                response = self.session.delete(url, headers=headers, timeout=10)
             else:
-                raise ValueError(f"Unsupported method: {method}")
-                
-            # Check expected status if provided
-            if expect_status and response.status_code != expect_status:
-                return {
-                    "success": False,
-                    "status_code": response.status_code,
-                    "data": response.text,
-                    "error": f"Expected status {expect_status}, got {response.status_code}"
-                }
+                return {"error": f"Unsupported method: {method}"}
                 
             return {
-                "success": True,
                 "status_code": response.status_code,
                 "data": response.json() if response.content else {},
                 "headers": dict(response.headers)
             }
-            
         except requests.exceptions.RequestException as e:
-            return {
-                "success": False,
-                "error": str(e),
-                "status_code": None,
-                "data": None
-            }
+            return {"error": str(e)}
         except json.JSONDecodeError:
             return {
-                "success": False,
-                "error": "Invalid JSON response",
                 "status_code": response.status_code,
-                "data": response.text
+                "data": response.text,
+                "headers": dict(response.headers)
             }
             
     def test_backend_health(self):
