@@ -79,6 +79,22 @@ db = client[os.environ.get('DB_NAME', 'pookie4u')]
 app = FastAPI(title="Pookie4u Authentication API", version="1.0.0")
 api_router = APIRouter(prefix="/api")
 
+# Startup event to ensure database indexes
+@app.on_event("startup")
+async def startup_db_indexes():
+    """Create database indexes on startup for data integrity"""
+    try:
+        # PHASE 3: Create unique index on Emergent OAuth ID to prevent duplicate accounts
+        await db.users.create_index(
+            "oauth_providers.emergent.emergent_id",
+            unique=True,
+            sparse=True,  # Allow users without Emergent OAuth
+            name="emergent_id_unique"
+        )
+        print("✅ Database indexes created successfully")
+    except Exception as e:
+        print(f"⚠️  Index creation warning (may already exist): {e}")
+
 # Health check endpoint (for deployment monitoring)
 @app.get("/health", response_model=None)
 async def health_check():
