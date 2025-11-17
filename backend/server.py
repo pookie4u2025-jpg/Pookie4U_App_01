@@ -2755,6 +2755,41 @@ async def update_partner_profile(partner: PartnerProfile, current_user: dict = D
             )
     
     return {"message": "Partner profile updated successfully", "auto_events_created": len(auto_events) if 'auto_events' in locals() else 0}
+@api_router.post("/user/complete-onboarding")
+async def complete_onboarding(
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Mark user's onboarding as complete
+    Sets profile_completed = true
+    """
+    try:
+        result = await db.users.update_one(
+            {"_id": current_user["_id"]},
+            {"$set": {
+                "profile_completed": True,
+                "updated_at": datetime.utcnow()
+            }}
+        )
+
+        if result.modified_count > 0:
+            print(f"✅ User {current_user['_id']} completed onboarding")
+            return {
+                "success": True,
+                "message": "Onboarding completed successfully",
+                "profile_completed": True
+            }
+        else:
+            # Already completed or no change
+            return {
+                "success": True,
+                "message": "Profile already completed",
+                "profile_completed": True
+            }
+
+    except Exception as e:
+        print(f"❌ Error completing onboarding: {e}")
+        raise HTTPException(status_code=500, detail="Failed to complete onboarding")
 
 @api_router.put("/user/relationship-mode")
 async def update_relationship_mode(mode: RelationshipMode, current_user: dict = Depends(get_current_user)):
