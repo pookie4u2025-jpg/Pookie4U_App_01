@@ -303,10 +303,15 @@ class Pookie4uAPITester:
             self.log_test("Task Management - Get Weekly Tasks", False, f"Request failed: {weekly_response['error']}")
         elif weekly_response["status_code"] == 200:
             weekly_data = weekly_response["data"]
-            if isinstance(weekly_data, list) and len(weekly_data) > 0:
-                self.log_test("Task Management - Get Weekly Tasks", True, f"Retrieved {len(weekly_data)} weekly tasks")
+            # Handle the actual response format which has 'tasks' array
+            if isinstance(weekly_data, dict) and "tasks" in weekly_data:
+                tasks = weekly_data["tasks"]
+                if isinstance(tasks, list) and len(tasks) > 0:
+                    self.log_test("Task Management - Get Weekly Tasks", True, f"Retrieved {len(tasks)} weekly tasks")
+                else:
+                    self.log_test("Task Management - Get Weekly Tasks", False, f"No weekly tasks in response: {tasks}")
             else:
-                self.log_test("Task Management - Get Weekly Tasks", False, f"No weekly tasks returned: {weekly_data}")
+                self.log_test("Task Management - Get Weekly Tasks", False, f"Unexpected response format: {weekly_data}")
         else:
             self.log_test("Task Management - Get Weekly Tasks", False, f"Status {weekly_response['status_code']}")
         
