@@ -85,243 +85,481 @@ class Pookie4uAPITester:
                 "data": response.text,
                 "headers": dict(response.headers)
             }
-            
-    def test_backend_health(self):
-        """Test if backend is running"""
-        print("\n🔍 Testing Backend Health...")
+
+    def test_health_endpoint(self):
+        """Test deployment health check endpoint"""
+        print("\n🏥 Testing Health Check Endpoint")
         
-        # Test basic connectivity
-        response = self.make_request("GET", "/")
-        if response["success"]:
-            self.log_test("Backend Connectivity", True, f"Backend responding (Status: {response['status_code']})")
+        response = self.make_request("GET", "/health")
+        
+        if "error" in response:
+            self.log_test("Health Check", False, f"Request failed: {response['error']}")
+            return False
+            
+        if response["status_code"] == 200:
+            data = response["data"]
+            if data.get("status") == "healthy":
+                self.log_test("Health Check", True, f"Service healthy, database: {data.get('database', 'unknown')}")
+                return True
+            else:
+                self.log_test("Health Check", False, f"Service unhealthy: {data}")
+                return False
         else:
-            self.log_test("Backend Connectivity", False, f"Backend not responding: {response.get('error', 'Unknown error')}")
-            
+            self.log_test("Health Check", False, f"Status {response['status_code']}: {response.get('data', {})}")
+            return False
+
     def test_user_registration(self):
-        """Test user registration"""
-        print("\n👤 Testing User Registration...")
+        """Test user registration endpoint"""
+        print("\n👤 Testing User Registration")
         
-        user_data = {
-            "email": TEST_USER_EMAIL,
-            "password": TEST_USER_PASSWORD,
-            "name": TEST_USER_NAME
+        # Test valid registration
+        registration_data = {
+            "email": self.test_user_email,
+            "password": self.test_user_password,
+            "name": self.test_user_name
         }
         
-        response = self.make_request("POST", "/auth/register", user_data)
+        response = self.make_request("POST", "/auth/register", registration_data)
         
-        if response["success"] and response["status_code"] == 200:
-            if "access_token" in response["data"]:
-                self.access_token = response["data"]["access_token"]
-                self.log_test("User Registration", True, "User registered successfully with JWT token")
-            else:
-                self.log_test("User Registration", False, "Registration successful but no access token returned")
-        else:
-            self.log_test("User Registration", False, f"Registration failed: {response.get('error', response.get('data', 'Unknown error'))}")
+        if "error" in response:
+            self.log_test("User Registration - Valid Data", False, f"Request failed: {response['error']}")
+            return False
             
+        if response["status_code"] == 200:
+            data = response["data"]
+            if "access_token" in data:
+                self.access_token = data["access_token"]
+                self.log_test("User Registration - Valid Data", True, "Registration successful with token")
+                
+                # Test duplicate email registration
+                duplicate_response = self.make_request("POST", "/auth/register", registration_data)
+                if duplicate_response["status_code"] == 400:
+                    self.log_test("User Registration - Duplicate Email", True, "Properly rejected duplicate email")
+                else:
+                    self.log_test("User Registration - Duplicate Email", False, f"Status {duplicate_response['status_code']}")
+                
+                return True
+            else:
+                self.log_test("User Registration - Valid Data", False, f"No access token in response: {data}")
+                return False
+        else:
+            self.log_test("User Registration - Valid Data", False, f"Status {response['status_code']}: {response.get('data', {})}")
+            return False
+
     def test_user_login(self):
-        """Test user login (fallback if registration fails)"""
-        print("\n🔐 Testing User Login...")
+        """Test user login endpoint"""
+        print("\n🔐 Testing User Login")
         
+        # Test valid login
         login_data = {
-            "email": TEST_USER_EMAIL,
-            "password": TEST_USER_PASSWORD
+            "email": self.test_user_email,
+            "password": self.test_user_password
         }
         
         response = self.make_request("POST", "/auth/login", login_data)
         
-        if response["success"] and response["status_code"] == 200:
-            if "access_token" in response["data"]:
-                self.access_token = response["data"]["access_token"]
-                self.log_test("User Login", True, "User logged in successfully with JWT token")
-            else:
-                self.log_test("User Login", False, "Login successful but no access token returned")
-        else:
-            self.log_test("User Login", False, f"Login failed: {response.get('error', response.get('data', 'Unknown error'))}")
+        if "error" in response:
+            self.log_test("User Login - Valid Credentials", False, f"Request failed: {response['error']}")
+            return False
             
-    def test_user_profile(self):
-        """Test user profile retrieval"""
-        print("\n👤 Testing User Profile...")
+        if response["status_code"] == 200:
+            data = response["data"]
+            if "access_token" in data:
+                self.access_token = data["access_token"]
+                self.log_test("User Login - Valid Credentials", True, "Login successful with token")
+                
+                # Test invalid credentials
+                invalid_login = {
+                    "email": self.test_user_email,
+                    "password": "wrongpassword"
+                }
+                invalid_response = self.make_request("POST", "/auth/login", invalid_login)
+                if invalid_response["status_code"] == 401:
+                    self.log_test("User Login - Invalid Credentials", True, "Properly rejected invalid credentials")
+                else:
+                    self.log_test("User Login - Invalid Credentials", False, f"Status {invalid_response['status_code']}")
+                
+                return True
+            else:
+                self.log_test("User Login - Valid Credentials", False, f"No access token in response: {data}")
+                return False
+        else:
+            self.log_test("User Login - Valid Credentials", False, f"Status {response['status_code']}: {response.get('data', {})}")
+            return False
+
+    def test_user_profile_endpoints(self):
+        """Test user profile endpoints"""
+        print("\n👤 Testing User Profile Endpoints")
         
         if not self.access_token:
-            self.log_test("User Profile", False, "No access token available")
-            return
-            
+            self.log_test("User Profile - Get Profile", False, "No access token available")
+            return False
+        
+        # Test get profile
         response = self.make_request("GET", "/user/profile")
         
-        if response["success"] and response["status_code"] == 200:
-            profile_data = response["data"]
-            # Check if subscription fields exist (should be present after Razorpay removal)
-            required_fields = ["subscription_type", "subscription_status", "trial_started"]
-            missing_fields = [field for field in required_fields if field not in profile_data]
+        if "error" in response:
+            self.log_test("User Profile - Get Profile", False, f"Request failed: {response['error']}")
+            return False
             
-            if not missing_fields:
-                self.log_test("User Profile", True, "Profile retrieved with subscription fields intact")
-            else:
-                self.log_test("User Profile", False, f"Profile missing subscription fields: {missing_fields}")
-        else:
-            self.log_test("User Profile", False, f"Profile retrieval failed: {response.get('error', response.get('data', 'Unknown error'))}")
-            
-    def test_subscription_status(self):
-        """Test subscription status endpoint (should still work)"""
-        print("\n💳 Testing Subscription Status (Should Work)...")
-        
-        if not self.access_token:
-            self.log_test("Subscription Status", False, "No access token available")
-            return
-            
-        response = self.make_request("GET", "/subscription/status")
-        
-        if response["success"] and response["status_code"] == 200:
-            status_data = response["data"]
-            
-            # Check if response has correct structure
-            if "success" in status_data and "subscription" in status_data:
-                subscription = status_data["subscription"]
-                required_fields = ["type", "status", "is_active", "days_remaining", "can_start_trial"]
-                missing_fields = [field for field in required_fields if field not in subscription]
+        if response["status_code"] == 200:
+            data = response["data"]
+            if "email" in data and "name" in data:
+                self.user_id = data.get("id")
+                self.log_test("User Profile - Get Profile", True, f"Profile retrieved: {data.get('name')} ({data.get('email')})")
                 
-                if not missing_fields:
-                    self.log_test("Subscription Status", True, f"Status endpoint working correctly: {subscription.get('type', 'unknown')} subscription")
-                else:
-                    self.log_test("Subscription Status", False, f"Subscription object missing fields: {missing_fields}")
-            else:
-                self.log_test("Subscription Status", False, f"Response missing 'success' or 'subscription' fields: {list(status_data.keys())}")
-        else:
-            self.log_test("Subscription Status", False, f"Status endpoint failed: {response.get('error', response.get('data', 'Unknown error'))}")
-            
-    def test_start_trial(self):
-        """Test start trial endpoint (should still work)"""
-        print("\n🆓 Testing Start Trial (Should Work)...")
-        
-        if not self.access_token:
-            self.log_test("Start Trial", False, "No access token available")
-            return
-            
-        response = self.make_request("POST", "/subscription/start-trial")
-        
-        if response["success"] and response["status_code"] == 200:
-            trial_data = response["data"]
-            if trial_data.get("success") and "subscription" in trial_data:
-                subscription = trial_data["subscription"]
-                if subscription.get("type") == "trial" and subscription.get("status") == "active":
-                    self.log_test("Start Trial", True, f"Trial started successfully: {subscription.get('days_remaining', 0)} days remaining")
-                else:
-                    self.log_test("Start Trial", False, f"Trial data incorrect: {subscription}")
-            else:
-                self.log_test("Start Trial", False, f"Trial response format incorrect: {trial_data}")
-        else:
-            # Check if it's already started (acceptable)
-            if response["status_code"] == 400 and "already" in str(response.get("data", "")).lower():
-                self.log_test("Start Trial", True, "Trial already started (acceptable)")
-            else:
-                self.log_test("Start Trial", False, f"Start trial failed: {response.get('error', response.get('data', 'Unknown error'))}")
+                # Test update profile
+                update_data = {
+                    "name": "Updated Test User",
+                    "email": self.test_user_email
+                }
                 
-    def test_removed_razorpay_endpoints(self):
-        """Test that Razorpay endpoints have been removed (should return 404)"""
-        print("\n🚫 Testing Removed Razorpay Endpoints (Should Return 404)...")
+                update_response = self.make_request("PUT", "/user/profile", update_data)
+                if update_response["status_code"] == 200:
+                    self.log_test("User Profile - Update Profile", True, "Profile updated successfully")
+                else:
+                    self.log_test("User Profile - Update Profile", False, f"Status {update_response['status_code']}")
+                
+                # Test update partner profile
+                partner_data = {
+                    "name": "Test Partner",
+                    "birthday": "15/06/1995",
+                    "anniversary": "14/02/2020",
+                    "favorite_color": "Blue",
+                    "favorite_food": "Pizza"
+                }
+                
+                partner_response = self.make_request("PUT", "/user/partner-profile", partner_data)
+                if partner_response["status_code"] == 200:
+                    self.log_test("User Profile - Update Partner Profile", True, "Partner profile updated successfully")
+                else:
+                    self.log_test("User Profile - Update Partner Profile", False, f"Status {partner_response['status_code']}")
+                
+                return True
+            else:
+                self.log_test("User Profile - Get Profile", False, f"Missing required fields in response: {data}")
+                return False
+        elif response["status_code"] == 401 or response["status_code"] == 403:
+            self.log_test("User Profile - Get Profile", False, "Authentication failed - token may be invalid")
+            return False
+        else:
+            self.log_test("User Profile - Get Profile", False, f"Status {response['status_code']}: {response.get('data', {})}")
+            return False
+
+    def test_task_management_endpoints(self):
+        """Test task management endpoints"""
+        print("\n📋 Testing Task Management Endpoints")
         
         if not self.access_token:
-            self.log_test("Razorpay Endpoints Check", False, "No access token available")
-            return
+            self.log_test("Task Management", False, "No access token available")
+            return False
+        
+        # Test get daily tasks
+        daily_response = self.make_request("GET", "/tasks/daily")
+        
+        if "error" in daily_response:
+            self.log_test("Task Management - Get Daily Tasks", False, f"Request failed: {daily_response['error']}")
+        elif daily_response["status_code"] == 200:
+            daily_data = daily_response["data"]
+            if isinstance(daily_data, list) and len(daily_data) > 0:
+                self.log_test("Task Management - Get Daily Tasks", True, f"Retrieved {len(daily_data)} daily tasks")
+                
+                # Test task completion with first task
+                first_task = daily_data[0]
+                task_id = first_task.get("id")
+                
+                if task_id:
+                    complete_data = {"task_id": task_id}
+                    complete_response = self.make_request("POST", "/tasks/complete", complete_data)
+                    
+                    if complete_response["status_code"] == 200:
+                        complete_result = complete_response["data"]
+                        if complete_result.get("success") and "points_earned" in complete_result:
+                            self.log_test("Task Management - Complete Task", True, 
+                                        f"Task completed, earned {complete_result['points_earned']} points")
+                        else:
+                            self.log_test("Task Management - Complete Task", False, f"Unexpected response: {complete_result}")
+                    else:
+                        self.log_test("Task Management - Complete Task", False, f"Status {complete_response['status_code']}")
+                else:
+                    self.log_test("Task Management - Complete Task", False, "No task ID found in daily tasks")
+            else:
+                self.log_test("Task Management - Get Daily Tasks", False, f"No tasks returned: {daily_data}")
+        else:
+            self.log_test("Task Management - Get Daily Tasks", False, f"Status {daily_response['status_code']}")
+        
+        # Test get weekly tasks
+        weekly_response = self.make_request("GET", "/tasks/weekly")
+        
+        if "error" in weekly_response:
+            self.log_test("Task Management - Get Weekly Tasks", False, f"Request failed: {weekly_response['error']}")
+        elif weekly_response["status_code"] == 200:
+            weekly_data = weekly_response["data"]
+            if isinstance(weekly_data, list) and len(weekly_data) > 0:
+                self.log_test("Task Management - Get Weekly Tasks", True, f"Retrieved {len(weekly_data)} weekly tasks")
+            else:
+                self.log_test("Task Management - Get Weekly Tasks", False, f"No weekly tasks returned: {weekly_data}")
+        else:
+            self.log_test("Task Management - Get Weekly Tasks", False, f"Status {weekly_response['status_code']}")
+        
+        # Test task regeneration
+        regen_response = self.make_request("POST", "/tasks/regenerate")
+        
+        if "error" in regen_response:
+            self.log_test("Task Management - Regenerate Tasks", False, f"Request failed: {regen_response['error']}")
+        elif regen_response["status_code"] == 200:
+            self.log_test("Task Management - Regenerate Tasks", True, "Tasks regenerated successfully")
+        else:
+            self.log_test("Task Management - Regenerate Tasks", False, f"Status {regen_response['status_code']}")
+
+    def test_events_endpoints(self):
+        """Test events endpoints"""
+        print("\n📅 Testing Events Endpoints")
+        
+        if not self.access_token:
+            self.log_test("Events", False, "No access token available")
+            return False
+        
+        # Test get events
+        events_response = self.make_request("GET", "/events")
+        
+        if "error" in events_response:
+            self.log_test("Events - Get Events", False, f"Request failed: {events_response['error']}")
+            return False
+        elif events_response["status_code"] == 200:
+            events_data = events_response["data"]
+            if isinstance(events_data, list):
+                self.log_test("Events - Get Events", True, f"Retrieved {len(events_data)} events")
+            else:
+                self.log_test("Events - Get Events", False, f"Unexpected response format: {events_data}")
+                return False
+        else:
+            self.log_test("Events - Get Events", False, f"Status {events_response['status_code']}")
+            return False
+        
+        # Test create custom event
+        event_data = {
+            "name": "Test Anniversary",
+            "date": (datetime.now() + timedelta(days=30)).isoformat(),
+            "description": "Test event for API testing",
+            "importance": "high"
+        }
+        
+        create_response = self.make_request("POST", "/events/custom", event_data)
+        
+        if "error" in create_response:
+            self.log_test("Events - Create Event", False, f"Request failed: {create_response['error']}")
+            return False
+        elif create_response["status_code"] == 200:
+            create_result = create_response["data"]
+            if "event" in create_result and "id" in create_result["event"]:
+                event_id = create_result["event"]["id"]
+                self.log_test("Events - Create Event", True, f"Event created with ID: {event_id}")
+                
+                # Test delete event
+                delete_response = self.make_request("DELETE", f"/events/custom/{event_id}")
+                
+                if delete_response["status_code"] == 200:
+                    self.log_test("Events - Delete Event", True, "Event deleted successfully")
+                else:
+                    self.log_test("Events - Delete Event", False, f"Status {delete_response['status_code']}")
+            else:
+                self.log_test("Events - Create Event", False, f"No event ID in response: {create_result}")
+        else:
+            self.log_test("Events - Create Event", False, f"Status {create_response['status_code']}")
+
+    def test_gamification_system(self):
+        """Test gamification features (points, streaks, levels)"""
+        print("\n🎮 Testing Gamification System")
+        
+        if not self.access_token:
+            self.log_test("Gamification", False, "No access token available")
+            return False
+        
+        # Get initial profile state
+        initial_response = self.make_request("GET", "/user/profile")
+        
+        if initial_response["status_code"] != 200:
+            self.log_test("Gamification - Get Initial State", False, f"Status {initial_response['status_code']}")
+            return False
+        
+        initial_data = initial_response["data"]
+        initial_points = initial_data.get("total_points", 0)
+        initial_level = initial_data.get("current_level", 1)
+        initial_streak = initial_data.get("current_streak", 0)
+        initial_tasks_completed = initial_data.get("tasks_completed", 0)
+        
+        self.log_test("Gamification - Get Initial State", True, 
+                     f"Points: {initial_points}, Level: {initial_level}, Streak: {initial_streak}, Tasks: {initial_tasks_completed}")
+        
+        # Get daily tasks and complete one to test point system
+        tasks_response = self.make_request("GET", "/tasks/daily")
+        
+        if tasks_response["status_code"] == 200 and isinstance(tasks_response["data"], list) and len(tasks_response["data"]) > 0:
+            # Find an uncompleted task
+            uncompleted_task = None
+            for task in tasks_response["data"]:
+                if not task.get("completed", False):
+                    uncompleted_task = task
+                    break
             
-        # List of endpoints that should be removed
-        removed_endpoints = [
-            ("POST", "/subscription/create-order", {"subscription_type": "monthly"}),
-            ("POST", "/subscription/verify-payment", {"razorpay_order_id": "test", "razorpay_payment_id": "test", "razorpay_signature": "test"}),
-            ("POST", "/subscriptions/create", {"subscription_type": "monthly"}),
-            ("POST", "/subscriptions/verify", {"razorpay_order_id": "test", "razorpay_payment_id": "test", "razorpay_signature": "test"}),
-            ("GET", "/subscriptions/status", None),
-            ("POST", "/subscriptions/cancel", None)
+            if uncompleted_task:
+                task_id = uncompleted_task.get("id")
+                expected_points = uncompleted_task.get("points", 5)
+                
+                # Complete the task
+                complete_response = self.make_request("POST", "/tasks/complete", {"task_id": task_id})
+                
+                if complete_response["status_code"] == 200:
+                    complete_result = complete_response["data"]
+                    points_earned = complete_result.get("points_earned", 0)
+                    
+                    if points_earned == expected_points:
+                        self.log_test("Gamification - Points Award", True, f"Correctly awarded {points_earned} points")
+                        
+                        # Check updated profile
+                        updated_response = self.make_request("GET", "/user/profile")
+                        if updated_response["status_code"] == 200:
+                            updated_data = updated_response["data"]
+                            new_points = updated_data.get("total_points", 0)
+                            new_level = updated_data.get("current_level", 1)
+                            new_streak = updated_data.get("current_streak", 0)
+                            new_tasks_completed = updated_data.get("tasks_completed", 0)
+                            
+                            # Verify points increased
+                            if new_points >= initial_points + points_earned:
+                                self.log_test("Gamification - Points Persistence", True, 
+                                            f"Points updated: {initial_points} → {new_points}")
+                            else:
+                                self.log_test("Gamification - Points Persistence", False, 
+                                            f"Points not updated correctly: {initial_points} → {new_points}")
+                            
+                            # Verify level calculation (level = points/100 + 1)
+                            expected_level = (new_points // 100) + 1
+                            if new_level == expected_level:
+                                self.log_test("Gamification - Level Calculation", True, 
+                                            f"Level correctly calculated: {new_level}")
+                            else:
+                                self.log_test("Gamification - Level Calculation", False, 
+                                            f"Level incorrect: expected {expected_level}, got {new_level}")
+                            
+                            # Verify task count increased
+                            if new_tasks_completed > initial_tasks_completed:
+                                self.log_test("Gamification - Task Count", True, 
+                                            f"Task count updated: {initial_tasks_completed} → {new_tasks_completed}")
+                            else:
+                                self.log_test("Gamification - Task Count", False, 
+                                            f"Task count not updated: {initial_tasks_completed} → {new_tasks_completed}")
+                            
+                            # Streak verification (should be at least 1 after completing a task)
+                            if new_streak >= 1:
+                                self.log_test("Gamification - Streak Tracking", True, 
+                                            f"Streak maintained/increased: {initial_streak} → {new_streak}")
+                            else:
+                                self.log_test("Gamification - Streak Tracking", False, 
+                                            f"Streak not working: {initial_streak} → {new_streak}")
+                        else:
+                            self.log_test("Gamification - Profile Update Check", False, "Could not fetch updated profile")
+                    else:
+                        self.log_test("Gamification - Points Award", False, 
+                                    f"Incorrect points: expected {expected_points}, got {points_earned}")
+                else:
+                    self.log_test("Gamification - Task Completion", False, f"Status {complete_response['status_code']}")
+            else:
+                self.log_test("Gamification - Find Uncompleted Task", False, "No uncompleted tasks available")
+        else:
+            self.log_test("Gamification - Get Tasks for Testing", False, "Could not retrieve daily tasks")
+
+    def test_authentication_edge_cases(self):
+        """Test authentication edge cases and error handling"""
+        print("\n🔒 Testing Authentication Edge Cases")
+        
+        # Test missing fields in registration
+        invalid_registration_cases = [
+            ({}, "Empty body"),
+            ({"email": self.test_user_email}, "Missing password and name"),
+            ({"password": "test123"}, "Missing email and name"),
+            ({"name": "Test"}, "Missing email and password"),
+            ({"email": "invalid-email", "password": "test123", "name": "Test"}, "Invalid email format")
         ]
         
-        for method, endpoint, data in removed_endpoints:
-            response = self.make_request(method, endpoint, data)
-            
-            if response["success"] and response["status_code"] == 404:
-                self.log_test(f"Removed Endpoint {method} {endpoint}", True, "Endpoint correctly returns 404 (removed)")
-            elif response["status_code"] == 404:
-                self.log_test(f"Removed Endpoint {method} {endpoint}", True, "Endpoint correctly returns 404 (removed)")
+        for case_data, case_name in invalid_registration_cases:
+            response = self.make_request("POST", "/auth/register", case_data)
+            if response["status_code"] == 422 or response["status_code"] == 400:
+                self.log_test(f"Auth Edge Case - {case_name}", True, f"Properly rejected with status {response['status_code']}")
             else:
-                self.log_test(f"Removed Endpoint {method} {endpoint}", False, f"Endpoint still exists (Status: {response.get('status_code', 'Unknown')})")
-                
-    def test_backend_logs_for_razorpay_errors(self):
-        """Check if backend is running without Razorpay import errors"""
-        print("\n📋 Testing Backend Logs for Razorpay Errors...")
+                self.log_test(f"Auth Edge Case - {case_name}", False, f"Status {response['status_code']}")
         
-        # Test a simple endpoint to see if backend is running without import errors
-        response = self.make_request("GET", "/subscription/status")
+        # Test unauthorized access
+        old_token = self.access_token
+        self.access_token = "invalid_token"
         
-        if response["success"]:
-            self.log_test("Backend Razorpay Import Check", True, "Backend running without Razorpay import errors")
+        unauthorized_response = self.make_request("GET", "/user/profile")
+        if unauthorized_response["status_code"] == 401 or unauthorized_response["status_code"] == 403:
+            self.log_test("Auth Edge Case - Invalid Token", True, "Properly rejected invalid token")
         else:
-            if "import" in str(response.get("error", "")).lower() or "module" in str(response.get("error", "")).lower():
-                self.log_test("Backend Razorpay Import Check", False, f"Possible import error: {response.get('error', 'Unknown error')}")
-            else:
-                self.log_test("Backend Razorpay Import Check", True, "No obvious import errors detected")
-                
-    def run_comprehensive_test(self):
-        """Run all tests"""
-        print("🚀 Starting Comprehensive Backend Testing for Razorpay Removal...")
-        print(f"Backend URL: {self.base_url}")
-        print(f"Test User: {TEST_USER_EMAIL}")
+            self.log_test("Auth Edge Case - Invalid Token", False, f"Status {unauthorized_response['status_code']}")
+        
+        # Restore valid token
+        self.access_token = old_token
+
+    def run_comprehensive_test_suite(self):
+        """Run all tests in sequence"""
+        print("🧪 Starting Comprehensive Backend API Testing for Production Readiness")
         print("=" * 80)
         
-        # Test sequence
-        self.test_backend_health()
-        self.test_user_registration()
+        start_time = time.time()
         
-        # If registration fails, try login
-        if not self.access_token:
-            self.test_user_login()
-            
         # Core functionality tests
-        self.test_user_profile()
-        self.test_subscription_status()
-        self.test_start_trial()
+        self.test_health_endpoint()
+        self.test_user_registration()
+        self.test_user_login()
+        self.test_user_profile_endpoints()
+        self.test_task_management_endpoints()
+        self.test_events_endpoints()
+        self.test_gamification_system()
+        self.test_authentication_edge_cases()
         
-        # Razorpay removal verification
-        self.test_removed_razorpay_endpoints()
-        self.test_backend_logs_for_razorpay_errors()
+        end_time = time.time()
+        duration = end_time - start_time
         
-        # Print summary
-        self.print_summary()
-        
-    def print_summary(self):
-        """Print test summary"""
+        # Print comprehensive summary
         print("\n" + "=" * 80)
-        print("🎯 TEST SUMMARY")
+        print("📊 COMPREHENSIVE TEST RESULTS SUMMARY")
+        print("=" * 80)
+        print(f"⏱️  Total Test Duration: {duration:.2f} seconds")
+        print(f"📈 Total Tests Run: {self.total_tests}")
+        print(f"✅ Tests Passed: {self.passed_tests}")
+        print(f"❌ Tests Failed: {len(self.failed_tests)}")
+        print(f"📊 Success Rate: {(self.passed_tests/self.total_tests*100):.1f}%")
+        
+        if self.failed_tests:
+            print("\n❌ FAILED TESTS:")
+            for i, failure in enumerate(self.failed_tests, 1):
+                print(f"   {i}. {failure}")
+        
+        print("\n🎯 PRODUCTION READINESS ASSESSMENT:")
+        success_rate = (self.passed_tests/self.total_tests*100)
+        
+        if success_rate >= 95:
+            print("🟢 EXCELLENT: System is production-ready with excellent reliability")
+        elif success_rate >= 90:
+            print("🟡 GOOD: System is mostly production-ready with minor issues")
+        elif success_rate >= 80:
+            print("🟠 FAIR: System needs attention before production deployment")
+        else:
+            print("🔴 POOR: System requires significant fixes before production")
+        
         print("=" * 80)
         
-        success_rate = (self.passed_tests / self.total_tests * 100) if self.total_tests > 0 else 0
-        
-        print(f"Total Tests: {self.total_tests}")
-        print(f"Passed: {self.passed_tests}")
-        print(f"Failed: {self.total_tests - self.passed_tests}")
-        print(f"Success Rate: {success_rate:.1f}%")
-        
-        print("\n📋 DETAILED RESULTS:")
-        for result in self.test_results:
-            print(f"{result['status']}: {result['test']} - {result['message']}")
-            
-        print("\n🔍 RAZORPAY REMOVAL VERIFICATION:")
-        
-        # Check specific categories
-        subscription_working = any("Subscription Status" in r["test"] and "✅" in r["status"] for r in self.test_results)
-        trial_working = any("Start Trial" in r["test"] and "✅" in r["status"] for r in self.test_results)
-        endpoints_removed = all("✅" in r["status"] for r in self.test_results if "Removed Endpoint" in r["test"])
-        no_import_errors = any("Backend Razorpay Import Check" in r["test"] and "✅" in r["status"] for r in self.test_results)
-        
-        print(f"✅ Subscription Status Working: {'YES' if subscription_working else 'NO'}")
-        print(f"✅ Free Trial Working: {'YES' if trial_working else 'NO'}")
-        print(f"✅ Razorpay Endpoints Removed: {'YES' if endpoints_removed else 'NO'}")
-        print(f"✅ No Import Errors: {'YES' if no_import_errors else 'NO'}")
-        
-        if subscription_working and trial_working and endpoints_removed and no_import_errors:
-            print("\n🎉 RAZORPAY REMOVAL VERIFICATION: SUCCESS")
-            print("All tests indicate Razorpay has been successfully removed while preserving core subscription functionality.")
-        else:
-            print("\n⚠️ RAZORPAY REMOVAL VERIFICATION: ISSUES DETECTED")
-            print("Some tests failed. Please review the detailed results above.")
+        return {
+            "total_tests": self.total_tests,
+            "passed_tests": self.passed_tests,
+            "failed_tests": len(self.failed_tests),
+            "success_rate": success_rate,
+            "duration": duration,
+            "failures": self.failed_tests
+        }
 
 if __name__ == "__main__":
     tester = BackendTester()
