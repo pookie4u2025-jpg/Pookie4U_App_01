@@ -321,81 +321,175 @@ export default function OnboardingScreen() {
     switch (step) {
       case 1:
         return (
-          <View style={styles.stepContainer}>
+          <Animated.View 
+            entering={FadeInDown.duration(500).springify()}
+            exiting={FadeOutUp.duration(300)}
+            style={styles.stepContainer}
+          >
             <Text style={styles.stepTitle}>What's your partner's name?</Text>
             <Text style={styles.stepSubtitle}>
               We'll use this to personalize your experience
             </Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                partnerNameError ? styles.inputError : null,
+              ]}
               placeholder="Partner's name"
               value={partnerName}
-              onChangeText={setPartnerName}
+              onChangeText={(text) => {
+                setPartnerName(text);
+                if (text.trim().length >= 2) {
+                  setPartnerNameError('');
+                }
+              }}
+              onBlur={() => {
+                if (partnerName.trim()) {
+                  validatePartnerName(partnerName);
+                }
+              }}
               autoCapitalize="words"
+              autoFocus
             />
-          </View>
+            {partnerNameError ? (
+              <Animated.Text 
+                entering={FadeInDown.duration(300)}
+                style={styles.errorText}
+              >
+                {partnerNameError}
+              </Animated.Text>
+            ) : null}
+          </Animated.View>
         );
 
       case 2:
         return (
-          <View style={styles.stepContainer}>
+          <Animated.View 
+            entering={FadeInDown.duration(500).springify()}
+            exiting={FadeOutUp.duration(300)}
+            style={styles.stepContainer}
+          >
             <Text style={styles.stepTitle}>What's your relationship mode?</Text>
             <Text style={styles.stepSubtitle}>
               This helps us suggest the right tasks for you
             </Text>
             <View style={styles.relationshipModeContainer}>
-              {RELATIONSHIP_MODES.map((mode) => (
-                <TouchableOpacity
+              {RELATIONSHIP_MODES.map((mode, index) => (
+                <Animated.View
                   key={mode.value}
-                  style={[
-                    styles.relationshipModeButton,
-                    relationshipMode === mode.value && styles.relationshipModeButtonSelected
-                  ]}
-                  onPress={() => setRelationshipMode(mode.value)}
-                  activeOpacity={0.7}
+                  entering={FadeInDown.duration(500).delay(index * 100).springify()}
                 >
-                  <Text style={[
-                    styles.relationshipModeText,
-                    relationshipMode === mode.value && styles.relationshipModeTextSelected
-                  ]}>
-                    {mode.label}
-                  </Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.relationshipModeButton,
+                      relationshipMode === mode.value && styles.relationshipModeButtonSelected
+                    ]}
+                    onPress={() => setRelationshipMode(mode.value)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[
+                      styles.relationshipModeText,
+                      relationshipMode === mode.value && styles.relationshipModeTextSelected
+                    ]}>
+                      {mode.label}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
               ))}
             </View>
-          </View>
+          </Animated.View>
         );
 
       case 3:
         return (
-          <View style={styles.stepContainer}>
+          <Animated.View 
+            entering={FadeInDown.duration(500).springify()}
+            exiting={FadeOutUp.duration(300)}
+            style={styles.stepContainer}
+          >
             <Text style={styles.stepTitle}>When is your partner's birthday?</Text>
             <Text style={styles.stepSubtitle}>
               Optional - We'll remind you of important dates
             </Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                birthdayError ? styles.inputError : null,
+              ]}
               placeholder="DD-MM-YYYY (e.g., 15-06-1995)"
               value={birthday}
-              onChangeText={setBirthday}
+              onChangeText={(text) => {
+                setBirthday(text);
+                if (birthdayError) {
+                  setBirthdayError('');
+                }
+              }}
+              onBlur={() => {
+                if (birthday.trim() && !validateDate(birthday, 'birthday')) {
+                  setBirthdayError('Please enter a valid date (DD-MM-YYYY)');
+                }
+              }}
+              keyboardType="numeric"
+              autoFocus
             />
-          </View>
+            {birthdayError ? (
+              <Animated.Text 
+                entering={FadeInDown.duration(300)}
+                style={styles.errorText}
+              >
+                {birthdayError}
+              </Animated.Text>
+            ) : null}
+            <Text style={styles.helperText}>
+              💡 You can skip this and add it later
+            </Text>
+          </Animated.View>
         );
 
       case 4:
         return (
-          <View style={styles.stepContainer}>
+          <Animated.View 
+            entering={FadeInDown.duration(500).springify()}
+            exiting={FadeOutUp.duration(300)}
+            style={styles.stepContainer}
+          >
             <Text style={styles.stepTitle}>When is your anniversary?</Text>
             <Text style={styles.stepSubtitle}>
               Optional - We'll help you celebrate special moments
             </Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                anniversaryError ? styles.inputError : null,
+              ]}
               placeholder="DD-MM-YYYY (e.g., 14-02-2020)"
               value={anniversary}
-              onChangeText={setAnniversary}
+              onChangeText={(text) => {
+                setAnniversary(text);
+                if (anniversaryError) {
+                  setAnniversaryError('');
+                }
+              }}
+              onBlur={() => {
+                if (anniversary.trim() && !validateDate(anniversary, 'anniversary')) {
+                  setAnniversaryError('Please enter a valid date (DD-MM-YYYY)');
+                }
+              }}
+              keyboardType="numeric"
+              autoFocus
             />
-          </View>
+            {anniversaryError ? (
+              <Animated.Text 
+                entering={FadeInDown.duration(300)}
+                style={styles.errorText}
+              >
+                {anniversaryError}
+              </Animated.Text>
+            ) : null}
+            <Text style={styles.helperText}>
+              💡 You can skip this and add it later
+            </Text>
+          </Animated.View>
         );
 
       default:

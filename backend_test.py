@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 
 # Configuration
-BACKEND_URL = "https://pookie-connect.preview.emergentagent.com/api"
+BACKEND_URL = "https://love-tasks-1.preview.emergentagent.com/api"
 TEST_USER_EMAIL = f"test.user.{int(time.time())}@example.com"
 TEST_USER_PASSWORD = "SecurePass123!"
 TEST_USER_NAME = "Test User"
