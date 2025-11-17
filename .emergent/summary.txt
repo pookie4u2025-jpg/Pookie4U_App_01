@@ -1,98 +1,91 @@
 <analysis>
-The AI engineer's work spanned multiple critical features and extensive debugging. Initially, the comprehensive removal of the Razorpay payment gateway was successfully completed across both backend and frontend, including code, dependencies, environment variables, and documentation. Following this, the focus shifted to integrating a hybrid subscription model using RevenueCat and Google Play Billing, which involved significant updates to the frontend subscription screen and backend configuration. A major challenge during this phase was troubleshooting persistent APK build errors, primarily related to corrupted files, monorepo structure, and uncommitted . Simultaneously, a new feature allowing users two weekly task refreshes was implemented, requiring both backend logic for tracking refreshes and frontend UI updates. The trajectory concluded with the engineer guiding the user on setting the 'Base directory' for an EAS build, indicating readiness for APK generation after resolving the monorepo configuration for EAS CLI.
+My analysis of the trajectory reveals a comprehensive development cycle, moving the application from a state with deployment blockers to a near-production-ready state. The work began by resolving a critical infrastructure issue: connecting the backend to a MongoDB Atlas cluster. This involved extensive, iterative debugging of the connection string, user credentials, and permissions, ultimately resolved by creating a new, simplified database user.
+
+With the database connected, the focus shifted to significant feature development and user experience enhancements. A multi-phase implementation of a comprehensive animation system using  was completed to add subtle, professional polish across the app. This was followed by the implementation of a robust offline support system, using  and a custom  to cache data and queue actions, enhancing the app's resilience.
+
+The final phase focused on production readiness. This included backend API testing and fixing minor bugs, followed by addressing user-reported UI/UX issues, such as a theme-related black screen bug and a navigation error on the subscription screen. The authentication flow was completely redesigned to be Google-first, simplifying the user journey. The most recent work involves implementing a six-point user request list to finalize the onboarding and user retention logic, ensuring the app is truly launch-ready. The user's primary language is English, and the next agent must continue to respond in English.
 </analysis>
 
 <product_requirements>
-The Pookie4u app is a gamified mobile application for couples, aiming to enhance relationships through AI-driven tasks, event notifications, curated gifts, and messaging, with a focus on a high-quality user experience. Key features include email/Emergent OAuth authentication, a 14-day free trial subscription model, push notifications, and a referral system. Recent enhancements involved an improved Gifts tab, app-wide animations, and AI personalization.
+The Pookie4u app is a gamified mobile application for couples, designed to enhance relationships through AI-driven tasks and shared activities. The primary goal is to provide a high-quality, seamless, and engaging user experience that feels polished and production-ready.
 
-So far, the app has implemented:
-- Event CRUD operations.
-- A Reward History Page.
-- Partially applied comprehensive animations.
-- An enhanced notification system.
-- Corrected daily streak calculation.
-- A complete account deletion system.
-- Emergent OAuth integration (replacing Google OAuth).
-- Initial setup and login flow improvements.
-- A Feedback System and Referral Rewards (50 points).
-- Reward Milestone System (auto gift coupon every 1000 points).
-- **Completed during this trajectory**: Full removal of Razorpay payment gateway.
-- **In progress**: Hybrid subscription flow with backend-managed 14-day trial and Google Play Billing for paid plans via RevenueCat.
-- **New Feature**: Two weekly task refreshes per user.
+**Key Features Implemented/Refined in this Trajectory:**
+
+*   **Production Database:** Migrated from a local MongoDB instance to a cloud-hosted MongoDB Atlas cluster.
+*   **Comprehensive Animations:** Implemented a system-wide animation framework for screen transitions, list item rendering, and micro-interactions (e.g., tab bar icon bounce) to improve UX.
+*   **Offline Support:** The app now caches critical data (tasks, profile) and queues offline actions (e.g., completing a task) to be synced when connectivity is restored. Includes a global offline indicator and toast notifications for feedback.
+*   **Simplified Authentication:** The login/signup flow was redesigned to be Google-first, removing the mandatory password-setting step for a smoother onboarding experience.
+*   **Subscription Logic:** The system was updated to support a 14-day free trial, monthly, and six-month subscription plans. Backend logic was added to restrict prize eligibility to paying subscribers.
+*   **Bug Fixes:** Resolved critical UI bugs, including a theme-related black screen issue and a navigation routing error.
+
+**Current Production-Readiness Requirements:**
+1.  Prevent duplicate accounts from the same Google ID.
+2.  Persist all user and partner details to avoid re-entry.
+3.  Automatically route existing users to the home page, skipping onboarding.
+4.  Ensure new users go through the full onboarding and subscription selection flow.
+5.  Implement a notification system for expiring free trials.
+6.  Ensure paid subscriptions are configured for auto-renewal.
 </product_requirements>
 
 <key_technical_concepts>
--   **Frontend**: React Native, Expo (Expo Router), Zustand, , , RevenueCat SDK (), EAS CLI.
--   **Backend**: FastAPI (Python), MongoDB, Pydantic, JWT authentication, .
--   **Authentication**: Email/Password, JWT decoding, Emergent OAuth (session-based, Google-backed).
--   **Payment**: Razorpay (removed), Google Play Billing (integrating via RevenueCat).
--   **AI**: Emergent integrations (LlmChat) for task generation.
+- **Frontend:** React Native, Expo, Expo Router,  (for all animations), Zustand (state management).
+- **Backend:** FastAPI (Python), MongoDB (with MongoDB Atlas for production).
+- **Offline Functionality:**  for network detection, AsyncStorage for caching Zustand stores, and a custom  for queuing API requests.
+- **Authentication:** Google OAuth via Emergent's service, with JWT for session management. Logic was added to handle  status.
+- **Deployment & Infrastructure:** EAS for builds, health-check endpoint () for deployment monitoring.
 </key_technical_concepts>
 
 <code_architecture>
+The project is a monorepo with a  (Expo) and  (FastAPI) application.
 
 
--   ****: Core FastAPI backend logic.
-    -   **Summary**: Central API handler. Significant changes for Razorpay removal and weekly task refresh logic.
-    -   **Changes**: Razorpay imports, endpoints, and  fields removed.  updated to store and manage  and  for each user, and to return .
--   ****: Razorpay payment logic.
-    -   **Summary**: Handled Razorpay integrations.
-    -   **Changes**: **DELETED**.
--   ****: Python dependencies for the backend.
-    -   **Summary**: Lists all Python packages.
-    -   **Changes**:  package removed.
--   ****: Frontend UI for subscription management.
-    -   **Summary**: Displays subscription options and handles payment initiation.
-    -   **Changes**: Completely refactored to implement the hybrid subscription flow. Removed all Razorpay-related logic. Integrated  (RevenueCat) to fetch offerings. Implements separate logic for backend-managed free trial and RevenueCat-managed paid plans. Includes Coming Soon for payment. Updated image paths to existing logos.
--   ****: Expo Router root layout.
-    -   **Summary**: Global layout and app initialization.
-    -   **Changes**: Added  for RevenueCat initialization.
--   ****: UI for displaying and managing tasks.
-    -   **Summary**: Shows daily and weekly tasks, allows completion and refreshing.
-    -   **Changes**: Updated  function to integrate with the new weekly refresh limit logic from . The weekly task refresh button now displays  and is disabled when the limit (2 per week) is reached. New styles added for the refresh counter.
--   ****: Zustand store for task-related state.
-    -   **Summary**: Manages task data and API calls.
-    -   **Changes**: Added  to the state. Modified  to receive and store this value from the backend. Updated  to decrement the count locally and send the  flag to the backend. Includes error handling for refresh limits.
--   ****: Frontend environment variables.
-    -   **Summary**: Stores public-facing configuration.
-    -   **Changes**:  removed.  added.
--   ****: Expo application configuration.
-    -   **Summary**: Defines app metadata, platform-specific settings, and plugins.
-    -   **Changes**:  permission added under . RevenueCat plugin () added to .  field set. Build error fixes:  format, and temporary removal of splash screen config.  was modified and later re-linked by EAS CLI.
--   ****: EAS build ignore file.
-    -   **Summary**: Specifies files/directories to ignore during EAS builds.
-    -   **Changes**: **NEW FILE**, added  to address build issues.
--   ****: EAS configuration for monorepo.
-    -   **Summary**: Configures EAS CLI for projects within subdirectories.
-    -   **Changes**: **NEW FILE** at the root, configured  and . Crucially, added  to point to  for monorepo support.
+
+-   ****
+    -   **Importance:** The single source of truth for all backend logic and API endpoints.
+    -   **Summary of Changes:** Critical updates were made to connect to MongoDB Atlas. A new endpoint, , was added to mark a user's profile as complete after they finish the initial onboarding flow. Logic was added to the  endpoint to include a  field, restricting prizes to paid users. An alias  was added, and the  endpoint was fixed to return proper JSON.
+
+-   ****
+    -   **Importance:** The entry point for user authentication.
+    -   **Summary of Changes:** Completely redesigned to create a Google-first login experience. The UI was simplified to prioritize the Continue with Google button, making email/password a less prominent, optional fallback. This removed a point of friction for new users.
+
+-   ****
+    -   **Importance:** The root layout component for the entire application.
+    -   **Summary of Changes:** This file was modified to wrap the application with newly created providers.  was added to show a global banner when the user is offline, and  was integrated to enable app-wide toast notifications.
+
+-   ** & **
+    -   **Importance:** Zustand stores for managing global state for tasks and authentication.
+    -   **Summary of Changes:** These stores were integrated with the new . Functions that perform mutations (e.g., , ) were updated to check for network connectivity. If offline, the request is queued in  to be executed later.
+
+-   ****
+    -   **Importance:** The screen new users see to input their initial details (partner name, anniversary, etc.).
+    -   **Summary of Changes:** The submission handler was updated to make a  request to the new  endpoint. This action is crucial for flagging the user as fully onboarded, allowing the app to route them directly to the home screen on subsequent logins.
+
+-   ****
+    -   **Importance:** The screen for managing user subscriptions.
+    -   **Summary of Changes:** This screen was the source of two user-reported bugs. The code was fixed to use theme-aware colors instead of hardcoded hex values, resolving a black screen issue on navigation. The back button logic was also corrected to use  instead of , fixing an Unmatched Route error.
 </code_architecture>
 
 <pending_tasks>
--   Complete comprehensive subtle, permanent animations across *all* app screens (beyond ).
--   Complete Feature 5: Offline Support.
--   Finish guiding the user through the Google Play Console setup (creating subscription products, linking with RevenueCat).
--   Successfully build the APK for the application.
+- **Onboarding Polish:** Enhance the UI/UX of the .
+- **Duplicate Account Prevention:** Solidify backend logic to prevent multiple accounts with the same Google ID.
+- **Trial Expiry Notifications:** Implement local or push notifications to warn users 2 days before their 14-day free trial ends.
+- **Auto-Renew Subscriptions:** Guide the user through the final Google Play Console steps to ensure subscriptions auto-renew correctly.
+- **Final Deployment:** Build the production APK and deploy the application.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was actively engaged in guiding the user to **build the APK** for the application using Expo Application Services (EAS). This is a critical step to enable the recently implemented RevenueCat and Google Play Billing integration to be tested and deployed.
+The current work is focused on implementing a list of six critical user experience and data-handling requirements to make the application fully launch-ready. The user has approved a multi-phase plan to tackle these requirements.
 
-The preceding work flow was as follows:
-1.  **RevenueCat Integration**: The frontend  and  files were updated to include RevenueCat SDK () and its initialization. A new environment variable, , was added to . The user was guided through creating a RevenueCat account, project, and adding the Android app, eventually providing the correct public API key.
-2.  **Weekly Task Refresh Feature**: This feature was fully implemented. The backend () was updated to track  and  per user, returning . The frontend ( and ) was updated to manage this state, display the remaining refreshes, and disable the refresh button when the limit is reached.
-3.  **APK Build Troubleshooting**: The AI engineer has been repeatedly attempting to assist the user in building the APK via EAS. Challenges encountered include:
-    *   Authentication issues with EAS CLI.
-    *   Persistent corrupted file errors () preventing builds from the environment.
-    *   Monorepo configuration issues, where EAS was looking for  and  in the root directory instead of .
-    *   Fixes applied include creating a root  with  pointing to , adding  to , and committing relevant configuration files.
-    *   Build errors related to image dimensions and  format in  were also fixed.
-    *   The project has been successfully linked to an EAS project ().
-    *   All necessary permissions (e.g., ) and RevenueCat plugins have been added to .
-    *   A comprehensive set of checks (JSON validity, image references, package name consistency) has been performed, and the app is deemed 100% ready for APK build from a code perspective.
+**Phase 1: Smart User Routing** was just completed. The goal was to ensure new users see an onboarding screen while existing users are taken directly to the home page. The key steps performed were:
+1.  **Analysis:** The AI confirmed that the frontend routing logic in  already checks for a  flag on the user object.
+2.  **Backend Gap Identified:** It was discovered that there was no backend mechanism to set this  flag to .
+3.  **Backend Implementation:** A new authenticated endpoint, , was created in . This endpoint finds the current user and sets their  field to .
+4.  **Frontend Integration:** The  was modified. Upon successful submission of the user's initial details, it now makes a  request to this new endpoint.
+5.  **Service Restart:** Both backend and frontend services were restarted to apply the changes.
 
-The immediate problem is that the user is still stuck at the EAS build configuration screen, specifically needing to set the Base directory field, as indicated by the most recent screenshot. The AI engineer is in the process of guiding the user through this final configuration step for the build.
+The system is now functionally complete for routing users based on their onboarding status. The immediate next step, as confirmed by the user, is to start **Phase 2: Onboarding Polish**.
 </current_work>
 
 <optional_next_step>
-Guide the user to set the Base directory field to  in the EAS build configuration screen.
+Proceed with **Phase 2: Onboarding Polish**. Analyze  to identify and implement UI/UX enhancements, such as improved input validation, better visual feedback, and smoother transitions.
 </optional_next_step>
