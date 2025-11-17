@@ -5047,5 +5047,25 @@ async def approve_reward(
 async def shutdown_db_client():
     client.close()
 
+# ============================================================================
+# PHASE 4: TRIAL EXPIRY NOTIFICATIONS - CRON ENDPOINT
+# ============================================================================
+
+@api_router.post("/admin/check-trial-expiry")
+async def trigger_trial_expiry_check(current_user: dict = Depends(get_current_user_flexible)):
+    """
+    Manually trigger trial expiry check and notifications
+    Should be called daily by a cron job or external scheduler
+    """
+    from trial_expiry_notifier import check_and_notify_trial_expiry
+    
+    result = await check_and_notify_trial_expiry()
+    
+    return {
+        "success": True,
+        "message": "Trial expiry check completed",
+        "result": result
+    }
+
 # Include API router with all endpoints
 app.include_router(api_router)
