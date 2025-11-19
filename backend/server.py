@@ -5066,6 +5066,264 @@ async def shutdown_db_client():
     client.close()
 
 # ============================================================================
+# GAMIFICATION SYSTEM API ENDPOINTS
+# ============================================================================
+
+# Global gamification service instance
+gamification_service = None
+
+@api_router.get("/gamification/stats")
+async def get_gamification_stats(current_user: dict = Depends(get_current_user_flexible)):
+    """
+    Get user's complete gamification stats
+    Returns points, level, streak, and eligibility info
+    """
+    user_id = current_user["_id"]
+    user = await db.users.find_one({"_id": user_id})
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Calculate available points
+    total_points = user.get("total_points", 0)
+    points_spent = user.get("points_spent", 0)
+    available_points = total_points - points_spent
+    
+    # Get current level info
+    current_level = user.get("current_level", 1)
+    level_info = LEVEL_THRESHOLDS.get(current_level, LEVEL_THRESHOLDS[1])
+    
+    # Get next level info
+    next_level = current_level + 1
+    next_level_info = LEVEL_THRESHOLDS.get(next_level)
+    
+    # Calculate progress to next level
+    if next_level_info:
+        points_needed = next_level_info["points"] - total_points
+        progress_percentage = ((total_points - level_info["points"]) / 
+                              (next_level_info["points"] - level_info["points"])) * 100
+    else:
+        points_needed = 0
+        progress_percentage = 100
+    
+    # Check prize eligibility
+    current_streak = user.get("current_streak", 0)
+    weekly_eligible = current_streak >= 7
+    monthly_eligible = current_streak >= 30
+    
+    return {
+        "success": True,
+        "points": {
+            "total": total_points,
+            "available": available_points,
+            "spent": points_spent
+        },
+        "level": {
+            "current": current_level,
+            "name": level_info["name"],
+            "unlock": level_info["unlock"],
+            "next_level": next_level if next_level_info else None,
+            "next_level_name": next_level_info["name"] if next_level_info else None,
+            "next_level_unlock": next_level_info["unlock"] if next_level_info else None,
+            "points_to_next": points_needed,
+            "progress_percentage": min(100, max(0, progress_percentage))
+        },
+        "streak": {
+            "current": current_streak,
+            "longest": user.get("longest_streak", 0),
+            "daily_tasks_today": user.get("daily_tasks_completed_today", 0),
+            "tasks_total": user.get("tasks_completed", 0)
+        },
+        "prize_eligibility": {
+            "weekly_draw": weekly_eligible,
+            "monthly_draw": monthly_eligible,
+            "days_to_weekly": max(0, 7 - current_streak) if not weekly_eligible else 0,
+            "days_to_monthly": max(0, 30 - current_streak) if not monthly_eligible else 0
+        },
+        "features_unlocked": {
+            "love_language": current_level >= 5,
+            "mood_tracker": current_level >= 5,
+            "advanced_date_generator": current_level >= 10,
+            "love_language_filtering": current_level >= 15,
+            "anniversary_toolkit": current_level >= 20
+        }
+    }
+
+@api_router.post("/store/purchase")
+async def purchase_store_item(
+    item_request: dict,
+    current_user: dict = Depends(get_current_user_flexible)
+):
+    """
+    Purchase an item from the in-app store
+    Body: { "item_id": "doover_pass" | "advanced_message_pack" | "bailout_streak_save" }
+    """
+    item_id = item_request.get("item_id")
+    
+    if not item_id:
+        raise HTTPException(status_code=400, detail="item_id is required")
+    
+    if item_id not in STORE_ITEMS:
+        raise HTTPException(status_code=404, detail=f"Item '{item_id}' not found in store")
+    
+    try:
+        result = await gamification_service.purchase_store_item(
+            current_user["_id"],
+            item_id
+        )
+        
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+        
+        return result
+        
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error purchasing item: {e}")
+        raise HTTPException(status_code=500, detail="Failed to purchase item")
+
+@api_router.get("/store/items")
+async def get_store_items(current_user: dict = Depends(get_current_user_flexible)):
+    """Get all available store items with user's purchase eligibility"""
+    user = await db.users.find_one({"_id": current_user["_id"]})
+    
+    available_points = user.get("total_points", 0) - user.get("points_spent", 0)
+    bailout_used = user.get("bailout_used_this_month", False)
+    
+    items_with_eligibility = []
+    for item_id, item_info in STORE_ITEMS.items():
+        can_afford = available_points >= item_info["cost"]
+        
+        # Check bailout monthly limitation
+        if item_id == "bailout_streak_save":
+            can_purchase = can_afford and not bailout_used
+            reason = "Already used this month" if bailout_used else None
+        else:
+            can_purchase = can_afford
+            reason = None
+        
+        items_with_eligibility.append({
+            "id": item_id,
+            **item_info,
+            "can_purchase": can_purchase,
+            "can_afford": can_afford,
+            "reason": reason
+        })
+    
+    return {
+        "success": True,
+        "items": items_with_eligibility,
+        "user_points": available_points
+    }
+
+@api_router.get("/gamification/leaderboard/weekly")
+async def get_weekly_leaderboard(current_user: dict = Depends(get_current_user_flexible)):
+    """
+    Get users eligible for weekly prize draw (7+ day streak)
+    """
+    # Find users with 7+ day streak
+    eligible_users = await db.users.find(
+        {"current_streak": {"$gte": 7}},
+        {"name": 1, "current_streak": 1, "total_points": 1}
+    ).to_list(length=100)
+    
+    # Sort by streak (descending), then by points
+    sorted_users = sorted(
+        eligible_users,
+        key=lambda x: (x.get("current_streak", 0), x.get("total_points", 0)),
+        reverse=True
+    )
+    
+    return {
+        "success": True,
+        "draw_type": "weekly",
+        "eligible_count": len(sorted_users),
+        "top_users": [
+            {
+                "name": user.get("name", "User"),
+                "streak": user.get("current_streak", 0),
+                "points": user.get("total_points", 0)
+            }
+            for user in sorted_users[:10]  # Top 10
+        ]
+    }
+
+@api_router.get("/gamification/leaderboard/monthly")
+async def get_monthly_leaderboard(current_user: dict = Depends(get_current_user_flexible)):
+    """
+    Get users eligible for monthly prize draw (30+ day streak)
+    """
+    # Find users with 30+ day streak
+    eligible_users = await db.users.find(
+        {"current_streak": {"$gte": 30}},
+        {"name": 1, "current_streak": 1, "total_points": 1}
+    ).to_list(length=100)
+    
+    # Sort by streak (descending), then by points
+    sorted_users = sorted(
+        eligible_users,
+        key=lambda x: (x.get("current_streak", 0), x.get("total_points", 0)),
+        reverse=True
+    )
+    
+    return {
+        "success": True,
+        "draw_type": "monthly",
+        "eligible_count": len(sorted_users),
+        "top_users": [
+            {
+                "name": user.get("name", "User"),
+                "streak": user.get("current_streak", 0),
+                "points": user.get("total_points", 0)
+            }
+            for user in sorted_users[:10]  # Top 10
+        ]
+    }
+
+@api_router.put("/user/love-language")
+async def set_love_language(
+    request: dict,
+    current_user: dict = Depends(get_current_user_flexible)
+):
+    """
+    Set user's love language (only available at Level 5+)
+    Body: { "love_language": "WoA" | "AoS" | "QT" | "Gifts" | "PT" }
+    """
+    user = await db.users.find_one({"_id": current_user["_id"]})
+    
+    # Check if user is Level 5+
+    if user.get("current_level", 1) < 5:
+        raise HTTPException(
+            status_code=403,
+            detail="Love Language selection unlocks at Level 5"
+        )
+    
+    love_language = request.get("love_language")
+    valid_languages = ["WoA", "AoS", "QT", "Gifts", "PT"]
+    
+    if not love_language or love_language not in valid_languages:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid love language. Must be one of: {', '.join(valid_languages)}"
+        )
+    
+    # Update love language
+    await db.users.update_one(
+        {"_id": current_user["_id"]},
+        {"$set": {
+            "love_language": love_language,
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    return {
+        "success": True,
+        "message": "Love language updated successfully",
+        "love_language": love_language
+    }
+
+# ============================================================================
 # PHASE 4: TRIAL EXPIRY NOTIFICATIONS - CRON ENDPOINT
 # ============================================================================
 
