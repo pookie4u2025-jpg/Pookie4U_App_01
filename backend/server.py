@@ -3411,84 +3411,53 @@ async def complete_task(task_data: TaskComplete, current_user: dict = Depends(ge
     if not task_found:
         raise HTTPException(status_code=404, detail="Task not found or already completed")
     
-    # Update user stats
-    new_total_points = current_user.get("total_points", 0) + points_earned
-    new_level = (new_total_points // 100) + 1
-    new_tasks_completed = current_user.get("tasks_completed", 0) + 1
+    # GAMIFICATION SYSTEM: Award points and update stats
+    print(f"🎮 GAMIFICATION: Awarding points for {task_type} task")
     
-    # Proper streak calculation - only updates once per day
-    today = datetime.utcnow().date()
-    last_streak_update = current_user.get("last_streak_update")
-    current_streak = current_user.get("current_streak", 0)
-    longest_streak = current_user.get("longest_streak", 0)
+    # Check if task is a special event (birthday/anniversary)
+    is_special_event = task_category in ["Birthday", "Anniversary", "Special Event"]
     
-    print(f"🔥 STREAK DEBUG - User: {current_user.get('email')}")
-    print(f"📅 Today: {today}")
-    print(f"📅 Last streak update: {last_streak_update}")
-    print(f"🔥 Current streak before update: {current_streak}")
-    print(f"🏆 Longest streak: {longest_streak}")
+    # Check if completed within 1 hour (bonus points)
+    # TODO: Implement reminder tracking to check completion time
+    completed_within_hour = False
     
-    # Check if we need to update streak
-    if last_streak_update:
-        # Convert to date if it's a datetime
-        if isinstance(last_streak_update, datetime):
-            last_update_date = last_streak_update.date()
-        else:
-            # Parse ISO string to date
-            last_update_date = datetime.fromisoformat(str(last_streak_update)).date()
+    # Award points through gamification service
+    try:
+        gamification_result = await gamification_service.award_points_for_task(
+            user_id=user_id,
+            task_type=task_type,
+            is_special_event=is_special_event,
+            completed_within_hour=completed_within_hour
+        )
         
-        days_diff = (today - last_update_date).days
+        print(f"✅ Points awarded: {gamification_result['points_earned']}")
+        print(f"🔥 Streak: {gamification_result['new_streak']}")
+        print(f"⬆️  Level: {gamification_result['new_level']}")
+        if gamification_result['level_up']:
+            print(f"🎉 LEVEL UP! New level: {gamification_result['new_level']} - {gamification_result['new_level_info']['name']}")
         
-        print(f"📊 Last update date: {last_update_date}")
-        print(f"📊 Days difference: {days_diff}")
-        
-        if days_diff == 0:
-            # Same day - don't change streak
-            print(f"✅ Same day - streak stays at {current_streak}")
-            pass
-        elif days_diff == 1:
-            # Yesterday - increment streak (consecutive day)
-            current_streak += 1
-            longest_streak = max(longest_streak, current_streak)
-            print(f"🔥 Consecutive day! Streak increased to {current_streak}")
-        else:
-            # Gap of 2+ days - reset streak to 1
-            current_streak = 1
-            print(f"💔 Streak broken (gap of {days_diff} days)! Reset to 1")
-    else:
-        # First time tracking streak - set to 1
-        current_streak = 1
-        print(f"🌟 First time tracking streak - set to 1")
+    except Exception as e:
+        print(f"❌ Gamification error: {e}")
+        # Fallback to old system if gamification fails
+        gamification_result = {
+            "points_earned": points_earned,
+            "total_points": current_user.get("total_points", 0) + points_earned,
+            "available_points": current_user.get("total_points", 0) + points_earned,
+            "level_up": False,
+            "new_level": current_user.get("current_level", 1),
+            "new_level_info": None,
+            "streak_update": False,
+            "new_streak": current_user.get("current_streak", 0),
+            "weekly_draw_eligible": False,
+            "monthly_draw_eligible": False
+        }
     
-    # Store last_streak_update as datetime for consistency
-    last_streak_update = datetime.utcnow()
-    
-    longest_streak = max(longest_streak, current_streak)
-    
-    print(f"🔥 Current streak after update: {current_streak}")
-    print(f"🏆 Longest streak after update: {longest_streak}")
-    
-    # Update badges (simplified)
-    badges = current_user.get("badges", [])
-    if new_tasks_completed >= 10 and "First 10 Tasks" not in badges:
-        badges.append("First 10 Tasks")
-    if current_streak >= 7 and "Week Warrior" not in badges:
-        badges.append("Week Warrior")
-    if new_level >= 5 and "Level 5 Master" not in badges:
-        badges.append("Level 5 Master")
-    
+    # Update task arrays in database
     update_data = {
         "ai_daily_tasks": ai_daily_tasks,
         "ai_weekly_tasks": ai_weekly_tasks,
         "daily_tasks": daily_tasks,
         "custom_tasks": custom_tasks,
-        "total_points": new_total_points,
-        "current_level": new_level,
-        "current_streak": current_streak,
-        "longest_streak": longest_streak,
-        "last_streak_update": last_streak_update,
-        "tasks_completed": new_tasks_completed,
-        "badges": badges,
         "updated_at": datetime.utcnow()
     }
     
@@ -3501,15 +3470,20 @@ async def complete_task(task_data: TaskComplete, current_user: dict = Depends(ge
         {"$set": update_data}
     )
     
+    # Return comprehensive response
     return {
         "message": "Task completed successfully!",
-        "points_earned": points_earned,
-        "total_points": new_total_points,
-        "new_level": new_level,
-        "current_streak": current_streak,
-        "longest_streak": longest_streak,
-        "tasks_completed": new_tasks_completed,
-        "badges": badges,
+        "points_earned": gamification_result["points_earned"],
+        "total_points": gamification_result["total_points"],
+        "available_points": gamification_result["available_points"],
+        "new_level": gamification_result["new_level"],
+        "level_up": gamification_result["level_up"],
+        "level_up_info": gamification_result["new_level_info"],
+        "current_streak": gamification_result["new_streak"],
+        "streak_updated": gamification_result["streak_update"],
+        "tasks_completed": current_user.get("tasks_completed", 0) + 1,
+        "weekly_draw_eligible": gamification_result["weekly_draw_eligible"],
+        "monthly_draw_eligible": gamification_result["monthly_draw_eligible"],
         "task_category": task_category,
         "task_type": task_type
     }
