@@ -52,6 +52,9 @@ from push_notification_service import push_notification_service
 # Import Email Service
 from email_service import email_service
 
+# Import Gamification Service
+from gamification_service import init_gamification_service, LEVEL_THRESHOLDS, STORE_ITEMS
+
 # Rate limiting storage
 rate_limit_storage = defaultdict(list)
 failed_attempts = defaultdict(list)
