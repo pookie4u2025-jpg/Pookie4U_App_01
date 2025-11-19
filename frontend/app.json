@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "com.pookie4u.app",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
