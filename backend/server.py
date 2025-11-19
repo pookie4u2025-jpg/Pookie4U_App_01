@@ -502,6 +502,15 @@ class UserProfile(BaseModel):
     tasks_completed: int = 0
     badges: List[str] = Field(default_factory=list)
     profile_completed: bool = False
+    # Gamification System (NEW)
+    points_spent: int = 0  # Track points used in store
+    available_points: int = 0  # total_points - points_spent
+    love_language: Optional[str] = None  # Unlocked at Level 5
+    last_task_completion_date: Optional[datetime] = None  # For streak tracking
+    bailout_used_this_month: bool = False  # For Bailout Streak Save
+    last_bailout_date: Optional[datetime] = None  # Track when bailout was used
+    daily_tasks_completed_today: int = 0  # Track progress toward all 3 tasks
+    last_daily_task_reset: Optional[datetime] = None  # Track daily reset
     profile_image: Optional[str] = None  # base64 encoded image
     created_at: datetime
     updated_at: datetime = Field(default_factory=datetime.utcnow)
