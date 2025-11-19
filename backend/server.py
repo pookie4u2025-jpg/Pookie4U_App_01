@@ -55,6 +55,9 @@ from email_service import email_service
 # Import Gamification Service
 from gamification_service import init_gamification_service, LEVEL_THRESHOLDS, STORE_ITEMS
 
+# Import Relationship Tasks Database
+from relationship_tasks_database import get_tasks_for_relationship_mode
+
 # Rate limiting storage
 rate_limit_storage = defaultdict(list)
 failed_attempts = defaultdict(list)
