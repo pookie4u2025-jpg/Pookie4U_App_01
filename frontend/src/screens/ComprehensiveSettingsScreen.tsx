@@ -554,87 +554,107 @@ export default function ComprehensiveSettingsScreen() {
         animationType="slide"
         onRequestClose={() => setShowEditAccountModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
-            <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
-              <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Account</Text>
-              <TouchableOpacity
-                onPress={() => setShowEditAccountModal(false)}
-                style={styles.modalCloseButton}
-              >
-                <Ionicons name="close" size={24} color={theme.textSecondary} />
-              </TouchableOpacity>
-            </View>
-            
-            <View style={styles.editAccountForm}>
-              <View style={styles.formGroup}>
-                <Text style={[styles.formLabel, { color: theme.text }]}>Name</Text>
-                <TextInput
-                  style={[styles.formInput, { 
-                    backgroundColor: theme.background, 
-                    color: theme.text,
-                    borderColor: theme.border
-                  }]}
-                  value={editName}
-                  onChangeText={setEditName}
-                  placeholder="Enter your name"
-                  placeholderTextColor={theme.textSecondary}
-                  editable={!isSavingAccount}
-                />
-              </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.modalOverlay}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={styles.keyboardAvoidingView}
+            >
+              <TouchableWithoutFeedback>
+                <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+                  <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
+                    <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Account</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        Keyboard.dismiss();
+                        setShowEditAccountModal(false);
+                      }}
+                      style={styles.modalCloseButton}
+                    >
+                      <Ionicons name="close" size={24} color={theme.textSecondary} />
+                    </TouchableOpacity>
+                  </View>
+                  
+                  <ScrollView 
+                    style={styles.editAccountForm}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                  >
+                    <View style={styles.formGroup}>
+                      <Text style={[styles.formLabel, { color: theme.text }]}>Name</Text>
+                      <TextInput
+                        style={[styles.formInput, { 
+                          backgroundColor: theme.background, 
+                          color: theme.text,
+                          borderColor: theme.border
+                        }]}
+                        value={editName}
+                        onChangeText={setEditName}
+                        placeholder="Enter your name"
+                        placeholderTextColor={theme.textSecondary}
+                        editable={!isSavingAccount}
+                        returnKeyType="next"
+                      />
+                    </View>
 
-              <View style={styles.formGroup}>
-                <Text style={[styles.formLabel, { color: theme.text }]}>Email</Text>
-                <TextInput
-                  style={[styles.formInput, { 
-                    backgroundColor: theme.background, 
-                    color: theme.text,
-                    borderColor: theme.border
-                  }]}
-                  value={editEmail}
-                  onChangeText={setEditEmail}
-                  placeholder="Enter your email"
-                  placeholderTextColor={theme.textSecondary}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  editable={!isSavingAccount}
-                />
-              </View>
+                    <View style={styles.formGroup}>
+                      <Text style={[styles.formLabel, { color: theme.text }]}>Email</Text>
+                      <TextInput
+                        style={[styles.formInput, { 
+                          backgroundColor: theme.background, 
+                          color: theme.text,
+                          borderColor: theme.border
+                        }]}
+                        value={editEmail}
+                        onChangeText={setEditEmail}
+                        placeholder="Enter your email"
+                        placeholderTextColor={theme.textSecondary}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        editable={!isSavingAccount}
+                        returnKeyType="next"
+                      />
+                    </View>
 
-              <View style={styles.formGroup}>
-                <Text style={[styles.formLabel, { color: theme.text }]}>Mobile Number</Text>
-                <TextInput
-                  style={[styles.formInput, { 
-                    backgroundColor: theme.background, 
-                    color: theme.text,
-                    borderColor: theme.border
-                  }]}
-                  value={editMobile}
-                  onChangeText={setEditMobile}
-                  placeholder="Enter your mobile number"
-                  placeholderTextColor={theme.textSecondary}
-                  keyboardType="phone-pad"
-                  editable={!isSavingAccount}
-                />
-              </View>
+                    <View style={styles.formGroup}>
+                      <Text style={[styles.formLabel, { color: theme.text }]}>Mobile Number</Text>
+                      <TextInput
+                        style={[styles.formInput, { 
+                          backgroundColor: theme.background, 
+                          color: theme.text,
+                          borderColor: theme.border
+                        }]}
+                        value={editMobile}
+                        onChangeText={setEditMobile}
+                        placeholder="Enter your mobile number"
+                        placeholderTextColor={theme.textSecondary}
+                        keyboardType="phone-pad"
+                        editable={!isSavingAccount}
+                        returnKeyType="done"
+                        onSubmitEditing={Keyboard.dismiss}
+                      />
+                    </View>
 
-              <TouchableOpacity
-                style={[styles.saveButton, { 
-                  backgroundColor: theme.primary,
-                  opacity: isSavingAccount ? 0.6 : 1
-                }]}
-                onPress={handleSaveAccount}
-                disabled={isSavingAccount}
-              >
-                {isSavingAccount ? (
-                  <ActivityIndicator color="#FFFFFF" size="small" />
-                ) : (
-                  <Text style={styles.saveButtonText}>Save Changes</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+                    <TouchableOpacity
+                      style={[styles.saveButton, { 
+                        backgroundColor: theme.primary,
+                        opacity: isSavingAccount ? 0.6 : 1
+                      }]}
+                      onPress={handleSaveAccount}
+                      disabled={isSavingAccount}
+                    >
+                      {isSavingAccount ? (
+                        <ActivityIndicator color="#FFFFFF" size="small" />
+                      ) : (
+                        <Text style={styles.saveButtonText}>Save Changes</Text>
+                      )}
+                    </TouchableOpacity>
+                  </ScrollView>
+                </View>
+              </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </SafeAreaView>
   );
