@@ -3325,9 +3325,15 @@ async def get_weekly_tasks(
             
         except Exception as e:
             print(f"AI weekly task generation failed: {e}")
-            # Fallback to static tasks
-            available_tasks = WEEKLY_TASKS.get(mode, WEEKLY_TASKS["SAME_HOME"])
-            weekly_tasks = random.sample(available_tasks, min(5, len(available_tasks)))
+            # Fallback to relationship-specific static tasks (NEW DATABASE)
+            available_tasks = get_tasks_for_relationship_mode(mode, "weekly")
+            
+            if not available_tasks:
+                print(f"⚠️  No weekly tasks found for mode {mode}, using SAME_HOME as fallback")
+                available_tasks = get_tasks_for_relationship_mode("SAME_HOME", "weekly")
+            
+            # Select 1 random weekly task (as per spec)
+            weekly_tasks = random.sample(available_tasks, min(1, len(available_tasks)))
             
             for task in weekly_tasks:
                 task["completed"] = False
@@ -3344,10 +3350,13 @@ async def get_weekly_tasks(
                 }}
             )
             
+            print(f"✅ Using relationship-specific weekly task from new database for mode: {mode}")
+            
             return {
                 "tasks": weekly_tasks,
                 "generated_for_mode": mode,
-                "fallback": True
+                "fallback": True,
+                "source": "relationship_database"
             }
     
     # Return existing tasks
