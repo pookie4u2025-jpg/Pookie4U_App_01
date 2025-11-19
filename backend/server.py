@@ -95,8 +95,14 @@ async def startup_db_indexes():
             name="emergent_id_unique"
         )
         print("✅ Database indexes created successfully")
+        
+        # Initialize gamification service
+        global gamification_service
+        gamification_service = init_gamification_service(db)
+        print("✅ Gamification service initialized")
+        
     except Exception as e:
-        print(f"⚠️  Index creation warning (may already exist): {e}")
+        print(f"⚠️  Startup warning: {e}")
 
 # Health check endpoint (for deployment monitoring)
 @app.get("/health", response_model=None)
