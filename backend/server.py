@@ -2574,6 +2574,9 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
         if hasattr(partner_data["anniversary"], 'strftime'):
             partner_data["anniversary"] = partner_data["anniversary"].strftime("%d/%m/%Y")
 
+    # Get profile image - check both fields for backwards compatibility
+    profile_image = current_user.get("profile_image") or current_user.get("picture")
+    
     return UserProfile(
         id=current_user["_id"],
         email=current_user["email"],
@@ -2587,7 +2590,7 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
         tasks_completed=current_user.get("tasks_completed", 0),
         badges=current_user.get("badges", []),
         profile_completed=current_user.get("profile_completed", False),
-        profile_image=current_user.get("profile_image"),
+        profile_image=profile_image,
         created_at=current_user["created_at"],
         updated_at=current_user.get("updated_at", datetime.utcnow()),
         # Subscription fields
