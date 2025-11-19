@@ -319,35 +319,8 @@ export default function HomeContent() {
         <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Let's make today special for your partner</Text>
       </View>
 
-      {/* Stats Cards */}
-      <View style={styles.statsContainer}>
-        <Animated.View entering={FadeInDown.delay(0).duration(400)} style={[styles.statCard, { backgroundColor: theme.surface }]}>
-          <Ionicons name="star" size={24} color="#FFD700" />
-          <Text style={[styles.statNumber, { color: theme.text }]}>{totalPoints}</Text>
-          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Total Points</Text>
-        </Animated.View>
-        <Animated.View entering={FadeInDown.delay(100).duration(400)} style={[styles.statCard, { backgroundColor: theme.surface }]}>
-          <Ionicons name="trophy" size={24} color={theme.primary} />
-          <Text style={[styles.statNumber, { color: theme.text }]}>Level {currentLevel}</Text>
-          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Current Level</Text>
-        </Animated.View>
-        <Animated.View entering={FadeInDown.delay(200).duration(400)} style={[styles.statCard, { backgroundColor: theme.surface }]}>
-          <Ionicons name="flash" size={24} color="#FF4500" />
-          <Text style={[styles.statNumber, { color: theme.text }]}>{currentStreak}</Text>
-          <Text style={[styles.statLabel, { color: theme.textSecondary }]}>Day Streak</Text>
-        </Animated.View>
-      </View>
-
-      {/* Progress Bar */}
-      <Animated.View entering={FadeIn.delay(300).duration(400)} style={[styles.progressContainer, { backgroundColor: theme.surface }]}>
-        <View style={styles.progressHeader}>
-          <Text style={[styles.progressTitle, { color: theme.text }]}>Level {currentLevel} Progress</Text>
-          <Text style={[styles.progressSubtitle, { color: theme.textSecondary }]}>{experienceForNext} points to next level</Text>
-        </View>
-        <View style={[styles.progressBarBackground, { backgroundColor: theme.border }]}>
-          <View style={[styles.progressBarFill, { backgroundColor: theme.primary, width: `${levelProgress}%` }]} />
-        </View>
-      </Animated.View>
+      {/* Gamification Stats - NEW */}
+      <GamificationStats />
 
       {/* Today's Tasks */}
       <View style={styles.section}>
