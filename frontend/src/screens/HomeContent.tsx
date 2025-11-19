@@ -15,6 +15,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import { useTaskStore } from '../stores/useTaskStore';
 import { useGameStore } from '../stores/useGameStore';
 import { useTheme } from '../contexts/ThemeContext';
+import GamificationStats from '../components/GamificationStats';
 
 const { width } = Dimensions.get('window');
 
