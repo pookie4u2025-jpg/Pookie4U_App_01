@@ -2185,18 +2185,28 @@ async def get_emergent_session_data(request: Request):
         if "oauth_providers" not in existing_user:
             existing_user["oauth_providers"] = {}
         
-        # Update Emergent OAuth provider data
-        if "emergent" not in existing_user["oauth_providers"]:
-            await db.users.update_one(
-                {"_id": existing_user["_id"]},
-                {"$set": {
-                    "oauth_providers.emergent": {
-                        "emergent_id": user_id_from_emergent,
-                        "linked_at": datetime.now(timezone.utc)
-                    },
-                    "updated_at": datetime.now(timezone.utc)
-                }}
-            )
+        # Update Emergent OAuth provider data and profile picture
+        update_data = {
+            "oauth_providers.emergent": {
+                "emergent_id": user_id_from_emergent,
+                "linked_at": datetime.now(timezone.utc)
+            },
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        # Always update picture if available from Google
+        if picture:
+            update_data["picture"] = picture
+            update_data["profile_image"] = picture  # Also store as profile_image
+        
+        # Update name if not set or different
+        if name and (not existing_user.get("name") or existing_user.get("name") == "User"):
+            update_data["name"] = name
+        
+        await db.users.update_one(
+            {"_id": existing_user["_id"]},
+            {"$set": update_data}
+        )
     else:
         # Create new user with Emergent OAuth
         user_id = str(uuid.uuid4())
