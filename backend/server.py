@@ -3190,9 +3190,15 @@ async def get_daily_tasks(
             
         except Exception as e:
             print(f"AI task generation failed: {e}")
-            # Fallback to static tasks
-            available_tasks = DAILY_TASKS.get(mode, DAILY_TASKS["SAME_HOME"])
-            daily_tasks = random.sample(available_tasks, 3)
+            # Fallback to relationship-specific static tasks (NEW DATABASE)
+            available_tasks = get_tasks_for_relationship_mode(mode, "daily")
+            
+            if not available_tasks:
+                print(f"⚠️  No tasks found for mode {mode}, using SAME_HOME as fallback")
+                available_tasks = get_tasks_for_relationship_mode("SAME_HOME", "daily")
+            
+            # Select 3 random tasks
+            daily_tasks = random.sample(available_tasks, min(3, len(available_tasks)))
             
             for task in daily_tasks:
                 task["completed"] = False
@@ -3209,10 +3215,13 @@ async def get_daily_tasks(
                 }}
             )
             
+            print(f"✅ Using relationship-specific tasks from new database for mode: {mode}")
+            
             return {
                 "tasks": daily_tasks,
                 "generated_for_mode": mode,
-                "fallback": True
+                "fallback": True,
+                "source": "relationship_database"
             }
     
     # Return existing tasks with mode information
