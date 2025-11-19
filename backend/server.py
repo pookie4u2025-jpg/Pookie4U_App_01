@@ -2215,6 +2215,7 @@ async def get_emergent_session_data(request: Request):
             "email": email,
             "name": name,
             "picture": picture,
+            "profile_image": picture,  # Store as both for consistency
             "oauth_providers": {
                 "emergent": {
                     "emergent_id": user_id_from_emergent,
