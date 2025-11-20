@@ -58,12 +58,54 @@ class EmergentOAuthService {
     try {
       console.log('🔐 Starting Emergent OAuth flow...');
 
+      // WEB-SPECIFIC: Check if we're returning from an OAuth redirect
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        const currentUrl = window.location.href;
+        console.log('🌐 Current web URL:', currentUrl);
+        
+        // Check if we have a session_id in the URL (returning from OAuth)
+        const sessionId = this.extractSessionId(currentUrl);
+        if (sessionId) {
+          console.log('🎫 Session ID found in URL (web redirect), exchanging for session data...');
+          
+          // Clean URL (remove fragment)
+          window.history.replaceState({}, document.title, window.location.pathname);
+          
+          // Exchange session_id for user data and session_token
+          try {
+            const sessionData = await this.exchangeSessionId(sessionId);
+            return {
+              type: 'success',
+              sessionToken: sessionData.session_token,
+              user: sessionData.user,
+            };
+          } catch (error) {
+            console.error('❌ Failed to exchange session ID:', error);
+            return {
+              type: 'error',
+              error: error instanceof Error ? error.message : 'Session validation failed',
+            };
+          }
+        }
+      }
+
       const redirectUrl = this.getRedirectUrl();
       const emergentAuthUrl = `${this.emergentAuthUrl}?redirect=${encodeURIComponent(redirectUrl)}`;
 
       console.log('🚀 Opening auth URL:', emergentAuthUrl);
 
-      // Open browser for OAuth
+      // On web, use window.location for better compatibility
+      if (Platform.OS === 'web' && typeof window !== 'undefined') {
+        console.log('🌐 Web platform detected - redirecting directly...');
+        window.location.href = emergentAuthUrl;
+        
+        // Return pending status - the page will reload after OAuth
+        return {
+          type: 'dismiss',
+        };
+      }
+
+      // NATIVE: Open browser for OAuth
       const result = await WebBrowser.openAuthSessionAsync(
         emergentAuthUrl,
         redirectUrl
