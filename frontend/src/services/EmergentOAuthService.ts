@@ -46,7 +46,7 @@ class EmergentOAuthService {
         }
       }
       // Final fallback
-      return 'https://love-tasks-1.preview.emergentagent.com';
+      return 'https://pookie-connect-1.preview.emergentagent.com';
     }
   }
 
