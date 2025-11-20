@@ -8,11 +8,15 @@ import { initializeRevenueCat } from '../src/config/revenuecatConfig';
 import { OfflineIndicator } from '../src/components/OfflineIndicator';
 import { OfflineManager } from '../src/utils/OfflineManager';
 import { ToastProvider } from '../src/utils/ToastManager';
+import { initializeWebPolyfills } from '../src/utils/webPolyfills';
 
 // Import stores to initialize them
 import '../src/stores/useAuthStore';
 import '../src/stores/useAppStore';
 import '../src/stores/useGameStore';
+
+// Initialize web polyfills BEFORE anything else
+initializeWebPolyfills();
 
 export default function RootLayout() {
   useEffect(() => {
