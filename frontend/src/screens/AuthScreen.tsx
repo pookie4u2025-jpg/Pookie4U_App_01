@@ -38,6 +38,7 @@ export default function AuthScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [isProcessingOAuth, setIsProcessingOAuth] = useState(false);
   
   // Forgot password states
   const [resetEmail, setResetEmail] = useState('');
@@ -51,6 +52,36 @@ export default function AuthScreen() {
   const { theme } = useTheme();
   const router = useRouter();
   const { signIn: emergentSignIn } = useEmergentOAuth();
+
+  // WEB: Check for OAuth redirect on mount
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      const checkForOAuthRedirect = async () => {
+        setIsProcessingOAuth(true);
+        try {
+          const result = await emergentSignIn();
+          
+          if (result.type === 'success') {
+            console.log('✅ OAuth redirect processed successfully');
+            const success = await loginWithEmergentOAuth(
+              result.sessionToken!,
+              result.user
+            );
+            
+            if (success) {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            }
+          }
+        } catch (error) {
+          console.error('❌ OAuth redirect processing failed:', error);
+        } finally {
+          setIsProcessingOAuth(false);
+        }
+      };
+      
+      checkForOAuthRedirect();
+    }
+  }, []);
 
   // Google OAuth removed - using only Emergent OAuth
 
