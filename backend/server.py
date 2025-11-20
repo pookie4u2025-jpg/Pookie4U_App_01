@@ -133,6 +133,32 @@ async def health_check():
                 "error": str(e),
                 "timestamp": datetime.utcnow().isoformat()
             },
+
+@api_router.get("/health", response_model=None)
+async def api_health_check():
+    """Health check endpoint at /api/health for Emergent deployment"""
+    try:
+        # Check if database is accessible
+        await db.users.find_one({}, {"_id": 1})
+        return JSONResponse(
+            content={
+                "status": "healthy",
+                "service": "pookie4u-api",
+                "database": "connected",
+                "timestamp": datetime.utcnow().isoformat()
+            },
+            status_code=200,
+            media_type="application/json"
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={
+                "status": "unhealthy",
+                "service": "pookie4u-api",
+                "database": "disconnected",
+                "error": str(e),
+                "timestamp": datetime.utcnow().isoformat()
+            },
             status_code=503,
             media_type="application/json"
         )
