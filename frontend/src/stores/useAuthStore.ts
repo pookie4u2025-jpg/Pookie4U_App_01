@@ -282,6 +282,7 @@ export const useAuthStore = create<AuthState>()(
             id: userData.id,
             email: userData.email,
             name: userData.name,
+            phone: userData.phone, // Include phone number
             relationship_mode: userData.relationship_mode || 'SAME_HOME',
             partner_profile: userData.partner_profile || {},
             total_points: userData.total_points || 0,
