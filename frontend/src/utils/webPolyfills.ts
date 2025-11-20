@@ -3,91 +3,78 @@
  * This fixes the "setNativeProps is not a function" error
  * 
  * ROOT CAUSE: @expo/vector-icons calls setNativeProps on refs, which don't exist on web
- * SOLUTION: Patch React.createElement to add setNativeProps to all ref callbacks
+ * FINAL SOLUTION: Directly patch the Ionicons component class
  */
 
-import React from 'react';
 import { Platform } from 'react-native';
 
-// Store original createElement
-const originalCreateElement = React.createElement;
-
 if (Platform.OS === 'web' && typeof window !== 'undefined') {
-  console.log('🔧 Applying web polyfills for setNativeProps...');
+  console.log('🔧 Applying NUCLEAR web polyfills for setNativeProps...');
   
-  // 1. Patch all DOM element prototypes
+  // NUCLEAR OPTION: Patch after a delay to ensure icons are loaded
+  setTimeout(() => {
+    try {
+      // Get the Ionicons module
+      const vectorIcons = require('@expo/vector-icons');
+      
+      // Patch Ionicons specifically
+      if (vectorIcons && vectorIcons.Ionicons) {
+        const originalIonicons = vectorIcons.Ionicons;
+        
+        // Override the component's setNativeProps method
+        if (originalIonicons.prototype && originalIonicons.prototype.setNativeProps) {
+          const originalSetNativeProps = originalIonicons.prototype.setNativeProps;
+          
+          originalIonicons.prototype.setNativeProps = function(props: any) {
+            // Safely call setNativeProps only if the ref has it
+            if (this._icon && typeof this._icon.setNativeProps === 'function') {
+              this._icon.setNativeProps(props);
+            }
+            // Otherwise, silently ignore (no error on web)
+          };
+          
+          console.log('✅ Ionicons.setNativeProps patched successfully!');
+        }
+      }
+      
+      // Also patch all icon families
+      const iconFamilies = ['Ionicons', 'MaterialIcons', 'FontAwesome', 'MaterialCommunityIcons'];
+      iconFamilies.forEach(family => {
+        if (vectorIcons[family] && vectorIcons[family].prototype) {
+          const original = vectorIcons[family].prototype.setNativeProps;
+          if (original) {
+            vectorIcons[family].prototype.setNativeProps = function(props: any) {
+              if (this._icon && typeof this._icon.setNativeProps === 'function') {
+                this._icon.setNativeProps(props);
+              }
+            };
+          }
+        }
+      });
+      
+      console.log('✅ All icon families patched!');
+    } catch (error) {
+      console.warn('⚠️ Could not patch icons:', error);
+    }
+  }, 0);
+  
+  // Also add the DOM patches as backup
   if (typeof HTMLElement !== 'undefined') {
-    HTMLElement.prototype.setNativeProps = function(props: any) {
-      // No-op on web - React handles updates automatically
-    };
+    HTMLElement.prototype.setNativeProps = function(props: any) {};
   }
   
   if (typeof Element !== 'undefined') {
-    Element.prototype.setNativeProps = function(props: any) {
-      // No-op on web
-    };
+    Element.prototype.setNativeProps = function(props: any) {};
   }
   
   if (typeof SVGElement !== 'undefined') {
-    SVGElement.prototype.setNativeProps = function(props: any) {
-      // No-op on web
-    };
+    SVGElement.prototype.setNativeProps = function(props: any) {};
   }
-  
-  // 2. CRITICAL FIX: Patch React.createElement to intercept ALL ref callbacks
-  // This catches refs BEFORE they're stored by icon libraries
-  (React as any).createElement = function(type: any, props: any, ...children: any[]) {
-    // If props has a ref, wrap it to add setNativeProps
-    if (props && props.ref) {
-      const originalRef = props.ref;
-      
-      // Handle ref callbacks
-      if (typeof originalRef === 'function') {
-        props.ref = function(node: any) {
-          if (node && typeof node === 'object' && !node.setNativeProps) {
-            node.setNativeProps = function(props: any) {
-              // No-op on web
-            };
-          }
-          return originalRef(node);
-        };
-      }
-      // Handle ref objects (useRef, createRef)
-      else if (originalRef && typeof originalRef === 'object' && 'current' in originalRef) {
-        // Wrap in a callback to patch when assigned
-        const refObject = originalRef;
-        props.ref = function(node: any) {
-          if (node && typeof node === 'object' && !node.setNativeProps) {
-            node.setNativeProps = function(props: any) {
-              // No-op on web
-            };
-          }
-          refObject.current = node;
-        };
-      }
-    }
-    
-    return originalCreateElement.call(React, type, props, ...children);
-  };
-  
-  // 3. Also patch document.createElement as a safety net
-  const originalDocCreateElement = document.createElement.bind(document);
-  document.createElement = function(tagName: any, options?: any) {
-    const element = originalDocCreateElement(tagName, options);
-    if (!element.setNativeProps) {
-      element.setNativeProps = function(props: any) {
-        // No-op on web
-      };
-    }
-    return element;
-  };
-  
-  console.log('✅ Web polyfills initialized - setNativeProps patched at React level');
 }
 
-// Export a function to initialize polyfills (for backwards compatibility)
+// Export a function to initialize polyfills
 export function initializeWebPolyfills() {
   if (Platform.OS === 'web') {
-    console.log('✅ Web polyfills verified - setNativeProps available');
+    console.log('✅ Web polyfills verified - setNativeProps patched');
   }
 }
