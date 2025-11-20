@@ -87,6 +87,9 @@ class EmergentOAuthService {
             };
           }
         }
+        
+        // If no session_id, this is a NEW OAuth request - proceed with redirect
+        console.log('📤 No session_id found - initiating new OAuth flow...');
       }
 
       const redirectUrl = this.getRedirectUrl();
@@ -96,7 +99,7 @@ class EmergentOAuthService {
 
       // On web, use window.location for better compatibility
       if (Platform.OS === 'web' && typeof window !== 'undefined') {
-        console.log('🌐 Web platform detected - redirecting directly...');
+        console.log('🌐 Web platform detected - redirecting to OAuth page...');
         window.location.href = emergentAuthUrl;
         
         // Return pending status - the page will reload after OAuth
