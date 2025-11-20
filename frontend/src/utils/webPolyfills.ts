@@ -5,31 +5,49 @@
 
 import { Platform } from 'react-native';
 
-// Export a function to initialize polyfills
-export function initializeWebPolyfills() {
-  if (Platform.OS === 'web' && typeof window !== 'undefined') {
-    // Polyfill setNativeProps for DOM elements
-    // This is a no-op on web since we don't have native props
-    if (typeof Element !== 'undefined') {
-      // @ts-ignore
-      if (!Element.prototype.setNativeProps) {
-        // @ts-ignore
-        Element.prototype.setNativeProps = function(props: any) {
-          // No-op on web
-          // On web, React handles prop updates automatically
-        };
-      }
-    }
-    
-    // Also polyfill for any object that might be used as a ref
-    const originalRef = (node: any) => {
-      if (node && typeof node === 'object' && !node.setNativeProps) {
-        node.setNativeProps = function() {
-          // No-op on web
-        };
-      }
+// Initialize polyfills immediately on web
+if (Platform.OS === 'web' && typeof window !== 'undefined') {
+  // Polyfill setNativeProps for all possible objects
+  
+  // 1. Patch HTMLElement prototype
+  if (typeof HTMLElement !== 'undefined' && !HTMLElement.prototype.setNativeProps) {
+    HTMLElement.prototype.setNativeProps = function(props: any) {
+      // No-op on web - React handles updates automatically
     };
-    
-    console.log('✅ Web polyfills initialized - setNativeProps available');
+  }
+  
+  // 2. Patch Element prototype as fallback
+  if (typeof Element !== 'undefined' && !Element.prototype.setNativeProps) {
+    Element.prototype.setNativeProps = function(props: any) {
+      // No-op on web
+    };
+  }
+  
+  // 3. Patch SVGElement for icon support
+  if (typeof SVGElement !== 'undefined' && !SVGElement.prototype.setNativeProps) {
+    SVGElement.prototype.setNativeProps = function(props: any) {
+      // No-op on web
+    };
+  }
+  
+  // 4. Global ref wrapper to catch any refs
+  const originalCreateElement = document.createElement.bind(document);
+  document.createElement = function(tagName: any, options?: any) {
+    const element = originalCreateElement(tagName, options);
+    if (!element.setNativeProps) {
+      element.setNativeProps = function(props: any) {
+        // No-op on web
+      };
+    }
+    return element;
+  };
+  
+  console.log('✅ Web polyfills initialized - setNativeProps patched globally');
+}
+
+// Export a function to initialize polyfills (for backwards compatibility)
+export function initializeWebPolyfills() {
+  if (Platform.OS === 'web') {
+    console.log('✅ Web polyfills check - already initialized');
   }
 }
