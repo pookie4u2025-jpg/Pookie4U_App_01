@@ -534,6 +534,7 @@ class UserProfile(BaseModel):
     id: str
     email: str
     name: str
+    phone: Optional[str] = None  # Mobile/phone number
     relationship_mode: str = "SAME_HOME"
     partner_profile: PartnerProfile = Field(default_factory=PartnerProfile)
     total_points: int = 0
