@@ -53,33 +53,40 @@ export default function AuthScreen() {
   const router = useRouter();
   const { signIn: emergentSignIn } = useEmergentOAuth();
 
-  // WEB: Check for OAuth redirect on mount
+  // WEB: Check for OAuth redirect on mount (only if session_id is present in URL)
   useEffect(() => {
-    if (Platform.OS === 'web') {
-      const checkForOAuthRedirect = async () => {
-        setIsProcessingOAuth(true);
-        try {
-          const result = await emergentSignIn();
-          
-          if (result.type === 'success') {
-            console.log('✅ OAuth redirect processed successfully');
-            const success = await loginWithEmergentOAuth(
-              result.sessionToken!,
-              result.user
-            );
-            
-            if (success) {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            }
-          }
-        } catch (error) {
-          console.error('❌ OAuth redirect processing failed:', error);
-        } finally {
-          setIsProcessingOAuth(false);
-        }
-      };
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
+      // Only process if we have a session_id in the URL (returning from OAuth)
+      const currentUrl = window.location.href;
+      const hasSessionId = currentUrl.includes('#session_id=') || currentUrl.includes('session_id=');
       
-      checkForOAuthRedirect();
+      if (hasSessionId) {
+        const checkForOAuthRedirect = async () => {
+          setIsProcessingOAuth(true);
+          try {
+            console.log('🔄 Processing OAuth redirect with session_id...');
+            const result = await emergentSignIn();
+            
+            if (result.type === 'success') {
+              console.log('✅ OAuth redirect processed successfully');
+              const success = await loginWithEmergentOAuth(
+                result.sessionToken!,
+                result.user
+              );
+              
+              if (success) {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              }
+            }
+          } catch (error) {
+            console.error('❌ OAuth redirect processing failed:', error);
+          } finally {
+            setIsProcessingOAuth(false);
+          }
+        };
+        
+        checkForOAuthRedirect();
+      }
     }
   }, []);
 
