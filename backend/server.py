@@ -2310,6 +2310,7 @@ async def get_emergent_session_data(request: Request):
             "id": user_id,
             "email": email,
             "name": user.get("name", name),
+            "phone": user.get("phone"),  # Include phone/mobile number
             "picture": profile_pic,  # Return the saved profile image
             "profile_image": profile_pic,  # Also as profile_image for consistency
             "relationship_mode": user.get("relationship_mode", "SAME_HOME"),
