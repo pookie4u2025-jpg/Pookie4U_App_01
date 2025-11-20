@@ -5,43 +5,31 @@
 
 import { Platform } from 'react-native';
 
-if (Platform.OS === 'web') {
-  // Polyfill setNativeProps for web
-  // This is a no-op on web since we don't have native props
-  if (typeof Element !== 'undefined' && !Element.prototype.setNativeProps) {
-    Element.prototype.setNativeProps = function(props: any) {
-      // No-op on web
-      // On web, React handles prop updates automatically
-    };
-  }
-
-  // Also patch React refs to prevent setNativeProps calls
-  const originalCreateElement = React.createElement;
-  
-  // @ts-ignore
-  React.createElement = function(...args) {
-    const element = originalCreateElement.apply(this, args);
-    
-    // If element has a ref callback, wrap it to add setNativeProps
-    if (element && element.ref && typeof element.ref === 'function') {
-      const originalRef = element.ref;
-      element.ref = function(node: any) {
-        if (node && !node.setNativeProps) {
-          node.setNativeProps = function() {
-            // No-op on web
-          };
-        }
-        return originalRef(node);
-      };
-    }
-    
-    return element;
-  };
-}
-
 // Export a function to initialize polyfills
 export function initializeWebPolyfills() {
-  if (Platform.OS === 'web') {
-    console.log('✅ Web polyfills initialized');
+  if (Platform.OS === 'web' && typeof window !== 'undefined') {
+    // Polyfill setNativeProps for DOM elements
+    // This is a no-op on web since we don't have native props
+    if (typeof Element !== 'undefined') {
+      // @ts-ignore
+      if (!Element.prototype.setNativeProps) {
+        // @ts-ignore
+        Element.prototype.setNativeProps = function(props: any) {
+          // No-op on web
+          // On web, React handles prop updates automatically
+        };
+      }
+    }
+    
+    // Also polyfill for any object that might be used as a ref
+    const originalRef = (node: any) => {
+      if (node && typeof node === 'object' && !node.setNativeProps) {
+        node.setNativeProps = function() {
+          // No-op on web
+        };
+      }
+    };
+    
+    console.log('✅ Web polyfills initialized - setNativeProps available');
   }
 }
