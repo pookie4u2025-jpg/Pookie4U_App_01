@@ -133,6 +133,9 @@ async def health_check():
                 "error": str(e),
                 "timestamp": datetime.utcnow().isoformat()
             },
+            status_code=503,
+            media_type="application/json"
+        )
 
 @api_router.get("/health", response_model=None)
 async def api_health_check():
