@@ -19,6 +19,7 @@ interface User {
   id: string;
   email: string;
   name: string;
+  phone?: string; // Mobile/phone number
   relationship_mode: string;
   partner_profile: PartnerProfile;
   total_points: number;
