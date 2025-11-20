@@ -2294,18 +2294,34 @@ async def get_emergent_session_data(request: Request):
     # Return user data with session token
     user = await db.users.find_one({"_id": user_id})
     
+    # Get profile image - prioritize saved profile_image over OAuth picture
+    profile_pic = user.get("profile_image") or user.get("picture") or picture
+    
+    # Get partner profile with defaults
+    partner_data = user.get("partner_profile", {})
+    if not partner_data:
+        partner_data = {}
+    
     return {
         "success": True,
         "session_token": emergent_session_token,
         "user": {
             "id": user_id,
             "email": email,
-            "name": name,
-            "picture": picture,
+            "name": user.get("name", name),
+            "picture": profile_pic,  # Return the saved profile image
+            "profile_image": profile_pic,  # Also as profile_image for consistency
             "relationship_mode": user.get("relationship_mode", "SAME_HOME"),
+            "partner_profile": partner_data,  # Include partner profile!
             "profile_completed": user.get("profile_completed", False),
             "total_points": user.get("total_points", 0),
-            "current_streak": user.get("current_streak", 0)
+            "current_level": user.get("current_level", 1),
+            "current_streak": user.get("current_streak", 0),
+            "longest_streak": user.get("longest_streak", 0),
+            "tasks_completed": user.get("tasks_completed", 0),
+            "badges": user.get("badges", []),
+            "created_at": user.get("created_at", datetime.now(timezone.utc)).isoformat(),
+            "updated_at": user.get("updated_at", datetime.now(timezone.utc)).isoformat()
         }
     }
 
