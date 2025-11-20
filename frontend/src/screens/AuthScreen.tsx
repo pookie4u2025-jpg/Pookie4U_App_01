@@ -786,10 +786,31 @@ export default function AuthScreen() {
   // Main render method
   return (
     <>
-      {currentScreen === 'welcome' && renderWelcomeScreen()}
-      {currentScreen === 'signup-options' && renderSignupOptionsScreen()}
-      {currentScreen === 'login' && renderLoginScreen()}
-      {currentScreen === 'register' && renderRegisterScreen()}
+      {isProcessingOAuth ? (
+        <View style={{ 
+          flex: 1, 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          backgroundColor: '#F7D7DA' 
+        }}>
+          <ActivityIndicator size="large" color="#FF1493" />
+          <Text style={{ 
+            marginTop: 16, 
+            fontSize: 16, 
+            color: '#666666',
+            textAlign: 'center'
+          }}>
+            Completing sign-in...
+          </Text>
+        </View>
+      ) : (
+        <>
+          {currentScreen === 'welcome' && renderWelcomeScreen()}
+          {currentScreen === 'signup-options' && renderSignupOptionsScreen()}
+          {currentScreen === 'login' && renderLoginScreen()}
+          {currentScreen === 'register' && renderRegisterScreen()}
+        </>
+      )}
     </>
   );
 }
