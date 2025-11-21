@@ -78,8 +78,20 @@ SMS_PROVIDER_BASE_URL = os.environ.get("SMS_PROVIDER_BASE_URL", "")
 
 # Database configuration
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'pookie4u')]
+db_name = os.environ.get('DB_NAME', 'pookie4u')
+
+# Initialize MongoDB client with connection settings for production
+# serverSelectionTimeoutMS: How long to wait for server selection
+# connectTimeoutMS: How long to wait for a connection to be established
+# maxPoolSize: Maximum number of connections in the pool
+client = AsyncIOMotorClient(
+    mongo_url,
+    serverSelectionTimeoutMS=10000,  # 10 seconds
+    connectTimeoutMS=10000,  # 10 seconds  
+    maxPoolSize=50,
+    minPoolSize=10
+)
+db = client[db_name]
 
 # Initialize FastAPI app
 app = FastAPI(title="Pookie4u Authentication API", version="1.0.0")
