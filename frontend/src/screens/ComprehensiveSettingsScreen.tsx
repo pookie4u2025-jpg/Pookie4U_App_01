@@ -212,7 +212,7 @@ export default function ComprehensiveSettingsScreen() {
     setShowEditAccountModal(true);
     setEditName(user?.name || '');
     setEditEmail(user?.email || '');
-    setEditMobile(user?.mobile || '');
+    setEditPhone(user?.phone || '');
   };
 
   const handleSaveAccount = async () => {
@@ -231,7 +231,7 @@ export default function ComprehensiveSettingsScreen() {
       const success = await updateUserProfile({
         name: editName.trim(),
         email: editEmail.trim(),
-        mobile: editMobile.trim(),
+        phone: editPhone.trim(),
       });
 
       if (success) {
