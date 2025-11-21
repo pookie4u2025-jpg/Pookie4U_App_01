@@ -624,8 +624,8 @@ export default function ComprehensiveSettingsScreen() {
                           color: theme.text,
                           borderColor: theme.border
                         }]}
-                        value={editMobile}
-                        onChangeText={setEditMobile}
+                        value={editPhone}
+                        onChangeText={setEditPhone}
                         placeholder="Enter your mobile number"
                         placeholderTextColor={theme.textSecondary}
                         keyboardType="phone-pad"
