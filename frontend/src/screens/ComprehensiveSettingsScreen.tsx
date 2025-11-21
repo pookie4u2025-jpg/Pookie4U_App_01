@@ -52,7 +52,7 @@ export default function ComprehensiveSettingsScreen() {
   const [showEditAccountModal, setShowEditAccountModal] = useState(false);
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
-  const [editMobile, setEditMobile] = useState('');
+  const [editPhone, setEditPhone] = useState('');
   const [isSavingAccount, setIsSavingAccount] = useState(false);
 
   // Relationship mode options (same as in ProfileContent)
