@@ -122,24 +122,49 @@ async def startup_db_indexes():
 # Health check endpoint (for deployment monitoring)
 @app.get("/health", response_model=None)
 async def health_check():
-    """Health check endpoint for deployment systems"""
+    """
+    Health check endpoint for deployment systems
+    Returns 200 even if database is temporarily unavailable during startup
+    """
+    db_status = "unknown"
+    try:
+        # Check if database is accessible with a short timeout
+        await asyncio.wait_for(
+            db.users.find_one({}, {"_id": 1}),
+            timeout=2.0  # 2 second timeout for health check
+        )
+        db_status = "connected"
+    except asyncio.TimeoutError:
+        db_status = "timeout"
+        print("⚠️ Health check: Database connection timeout")
+    except Exception as e:
+        db_status = "error"
+        print(f"⚠️ Health check: Database error: {e}")
+    
+    # Always return 200 for app health, include DB status in response
+    return JSONResponse(
+        content={
+            "status": "healthy",
+            "service": "pookie4u-api",
+            "database": db_status,
+            "timestamp": datetime.utcnow().isoformat()
+        },
+        status_code=200,
+        media_type="application/json"
+    )
+    
+@app.get("/health/ready", response_model=None)
+async def readiness_check():
+    """
+    Readiness check - only returns 200 when database is fully connected
+    Use this for Kubernetes readiness probes
+    """
     try:
         # Check if database is accessible
         await db.users.find_one({}, {"_id": 1})
         return JSONResponse(
             content={
-                "status": "healthy",
-                "service": "pookie4u-api",
-                "database": "connected",
-                "timestamp": datetime.utcnow().isoformat()
-            },
-            status_code=200,
-            media_type="application/json"
-        )
-    except Exception as e:
-        return JSONResponse(
-            content={
-                "status": "unhealthy",
+                "status": "ready",
                 "service": "pookie4u-api",
                 "database": "disconnected",
                 "error": str(e),
