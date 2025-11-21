@@ -167,6 +167,17 @@ async def readiness_check():
             content={
                 "status": "ready",
                 "service": "pookie4u-api",
+                "database": "connected",
+                "timestamp": datetime.utcnow().isoformat()
+            },
+            status_code=200,
+            media_type="application/json"
+        )
+    except Exception as e:
+        return JSONResponse(
+            content={
+                "status": "not_ready",
+                "service": "pookie4u-api",
                 "database": "disconnected",
                 "error": str(e),
                 "timestamp": datetime.utcnow().isoformat()
