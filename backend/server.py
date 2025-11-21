@@ -2654,7 +2654,7 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
 @api_router.put("/user/profile")
 async def update_user_profile(profile_update: dict, current_user: dict = Depends(get_current_user)):
     # Validate allowed fields
-    allowed_fields = {"name", "email", "mobile"}
+    allowed_fields = {"name", "email", "phone"}  # Using "phone" to match schema
     update_data = {k: v for k, v in profile_update.items() if k in allowed_fields}
     
     if not update_data:
@@ -2664,12 +2664,15 @@ async def update_user_profile(profile_update: dict, current_user: dict = Depends
     update_data["updated_at"] = datetime.utcnow()
     
     # Update in database
-    await db.users.update_one(
+    result = await db.users.update_one(
         {"_id": current_user["_id"]},
         {"$set": update_data}
     )
     
-    return {"message": "Profile updated successfully"}
+    if result.modified_count > 0:
+        print(f"✅ User profile updated: {update_data.keys()}")
+    
+    return {"message": "Profile updated successfully", "updated_fields": list(update_data.keys())}
 
 @api_router.post("/user/add-password")
 async def add_password(password_data: dict, current_user: dict = Depends(get_current_user)):
