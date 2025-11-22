@@ -472,7 +472,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      updateUserProfile: async (profile: { name?: string; email?: string; mobile?: string }) => {
+      updateUserProfile: async (profile: { name?: string; email?: string; phone?: string }) => {
         const { token } = get();
         if (!token) {
           console.log('❌ No token available for profile update');
