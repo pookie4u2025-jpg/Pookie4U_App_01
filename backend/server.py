@@ -78,21 +78,37 @@ SMS_PROVIDER_API_KEY = os.environ.get("SMS_PROVIDER_API_KEY", "")
 SMS_PROVIDER_BASE_URL = os.environ.get("SMS_PROVIDER_BASE_URL", "")
 
 # Database configuration
-mongo_url = os.environ['MONGO_URL']
+# Make MongoDB URL resilient - handle missing environment variable gracefully
+mongo_url = os.environ.get('MONGO_URL')
+if not mongo_url:
+    print("⚠️ WARNING: MONGO_URL environment variable not set!")
+    print("⚠️ Application will start but database operations will fail")
+    print("⚠️ Please configure MONGO_URL in your environment")
+    # Use a placeholder to prevent crashes - app will start but DB operations will fail gracefully
+    mongo_url = "mongodb://localhost:27017"
+
 db_name = os.environ.get('DB_NAME', 'pookie4u')
 
 # Initialize MongoDB client with connection settings for production
 # serverSelectionTimeoutMS: How long to wait for server selection
 # connectTimeoutMS: How long to wait for a connection to be established
 # maxPoolSize: Maximum number of connections in the pool
-client = AsyncIOMotorClient(
-    mongo_url,
-    serverSelectionTimeoutMS=10000,  # 10 seconds
-    connectTimeoutMS=10000,  # 10 seconds  
-    maxPoolSize=50,
-    minPoolSize=10
-)
-db = client[db_name]
+try:
+    client = AsyncIOMotorClient(
+        mongo_url,
+        serverSelectionTimeoutMS=10000,  # 10 seconds
+        connectTimeoutMS=10000,  # 10 seconds  
+        maxPoolSize=50,
+        minPoolSize=10
+    )
+    db = client[db_name]
+    print(f"✅ MongoDB client initialized for database: {db_name}")
+except Exception as e:
+    print(f"⚠️ Error initializing MongoDB client: {e}")
+    print("⚠️ Application will start but database operations may fail")
+    # Create a minimal client that won't crash the app
+    client = AsyncIOMotorClient("mongodb://localhost:27017")
+    db = client[db_name]
 
 # Initialize FastAPI app
 app = FastAPI(title="Pookie4u Authentication API", version="1.0.0")
