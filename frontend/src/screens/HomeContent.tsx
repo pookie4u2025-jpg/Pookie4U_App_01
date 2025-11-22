@@ -60,6 +60,7 @@ export default function HomeContent() {
   const [winners, setWinners] = useState<Winner[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   // Helper function to format event display
   const formatEventDate = (event: UpcomingEvent) => {
