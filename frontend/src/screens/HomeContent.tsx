@@ -88,10 +88,15 @@ export default function HomeContent() {
 
   useEffect(() => {
     if (token) {
-      fetchDailyTasks(token);
-      fetchWeeklyTask(token);
-      fetchWinners();
-      fetchUpcomingEvents();
+      // Fetch all data in parallel for faster loading
+      Promise.all([
+        fetchDailyTasks(token),
+        fetchWeeklyTask(token),
+        fetchWinners(),
+        fetchUpcomingEvents()
+      ]).catch(error => {
+        console.error('Error loading home data:', error);
+      });
     }
   }, [token]);
 
