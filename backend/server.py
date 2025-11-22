@@ -2292,10 +2292,12 @@ async def get_emergent_session_data(request: Request):
             "updated_at": datetime.now(timezone.utc)
         }
         
-        # Always update picture if available from Google
+        # Only update profile_image if user hasn't set a custom one
         if picture:
             update_data["picture"] = picture
-            update_data["profile_image"] = picture  # Also store as profile_image
+            # Don't override custom profile_image - only set if not exists
+            if not existing_user.get("profile_image"):
+                update_data["profile_image"] = picture
         
         # Update name if not set or different
         if name and (not existing_user.get("name") or existing_user.get("name") == "User"):
