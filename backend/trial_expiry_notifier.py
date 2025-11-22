@@ -13,10 +13,20 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Database configuration
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'pookie4u')]
+# Database configuration - resilient to missing env vars
+mongo_url = os.environ.get('MONGO_URL')
+if not mongo_url:
+    logger.warning("⚠️ MONGO_URL not set in trial_expiry_notifier")
+    mongo_url = "mongodb://localhost:27017"  # Fallback
+
+try:
+    client = AsyncIOMotorClient(mongo_url)
+    db = client[os.environ.get('DB_NAME', 'pookie4u')]
+    logger.info("✅ Trial expiry notifier: MongoDB client initialized")
+except Exception as e:
+    logger.error(f"⚠️ Trial expiry notifier: Error initializing MongoDB: {e}")
+    client = AsyncIOMotorClient("mongodb://localhost:27017")
+    db = client[os.environ.get('DB_NAME', 'pookie4u')]
 
 async def check_and_notify_trial_expiry():
     """
