@@ -2798,7 +2798,7 @@ async def forgot_password(email_data: dict):
     )
     
     # Create reset link (for mobile app deep linking or web)
-    app_url = os.getenv("APP_URL", "https://pookie-connect-1.preview.emergentagent.com")
+    app_url = os.getenv("APP_URL", "https://bug-buster-22.preview.emergentagent.com")
     reset_link = f"{app_url}/reset-password?code={reset_code}&email={email}"
     
     # Send email
