@@ -292,7 +292,8 @@ export const useAuthStore = create<AuthState>()(
             tasks_completed: userData.tasks_completed || 0,
             badges: userData.badges || [],
             profile_completed: userData.profile_completed || false,
-            profile_image: userData.picture,
+            // Use custom profile_image if exists, otherwise use Google picture
+            profile_image: userData.profile_image || userData.picture,
             created_at: userData.created_at || new Date().toISOString(),
             updated_at: userData.updated_at || new Date().toISOString(),
           };
