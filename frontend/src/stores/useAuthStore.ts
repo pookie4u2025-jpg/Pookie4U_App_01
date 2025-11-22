@@ -63,7 +63,7 @@ interface AuthState {
   loginWithEmergentOAuth: (sessionToken: string, userData: any) => Promise<boolean>;
   logout: () => void;
   updateProfile: (profile: Partial<User>) => void;
-  updateUserProfile: (profile: { name?: string; email?: string }) => Promise<boolean>;
+  updateUserProfile: (profile: { name?: string; email?: string; phone?: string }) => Promise<boolean>;
   fetchProfile: () => Promise<void>;
   updatePartnerProfile: (partner: PartnerProfile) => Promise<boolean>;
   updateRelationshipMode: (mode: string) => Promise<boolean>;
